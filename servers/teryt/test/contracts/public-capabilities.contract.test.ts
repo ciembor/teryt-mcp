@@ -41,6 +41,17 @@ const toolInputs: Readonly<Record<string, unknown>> = {
 
 const toolsWithoutInputSchema = new Set(["health_status", "server_status", "source_status"]);
 
+const invalidInputErrors: Readonly<Record<string, string>> = {
+  get_place: "get_place requires id.",
+  get_street: "get_street requires id.",
+  get_unit: "get_unit requires id.",
+  resolve_address: "resolve_address requires query.",
+  search_places: "search_places requires query.",
+  search_streets: "search_streets requires query.",
+  search_units: "search_units requires query.",
+  sync_database: "sync_database requires mode: missing | stale | force.",
+};
+
 afterEach(async () => {
   await Promise.all(
     tempDirs.map((path) =>
@@ -99,6 +110,21 @@ describe("public capability contracts", () => {
 
       expect(result, toolName).toHaveProperty("structuredContent");
       expect(result.structuredContent, toolName).toBeDefined();
+    }
+  });
+
+  it("returns stable errors for invalid public tool input", async () => {
+    const app = createApp({
+      dataDir: await createTempDir(),
+      port: 3000,
+      transport: "stdio",
+    });
+
+    for (const [toolName, message] of Object.entries(invalidInputErrors)) {
+      await expect(callTool(app, toolName, {}), toolName).rejects.toMatchObject({
+        message,
+        name: "Error",
+      });
     }
   });
 });

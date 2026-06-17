@@ -989,7 +989,7 @@ teryt-mcp search places Kraków
 - [x] Contract tests sprawdzają `outputSchema`.
 - [x] Contract tests sprawdzają annotations.
 - [x] Contract tests sprawdzają `structuredContent`.
-- [ ] Contract tests sprawdzają error shape.
+- [x] Contract tests sprawdzają error shape.
 - [x] Dodaj TERC fixture.
 - [x] Dodaj SIMC fixture.
 - [x] Dodaj ULIC fixture.
