@@ -764,7 +764,7 @@ write manifest
 - [x] Obsłuż ZIP.
 - [x] Dodaj dataset detection.
 - [x] Dodaj column validation.
-- [ ] Dodaj SQLite schema.
+- [x] Dodaj SQLite schema.
 - [x] Kody są przechowywane jako `TEXT` bez utraty zer wiodących.
 - [ ] Manifest zapisuje dataset, variant, stateDate, downloadedAt, publishedAtObserved, sha256, recordCount, columns, source.
 - [x] Dodaj walidacje wymaganych kolumn.
