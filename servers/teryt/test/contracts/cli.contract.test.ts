@@ -1,11 +1,27 @@
 import { Writable } from "node:stream";
-import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { mkdtemp, rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-kit/core";
 
 import { createApp } from "../../src/app.js";
 import { runCli } from "../../src/cli.js";
+
+const tempDirs: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    tempDirs.map((path) =>
+      rm(path, {
+        force: true,
+        recursive: true,
+      }),
+    ),
+  );
+  tempDirs.length = 0;
+});
 
 describe("teryt-mcp CLI contract", () => {
   it("returns server status consistent with MCP", async () => {
@@ -53,7 +69,52 @@ describe("teryt-mcp CLI contract", () => {
 
     expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
   });
+
+  it("runs database sync in force mode", async () => {
+    const stdout = new MemoryWritable();
+    const dataDir = await createTempDir();
+
+    await runCli(["sync", "--force"], {
+      env: {
+        MCP_DATA_DIR: dataDir,
+        MCP_TRANSPORT: "stdio",
+      },
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(JSON.parse(stdout.content)).toMatchObject({
+      databasePath: join(dataDir, "teryt.sqlite"),
+      datasets: [
+        {
+          dataset: "TERC",
+          stateDate: "unknown",
+        },
+        {
+          dataset: "SIMC",
+          stateDate: "unknown",
+        },
+        {
+          dataset: "ULIC",
+          stateDate: "unknown",
+        },
+        {
+          dataset: "WMRODZ",
+          stateDate: "unknown",
+        },
+      ],
+      mode: "force",
+      status: "synced",
+    });
+    await expect(stat(join(dataDir, "teryt.sqlite"))).resolves.toBeDefined();
+  });
 });
+
+async function createTempDir(): Promise<string> {
+  const path = await mkdtemp(join(tmpdir(), "teryt-cli-"));
+  tempDirs.push(path);
+  return path;
+}
 
 class MemoryWritable extends Writable {
   readonly chunks: string[] = [];

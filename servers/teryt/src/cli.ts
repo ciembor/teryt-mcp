@@ -15,7 +15,7 @@ type CliIo = {
 };
 
 export async function runCli(argv: readonly string[] = process.argv.slice(2), io: CliIo = defaultIo()): Promise<void> {
-  const [command] = argv;
+  const [command, ...args] = argv;
 
   if (command === "serve") {
     await serve(loadRuntimeConfig(io.env));
@@ -38,6 +38,11 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
 
   if (command === "source-status") {
     await writeCliToolResult(io.stdout, "source_status", {}, io.env);
+    return;
+  }
+
+  if (command === "sync") {
+    await writeCliToolResult(io.stdout, "sync_database", { mode: parseSyncMode(args) }, io.env);
     return;
   }
 
@@ -65,6 +70,26 @@ function defaultIo(): CliIo {
     stderr: process.stderr,
     stdout: process.stdout,
   };
+}
+
+function parseSyncMode(args: readonly string[]): "missing" | "stale" | "force" {
+  if (args.includes("--force")) {
+    return "force";
+  }
+
+  const modeIndex = args.indexOf("--mode");
+
+  if (modeIndex >= 0) {
+    const mode = args[modeIndex + 1];
+
+    if (mode === "missing" || mode === "stale" || mode === "force") {
+      return mode;
+    }
+
+    throw new Error("sync --mode requires: missing | stale | force.");
+  }
+
+  return "missing";
 }
 
 function isCliEntrypoint(argvPath: string | undefined = process.argv[1]): boolean {
