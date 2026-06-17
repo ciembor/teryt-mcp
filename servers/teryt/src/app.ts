@@ -1,6 +1,7 @@
 import { createMcpApp } from "@mcp-kit/core";
 import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-kit/node";
 
+import { InMemoryPlaceRepository } from "./features/search-places/infrastructure/in-memory-place-repository.js";
 import { EterytSourceCatalog } from "./features/source-status/infrastructure/eteryt-source-catalog.js";
 import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
 import { EterytSource } from "./features/sync-database/infrastructure/eteryt-source.js";
@@ -24,6 +25,7 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig()) {
     registry: createRegistry({
       config,
       manifestStore,
+      placeRepository: new InMemoryPlaceRepository(),
       sourceCatalog,
       sync: {
         databaseBuilder: new SqliteDatabaseBuilder(),

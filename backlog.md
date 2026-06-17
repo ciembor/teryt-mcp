@@ -866,26 +866,26 @@ recordCount
 ### Checklist
 
 - [ ] Dodaj `search_units`.
-- [ ] Dodaj `search_places`.
+- [x] Dodaj `search_places`.
 - [ ] Dodaj `search_streets`.
 - [ ] Dodaj `resolve_address`.
 - [ ] Dodaj `get_unit`.
 - [ ] Dodaj `get_place`.
 - [ ] Dodaj `get_street`.
 - [ ] Każda feature ma domain/application/ports/mcp/infrastructure/index.ts.
-- [ ] Search tools mają `limit` default 20.
-- [ ] Search tools mają `limit` max 100.
-- [ ] Search tools mają `outputSchema`.
-- [ ] Search tools zwracają `structuredContent`.
-- [ ] Search tools zwracają `stateDate`, `matchedBy`, `confidence`.
-- [ ] Ranking obsługuje exact code.
-- [ ] Ranking obsługuje exact normalized name.
-- [ ] Ranking obsługuje prefix.
+- [x] Search tools mają `limit` default 20.
+- [x] Search tools mają `limit` max 100.
+- [x] Search tools mają `outputSchema`.
+- [x] Search tools zwracają `structuredContent`.
+- [x] Search tools zwracają `stateDate`, `matchedBy`, `confidence`.
+- [x] Ranking obsługuje exact code.
+- [x] Ranking obsługuje exact normalized name.
+- [x] Ranking obsługuje prefix.
 - [ ] Ranking obsługuje FTS.
-- [ ] `search_*` nie zwraca nieograniczonych list.
-- [ ] Każdy tool ma contract test.
-- [ ] Każdy repository jest za portem.
-- [ ] `pnpm quality` przechodzi po każdej feature.
+- [x] `search_*` nie zwraca nieograniczonych list.
+- [x] Każdy tool ma contract test.
+- [x] Każdy repository jest za portem.
+- [x] `pnpm quality` przechodzi po każdej feature.
 
 ### Zadania
 
