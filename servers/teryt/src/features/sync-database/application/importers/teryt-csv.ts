@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import type { DatasetCode } from "../../domain/dataset.js";
 
 type TerytRow = {
@@ -14,6 +16,7 @@ type TerytImport = {
 };
 
 type ImportTerytCsvOptions = {
+  readonly expectedSha256?: string;
   readonly minRecordCount?: number;
 };
 
@@ -37,6 +40,8 @@ export function importTerytCsv(content: string, options: ImportTerytCsvOptions =
   if (!headerLine) {
     throw new Error("TERYT CSV is empty.");
   }
+
+  validateSha256(content, options.expectedSha256);
 
   const columns = parseCsvLine(headerLine);
   const dataset = detectDataset(columns);
@@ -102,6 +107,18 @@ function validateStateDate(dataset: DatasetCode, rows: readonly TerytRow[]): str
 function validateRecordCount(dataset: DatasetCode, recordCount: number, minRecordCount = 1): void {
   if (recordCount < minRecordCount) {
     throw new Error(`${dataset} recordCount ${recordCount} is below minimum ${minRecordCount}.`);
+  }
+}
+
+function validateSha256(content: string, expectedSha256: string | undefined): void {
+  if (!expectedSha256) {
+    return;
+  }
+
+  const actualSha256 = createHash("sha256").update(content).digest("hex");
+
+  if (actualSha256 !== expectedSha256) {
+    throw new Error(`TERYT CSV sha256 mismatch: expected ${expectedSha256}, got ${actualSha256}.`);
   }
 }
 

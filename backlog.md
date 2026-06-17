@@ -771,7 +771,7 @@ write manifest
 - [x] Dodaj walidacje `STAN_NA`.
 - [x] Dodaj minimalne liczby rekordów.
 - [ ] Dodaj spójność podstawowych relacji.
-- [ ] Dodaj walidację hash pliku.
+- [x] Dodaj walidację hash pliku.
 - [x] Dodaj walidację `recordCount`.
 - [x] Import fixture działa.
 - [ ] Import realnych plików jest możliwy.

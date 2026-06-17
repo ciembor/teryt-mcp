@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -49,6 +50,14 @@ describe("importTerytCsv", () => {
     const csv = await readFile(join(fixtureDir, "WMRODZ.csv"), "utf8");
 
     expect(() => importTerytCsv(csv, { minRecordCount: 3 })).toThrow(/recordCount/);
+  });
+
+  it("validates source file sha256 when expected hash is provided", async () => {
+    const csv = await readFile(join(fixtureDir, "TERC.csv"), "utf8");
+    const expectedSha256 = createHash("sha256").update(csv).digest("hex");
+
+    expect(importTerytCsv(csv, { expectedSha256 }).recordCount).toBe(3);
+    expect(() => importTerytCsv(csv, { expectedSha256: "invalid" })).toThrow(/sha256 mismatch/);
   });
 
   it("rejects ambiguous dataset detection", () => {
