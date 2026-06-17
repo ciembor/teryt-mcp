@@ -12,6 +12,7 @@ describe("app", () => {
 
     expect(app.registry.get("health_status")).toBeDefined();
     expect(app.registry.get("search_places")).toBeDefined();
+    expect(app.registry.get("search_units")).toBeDefined();
     expect(app.registry.get("server_status")).toBeDefined();
     expect(app.registry.get("source_status")).toBeDefined();
     expect(app.registry.get("sync_database")).toBeDefined();

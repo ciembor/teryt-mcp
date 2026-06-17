@@ -3,6 +3,7 @@ import type { RuntimeConfig } from "@mcp-kit/node";
 
 import { healthTool } from "../features/health/index.js";
 import { createSearchPlacesTool, type PlaceRepository } from "../features/search-places/index.js";
+import { createSearchUnitsTool, type UnitRepository } from "../features/search-units/index.js";
 import { createServerStatusTool } from "../features/server-status/index.js";
 import { createSourceStatusTool, type ManifestStore, type TerytSourceCatalog } from "../features/source-status/index.js";
 import {
@@ -19,6 +20,7 @@ type CreateRegistryInput = {
   readonly manifestStore: ManifestStore;
   readonly placeRepository: PlaceRepository;
   readonly sourceCatalog: TerytSourceCatalog;
+  readonly unitRepository: UnitRepository;
   readonly sync: {
     readonly databaseBuilder: DatabaseBuilder;
     readonly fileStore: FileStore;
@@ -42,6 +44,9 @@ export function createRegistry(input: CreateRegistryInput) {
     }),
     createSearchPlacesTool({
       placeRepository: input.placeRepository,
+    }),
+    createSearchUnitsTool({
+      unitRepository: input.unitRepository,
     }),
     createSyncDatabaseTool(input.sync),
   ]);

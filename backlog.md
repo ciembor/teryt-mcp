@@ -865,7 +865,7 @@ recordCount
 
 ### Checklist
 
-- [ ] Dodaj `search_units`.
+- [x] Dodaj `search_units`.
 - [x] Dodaj `search_places`.
 - [ ] Dodaj `search_streets`.
 - [ ] Dodaj `resolve_address`.
