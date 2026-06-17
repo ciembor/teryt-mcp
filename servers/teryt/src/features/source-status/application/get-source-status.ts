@@ -5,11 +5,22 @@ import type { TerytSourceCatalog } from "./ports/teryt-source-catalog.js";
 
 type SourceStatusItem = {
   readonly dataset: Dataset;
+  readonly sha256: string | null;
   readonly snapshot: SourceSnapshot | null;
+  readonly stateDate: string | null;
 };
 
 type SourceStatus = {
   readonly datasets: readonly SourceStatusItem[];
+  readonly lastCheckedAt: string | null;
+  readonly lastSuccessfulSync: string | null;
+  readonly localDatabase: {
+    readonly status: "missing" | "available";
+  };
+  readonly remoteSource: {
+    readonly errors: readonly string[];
+    readonly status: "unknown" | "available" | "error";
+  };
 };
 
 export type GetSourceStatusInput = {
@@ -20,13 +31,33 @@ export type GetSourceStatusInput = {
 export async function getSourceStatus(input: GetSourceStatusInput): Promise<SourceStatus> {
   const datasets = await input.sourceCatalog.listDatasets();
   const snapshots = await Promise.all(
-    datasets.map(async (dataset) => ({
-      dataset,
-      snapshot: (await input.manifestStore.getSnapshot(dataset.code)) ?? null,
-    })),
+    datasets.map(async (dataset) => {
+      const snapshot = (await input.manifestStore.getSnapshot(dataset.code)) ?? null;
+
+      return {
+        dataset,
+        sha256: snapshot?.sha256 ?? null,
+        snapshot,
+        stateDate: snapshot?.stateDate ?? null,
+      };
+    }),
   );
+  const lastSuccessfulSync = snapshots
+    .map((item) => item.snapshot?.downloadedAt)
+    .filter((downloadedAt): downloadedAt is string => Boolean(downloadedAt))
+    .sort()
+    .at(-1) ?? null;
 
   return {
     datasets: snapshots,
+    lastCheckedAt: null,
+    lastSuccessfulSync,
+    localDatabase: {
+      status: snapshots.some((item) => item.snapshot) ? "available" : "missing",
+    },
+    remoteSource: {
+      errors: [],
+      status: "unknown",
+    },
   };
 }

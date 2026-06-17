@@ -47,11 +47,40 @@ export function createSourceStatusTool(input: GetSourceStatusInput) {
                       downloadedAt: {
                         type: "string",
                       },
+                      recordCount: {
+                        type: "number",
+                      },
+                      sha256: {
+                        type: "string",
+                      },
                       sourceUrl: {
                         type: "string",
                       },
+                      stateDate: {
+                        type: "string",
+                      },
                     },
-                    required: ["dataset", "version", "downloadedAt", "sourceUrl"],
+                    required: ["dataset", "downloadedAt", "sourceUrl"],
+                  },
+                  {
+                    type: "null",
+                  },
+                ],
+              },
+              sha256: {
+                anyOf: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "null",
+                  },
+                ],
+              },
+              stateDate: {
+                anyOf: [
+                  {
+                    type: "string",
                   },
                   {
                     type: "null",
@@ -59,11 +88,57 @@ export function createSourceStatusTool(input: GetSourceStatusInput) {
                 ],
               },
             },
-            required: ["dataset", "snapshot"],
+            required: ["dataset", "sha256", "snapshot", "stateDate"],
           },
         },
+        lastCheckedAt: {
+          anyOf: [
+            {
+              type: "string",
+            },
+            {
+              type: "null",
+            },
+          ],
+        },
+        lastSuccessfulSync: {
+          anyOf: [
+            {
+              type: "string",
+            },
+            {
+              type: "null",
+            },
+          ],
+        },
+        localDatabase: {
+          type: "object",
+          properties: {
+            status: {
+              type: "string",
+              enum: ["missing", "available"],
+            },
+          },
+          required: ["status"],
+        },
+        remoteSource: {
+          type: "object",
+          properties: {
+            errors: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+            status: {
+              type: "string",
+              enum: ["unknown", "available", "error"],
+            },
+          },
+          required: ["errors", "status"],
+        },
       },
-      required: ["datasets"],
+      required: ["datasets", "lastCheckedAt", "lastSuccessfulSync", "localDatabase", "remoteSource"],
     },
     annotations: {
       readOnlyHint: true,

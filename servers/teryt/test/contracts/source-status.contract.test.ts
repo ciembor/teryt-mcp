@@ -25,7 +25,9 @@ describe("source_status contract", () => {
               name: "Territorial units",
               sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
             },
+            sha256: null,
             snapshot: null,
+            stateDate: null,
           },
           {
             dataset: {
@@ -33,7 +35,9 @@ describe("source_status contract", () => {
               name: "Localities",
               sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
             },
+            sha256: null,
             snapshot: null,
+            stateDate: null,
           },
           {
             dataset: {
@@ -41,7 +45,9 @@ describe("source_status contract", () => {
               name: "Streets",
               sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
             },
+            sha256: null,
             snapshot: null,
+            stateDate: null,
           },
           {
             dataset: {
@@ -49,9 +55,20 @@ describe("source_status contract", () => {
               name: "Locality type dictionary",
               sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
             },
+            sha256: null,
             snapshot: null,
+            stateDate: null,
           },
         ],
+        lastCheckedAt: null,
+        lastSuccessfulSync: null,
+        localDatabase: {
+          status: "missing",
+        },
+        remoteSource: {
+          errors: [],
+          status: "unknown",
+        },
       },
     });
   });
