@@ -1,0 +1,21 @@
+{
+  "name": "teryt-mcp-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for MCP Kit and the TERYT MCP server.",
+  "type": "module",
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "quality": "node -e \"console.log('quality placeholder')\""
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
