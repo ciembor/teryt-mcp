@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createProjectFiles, getQualitySteps, initProject, runQuality } from "../src/index";
+import { createProjectFiles, getQualitySteps, initProject, isCliEntrypoint, runQuality } from "../src/index";
 
 const tempDirs: string[] = [];
 
@@ -36,6 +36,12 @@ describe("@mcp-kit/cli", () => {
       "vitest run --coverage test/unit test/integration test/contracts",
     ]);
     expect(getQualitySteps()).toHaveLength(6);
+  });
+
+  it("detects execution through the package bin symlink", () => {
+    expect(isCliEntrypoint("/repo/node_modules/.bin/mcp-kit")).toBe(true);
+    expect(isCliEntrypoint("/repo/packages/cli/dist/index.js")).toBe(true);
+    expect(isCliEntrypoint("/repo/node_modules/vitest/vitest.mjs")).toBe(false);
   });
 
   it("generates the expected server file set", () => {

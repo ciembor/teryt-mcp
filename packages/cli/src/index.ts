@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, writeFile, chmod, stat } from "node:fs/promises";
 import { spawn } from "node:child_process";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 
 export type InitProjectOptions = {
   readonly path: string;
@@ -67,6 +67,12 @@ export function getQualitySteps(): readonly [string, readonly string[]][] {
   return qualitySteps;
 }
 
+export function isCliEntrypoint(argvPath: string | undefined = process.argv[1]): boolean {
+  const entrypoint = argvPath ? basename(argvPath) : "";
+
+  return entrypoint === "mcp-kit" || entrypoint === "index.js";
+}
+
 export function createProjectFiles(name: string): readonly GeneratedFile[] {
   const packageName = normalizePackageName(name);
 
@@ -91,7 +97,8 @@ export function createProjectFiles(name: string): readonly GeneratedFile[] {
           devDependencies: {
             "@mcp-kit/cli": "workspace:*",
             "@types/node": "^24.0.3",
-            "dependency-cruiser": "^16.10.4",
+            "@vitest/coverage-v8": "^3.2.4",
+            "dependency-cruiser": "^13.1.5",
             eslint: "^9.29.0",
             "eslint-plugin-sonarjs": "^3.0.3",
             knip: "^5.61.3",
@@ -120,7 +127,7 @@ export function createProjectFiles(name: string): readonly GeneratedFile[] {
       path: "src/app.ts",
       content: `import { createMcpApp } from "@mcp-kit/core";
 
-import { registry } from "./mcp/registry";
+import { registry } from "./mcp/registry.js";
 
 export function createApp() {
   return createMcpApp({
@@ -135,9 +142,9 @@ export function createApp() {
       path: "src/main.ts",
       content: `import { loadRuntimeConfig } from "@mcp-kit/node";
 
-import { createApp } from "./app";
-import { startHttpTransport } from "./server/transports/http";
-import { startStdioTransport } from "./server/transports/stdio";
+import { createApp } from "./app.js";
+import { startHttpTransport } from "./server/transports/http.js";
+import { startStdioTransport } from "./server/transports/stdio.js";
 
 const app = createApp();
 const config = loadRuntimeConfig();
@@ -155,7 +162,7 @@ if (config.transport === "http") {
       path: "src/mcp/registry.ts",
       content: `import { createCapabilityRegistry } from "@mcp-kit/core";
 
-import { healthTool } from "../features/health";
+import { healthTool } from "../features/health/index.js";
 
 export const registry = createCapabilityRegistry([
   healthTool,
@@ -184,9 +191,9 @@ export function startStdioTransport(app: McpApp, options: StdioServerOptions = {
     },
     {
       path: "src/features/health/index.ts",
-      content: `export { getHealth } from "./application/get-health";
-export { healthTool } from "./mcp/health.tool";
-export type { HealthStatus } from "./domain/health-status";
+      content: `export { getHealth } from "./application/get-health.js";
+export { healthTool } from "./mcp/health.tool.js";
+export type { HealthStatus } from "./domain/health-status.js";
 `,
     },
     {
@@ -198,7 +205,7 @@ export type { HealthStatus } from "./domain/health-status";
     },
     {
       path: "src/features/health/application/get-health.ts",
-      content: `import type { HealthStatus } from "../domain/health-status";
+      content: `import type { HealthStatus } from "../domain/health-status.js";
 
 export function getHealth(): HealthStatus {
   return {
@@ -211,7 +218,7 @@ export function getHealth(): HealthStatus {
       path: "src/features/health/mcp/health.tool.ts",
       content: `import { defineTool } from "@mcp-kit/core";
 
-import { getHealth } from "../application/get-health";
+import { getHealth } from "../application/get-health.js";
 
 export const healthTool = defineTool({
   name: "health_status",
@@ -240,7 +247,7 @@ export const healthTool = defineTool({
       path: "test/architecture/project.architecture.test.ts",
       content: `import { describe, expect, it } from "vitest";
 
-import { registry } from "../../src/mcp/registry";
+import { registry } from "../../src/mcp/registry.js";
 
 describe("project architecture", () => {
   it("keeps the capability registry valid", () => {
@@ -255,7 +262,7 @@ describe("project architecture", () => {
 
 import { callTool } from "@mcp-kit/core";
 
-import { createApp } from "../../src/app";
+import { createApp } from "../../src/app.js";
 
 describe("health contract", () => {
   it("returns structured health status", async () => {
@@ -272,7 +279,7 @@ describe("health contract", () => {
       path: "test/integration/app.smoke.test.ts",
       content: `import { describe, expect, it } from "vitest";
 
-import { createApp } from "../../src/app";
+import { createApp } from "../../src/app.js";
 
 describe("app", () => {
   it("creates an MCP app", () => {
@@ -329,7 +336,18 @@ export default tseslint.config(
   "project": [
     "src/**/*.ts",
     "test/**/*.ts"
-  ]
+  ],
+  "ignoreDependencies": [
+    "@mcp-kit/core",
+    "@mcp-kit/node",
+    "dependency-cruiser"
+  ],
+  "ignoreIssues": {
+    "src/features/**/index.ts": [
+      "exports",
+      "types"
+    ]
+  }
 }
 `,
     },
@@ -433,7 +451,7 @@ function normalizePackageName(name: string): string {
   return name.trim().toLowerCase().replaceAll(/[^a-z0-9-]+/g, "-").replaceAll(/^-|-$/g, "");
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isCliEntrypoint()) {
   main().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     process.stderr.write(`${message}\n`);
