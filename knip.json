@@ -1,0 +1,39 @@
+{
+  "workspaces": {
+    "packages/cli": {
+      "entry": [
+        "src/index.ts",
+        "test/**/*.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "test/**/*.ts"
+      ],
+      "ignoreDependencies": [
+        "@mcp-kit/core",
+        "@mcp-kit/node"
+      ]
+    },
+    "packages/core": {
+      "entry": [
+        "src/index.ts",
+        "test/**/*.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "test/**/*.ts"
+      ]
+    },
+    "packages/node": {
+      "entry": [
+        "src/index.ts",
+        "test/**/*.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "test/**/*.ts"
+      ],
+      "ignoreDependencies": []
+    }
+  }
+}

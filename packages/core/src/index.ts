@@ -49,6 +49,8 @@ export type ToolCapability<TInput = unknown, TStructuredContent = unknown> = Cap
   readonly handler: ToolHandler<TInput, TStructuredContent>;
 };
 
+export type AnyToolCapability = ToolCapability<never, unknown>;
+
 export type ResourceCapability = CapabilityBase & {
   readonly kind: "resource";
   readonly uriTemplate: string;
@@ -60,14 +62,14 @@ export type PromptCapability = CapabilityBase & {
 };
 
 export type Capability =
-  | ToolCapability
+  | AnyToolCapability
   | ResourceCapability
   | PromptCapability;
 
 export type CapabilityRegistry = {
   readonly capabilities: readonly Capability[];
   readonly get: (name: string) => Capability | undefined;
-  readonly tools: () => readonly ToolCapability[];
+  readonly tools: () => readonly AnyToolCapability[];
   readonly resources: () => readonly ResourceCapability[];
   readonly prompts: () => readonly PromptCapability[];
 };
@@ -94,7 +96,47 @@ export type SourceFile = {
   readonly content: string;
 };
 
+type CleanArchitectureLayer = "domain" | "application" | "mcp" | "infrastructure";
+
+type LayerImportRule = {
+  readonly blockedImportSegment: string;
+  readonly message: string;
+};
+
 const CAPABILITY_NAME_PATTERN = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
+const cleanArchitectureRules: Readonly<Record<CleanArchitectureLayer, readonly LayerImportRule[]>> = {
+  application: [
+    {
+      blockedImportSegment: "/mcp",
+      message: "imports MCP",
+    },
+    {
+      blockedImportSegment: "/infrastructure",
+      message: "imports infrastructure",
+    },
+    {
+      blockedImportSegment: "@modelcontextprotocol",
+      message: "imports MCP SDK",
+    },
+  ],
+  domain: [
+    {
+      blockedImportSegment: "/mcp",
+      message: "imports MCP",
+    },
+    {
+      blockedImportSegment: "@modelcontextprotocol",
+      message: "imports MCP SDK",
+    },
+  ],
+  infrastructure: [],
+  mcp: [
+    {
+      blockedImportSegment: "/infrastructure",
+      message: "imports infrastructure",
+    },
+  ],
+};
 
 export function defineTool<TInput = unknown, TStructuredContent = unknown>(
   capability: Omit<ToolCapability<TInput, TStructuredContent>, "kind">,
@@ -177,14 +219,16 @@ export async function callTool<TInput = unknown, TStructuredContent = unknown>(
     throw new Error(`Tool "${name}" is not registered.`);
   }
 
-  return capability.handler(input, context) as Promise<ToolCallResult<TStructuredContent>>;
+  const tool = capability as ToolCapability<TInput, TStructuredContent>;
+
+  return tool.handler(input, context) as Promise<ToolCallResult<TStructuredContent>>;
 }
 
 export function assertValidRegistry(registry: CapabilityRegistry): void {
   const errors = validateRegistry(registry);
 
   if (errors.length > 0) {
-    throw new Error(`Invalid capability registry:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Invalid capability registry:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -192,7 +236,7 @@ export function assertNoDependencyCycles(files: readonly SourceFile[]): void {
   const errors = validateNoDependencyCycles(files);
 
   if (errors.length > 0) {
-    throw new Error(`Dependency cycles detected:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Dependency cycles detected:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -200,7 +244,7 @@ export function assertFeatureBoundaries(files: readonly SourceFile[]): void {
   const errors = validateFeatureBoundaries(files);
 
   if (errors.length > 0) {
-    throw new Error(`Feature boundary violations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Feature boundary violations:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -208,7 +252,7 @@ export function assertCleanArchitectureLayers(files: readonly SourceFile[]): voi
   const errors = validateCleanArchitectureLayers(files);
 
   if (errors.length > 0) {
-    throw new Error(`Clean architecture violations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Clean architecture violations:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -224,7 +268,7 @@ export function assertMcpAnnotations(registry: CapabilityRegistry): void {
   });
 
   if (errors.length > 0) {
-    throw new Error(`Invalid MCP annotations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Invalid MCP annotations:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -236,7 +280,7 @@ export function assertToolSchemas(registry: CapabilityRegistry): void {
   });
 
   if (errors.length > 0) {
-    throw new Error(`Invalid tool schemas:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+    throw new Error(`Invalid tool schemas:\n${formatErrorList(errors)}`);
   }
 }
 
@@ -269,7 +313,7 @@ export function validateRegistry(registry: CapabilityRegistry): string[] {
   return errors;
 }
 
-function validateTool(tool: ToolCapability, errors: string[]): void {
+function validateTool(tool: AnyToolCapability, errors: string[]): void {
   if (tool.returnsStructuredContent === true && !tool.outputSchema) {
     errors.push(`Tool "${tool.name}" returns structuredContent and must define outputSchema.`);
   }
@@ -309,33 +353,24 @@ function validateCleanArchitectureLayers(files: readonly SourceFile[]): string[]
     }
 
     for (const importPath of imports) {
-      if (layer === "domain" && importPath.includes("/mcp")) {
-        errors.push(`${file.path} imports MCP from ${importPath}.`);
-      }
-
-      if (layer === "domain" && importPath.includes("@modelcontextprotocol")) {
-        errors.push(`${file.path} imports MCP SDK from ${importPath}.`);
-      }
-
-      if (layer === "application" && importPath.includes("/mcp")) {
-        errors.push(`${file.path} imports MCP from ${importPath}.`);
-      }
-
-      if (layer === "application" && importPath.includes("/infrastructure")) {
-        errors.push(`${file.path} imports infrastructure from ${importPath}.`);
-      }
-
-      if (layer === "application" && importPath.includes("@modelcontextprotocol")) {
-        errors.push(`${file.path} imports MCP SDK from ${importPath}.`);
-      }
-
-      if (layer === "mcp" && importPath.includes("/infrastructure")) {
-        errors.push(`${file.path} imports infrastructure from ${importPath}.`);
-      }
+      validateLayerImport(file.path, layer, importPath, errors);
     }
   }
 
   return errors;
+}
+
+function validateLayerImport(
+  filePath: string,
+  layer: CleanArchitectureLayer,
+  importPath: string,
+  errors: string[],
+): void {
+  for (const rule of cleanArchitectureRules[layer]) {
+    if (importPath.includes(rule.blockedImportSegment)) {
+      errors.push(`${filePath} ${rule.message} from ${importPath}.`);
+    }
+  }
 }
 
 function validateFeatureBoundaries(files: readonly SourceFile[]): string[] {
@@ -427,16 +462,43 @@ function visitFile(
 
 function extractImports(content: string): readonly string[] {
   const imports: string[] = [];
-  const importPattern = /import(?:\s+type)?(?:\s+[^'"]+?\s+from)?\s+["']([^"']+)["']/g;
 
-  for (const match of content.matchAll(importPattern)) {
-    imports.push(match[1] ?? "");
+  for (const line of content.split(/\r?\n/u)) {
+    const importPath = extractImportPath(line.trim());
+
+    if (importPath) {
+      imports.push(importPath);
+    }
   }
 
   return imports;
 }
 
-function getLayer(path: string): "domain" | "application" | "mcp" | "infrastructure" | undefined {
+function extractImportPath(line: string): string | undefined {
+  if (!line.startsWith("import")) {
+    return undefined;
+  }
+
+  const fromMarker = " from ";
+  const fromIndex = line.lastIndexOf(fromMarker);
+  const specifier = fromIndex >= 0 ? line.slice(fromIndex + fromMarker.length).trim() : line.slice("import".length).trim();
+
+  return readQuotedSpecifier(specifier);
+}
+
+function readQuotedSpecifier(value: string): string | undefined {
+  const quote = value[0];
+
+  if (quote !== "\"" && quote !== "'") {
+    return undefined;
+  }
+
+  const endIndex = value.indexOf(quote, 1);
+
+  return endIndex > 1 ? value.slice(1, endIndex) : undefined;
+}
+
+function getLayer(path: string): CleanArchitectureLayer | undefined {
   if (path.includes("/domain/")) {
     return "domain";
   }
@@ -500,6 +562,10 @@ function schemaHasLimit(schema: JsonSchema | undefined): boolean {
   return Boolean(schema?.properties?.limit);
 }
 
+function formatErrorList(errors: readonly string[]): string {
+  return errors.map((error) => `- ${error}`).join("\n");
+}
+
 function sortCapabilities(capabilities: readonly Capability[]): readonly Capability[] {
   return [...capabilities].sort((left, right) => {
     const byName = left.name.localeCompare(right.name);
@@ -512,7 +578,7 @@ function sortCapabilities(capabilities: readonly Capability[]): readonly Capabil
   });
 }
 
-function isToolCapability(capability: Capability): capability is ToolCapability {
+function isToolCapability(capability: Capability): capability is AnyToolCapability {
   return capability.kind === "tool";
 }
 

@@ -14,7 +14,7 @@ import {
   startHttpServer,
   startStdioServer,
   withLock,
-} from "../src/index";
+} from "../../src/index.js";
 
 const tempDirs: string[] = [];
 

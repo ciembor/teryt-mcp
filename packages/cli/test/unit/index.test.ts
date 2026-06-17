@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createProjectFiles, getQualitySteps, initProject, isCliEntrypoint, runQuality } from "../src/index";
+import { createProjectFiles, getQualitySteps, initProject, isCliEntrypoint, runQuality } from "../../src/index.js";
 
 const tempDirs: string[] = [];
 

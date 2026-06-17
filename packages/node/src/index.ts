@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
-import { createInterface, type Interface } from "node:readline";
+import { randomUUID } from "node:crypto";
+import { createInterface } from "node:readline";
 import { Readable, Writable } from "node:stream";
 import { mkdir, open, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -147,7 +148,7 @@ export async function atomicWrite(path: string, data: string | Uint8Array): Prom
     recursive: true,
   });
 
-  const temporaryPath = join(dirname(path), `.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`);
+  const temporaryPath = join(dirname(path), `.${process.pid}.${Date.now()}.${randomUUID()}.tmp`);
 
   try {
     await writeFile(temporaryPath, data);

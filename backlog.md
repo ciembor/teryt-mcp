@@ -1114,35 +1114,185 @@ jakie są granice TERYT MCP
 
 ### Checklist
 
+- [x] Dodaj root quality dla pakietów frameworka.
+- [x] Podepnij root `pnpm quality` do trackowanego pre-commit.
 - [ ] Sprawdź, że `servers/teryt` używa tylko publicznych importów frameworka.
 - [ ] Zablokuj publiczne `exports` w pakietach.
 - [ ] Usuń API frameworka nieużywane przez TERYT.
+- [ ] Przeprowadź refactoring `@mcp-kit/core` przed publikacją.
+- [ ] Przeprowadź refactoring `@mcp-kit/node` przed publikacją.
+- [ ] Przeprowadź refactoring `@mcp-kit/cli` przed publikacją.
+- [ ] Dodaj docelowe testy architektoniczne pakietów frameworka.
+- [ ] Ustal progi coverage dla pakietów frameworka.
 - [ ] Dodaj release flow.
 - [ ] Przygotuj `@mcp-kit/core` do publikacji.
 - [ ] Przygotuj `@mcp-kit/node` do publikacji.
 - [ ] Przygotuj `@mcp-kit/cli` do publikacji.
 - [ ] Framework można przenieść do osobnego repo bez refaktoru TERYT.
 - [ ] Serwer TERYT nie używa prywatnych ścieżek frameworka.
-- [ ] `pnpm quality` przechodzi w root i w serwerze.
+- [x] `pnpm quality` przechodzi w root i w serwerze.
 
 ### Zadania
 
-1. Sprawdź, że `servers/teryt` używa tylko publicznych importów:
+1. Utrzymuj root quality dla frameworka i serwera:
+
+```text
+pnpm quality
+  quality:framework
+    knip dla packages/core, packages/node, packages/cli
+    tsc --noEmit dla każdego pakietu frameworka
+    eslint packages --fix
+    dependency-cruiser dla packages/*
+    vitest run packages/*/test/architecture
+    vitest run --coverage packages/*/test/unit
+  teryt-mcp quality
+```
+
+Pre-commit repo ma uruchamiać:
+
+```text
+pnpm quality
+```
+
+2. Przed publikacją wykonaj duży refactoring frameworka. Nie publikuj pakietów z obecnym płaskim `src/index.ts`.
+
+Docelowa struktura `@mcp-kit/core`:
+
+```text
+packages/core/src/
+  capabilities/
+    define-tool.ts
+    define-resource.ts
+    define-prompt.ts
+    define-feature.ts
+    types.ts
+  registry/
+    capability-registry.ts
+    registry-validation.ts
+  architecture/
+    dependency-cycles.ts
+    feature-boundaries.ts
+    clean-architecture-layers.ts
+    source-files.ts
+  testing/
+    create-test-app.ts
+    call-tool.ts
+  index.ts
+```
+
+Docelowa struktura `@mcp-kit/node`:
+
+```text
+packages/node/src/
+  runtime/
+    runtime-config.ts
+    data-dir.ts
+  logging/
+    logger.ts
+  filesystem/
+    atomic-write.ts
+    lock-file.ts
+  transports/
+    http/
+      http-server.ts
+      json-body.ts
+    stdio/
+      stdio-server.ts
+      json-rpc.ts
+  index.ts
+```
+
+Docelowa struktura `@mcp-kit/cli`:
+
+```text
+packages/cli/src/
+  commands/
+    init-command.ts
+    quality-command.ts
+  project-generator/
+    create-project-files.ts
+    package-json-template.ts
+    source-template.ts
+    test-template.ts
+    config-template.ts
+  quality/
+    quality-runner.ts
+    quality-steps.ts
+  git-hooks/
+    install-pre-commit-hook.ts
+    find-git-root.ts
+  index.ts
+```
+
+Zasady refaktoringu:
+
+- `index.ts` w każdym pakiecie jest wyłącznie publicznym barrel exportem.
+- Moduły domenowe frameworka nie importują Node runtime.
+- `@mcp-kit/node` może importować `@mcp-kit/core`, ale tylko przez publiczny package export.
+- `@mcp-kit/cli` może importować `@mcp-kit/core` i `@mcp-kit/node`, ale tylko przez publiczne package exports.
+- Żaden pakiet frameworka nie importuje `servers/*`.
+- Generator CLI nie może mieć logiki jakości wymieszanej z template'ami.
+- Quality runner ma być testowalny bez spawnienia realnych procesów.
+- Publiczne API musi zostać świadomie potwierdzone w snapshotach eksportów.
+
+Docelowe testy architektoniczne frameworka:
+
+```text
+packages/core/test/architecture/
+  public-api.architecture.test.ts
+  runtime-independence.architecture.test.ts
+  architecture-helpers.architecture.test.ts
+
+packages/node/test/architecture/
+  public-api.architecture.test.ts
+  core-public-imports.architecture.test.ts
+  transport-boundaries.architecture.test.ts
+
+packages/cli/test/architecture/
+  public-api.architecture.test.ts
+  generated-project-contract.architecture.test.ts
+  quality-command-order.architecture.test.ts
+  no-private-framework-imports.architecture.test.ts
+```
+
+Docelowe testy jednostkowe i kontraktowe:
+
+```text
+packages/core/test/unit/
+  capabilities/
+  registry/
+  architecture/
+  testing/
+
+packages/node/test/unit/
+  runtime/
+  logging/
+  filesystem/
+  transports/
+
+packages/cli/test/unit/
+  commands/
+  project-generator/
+  quality/
+  git-hooks/
+```
+
+3. Sprawdź, że `servers/teryt` używa tylko publicznych importów:
 
 ```text
 @mcp-kit/core
 @mcp-kit/node
 ```
 
-2. Zablokuj publiczne `exports` w pakietach.
-3. Usuń API frameworka nieużywane przez TERYT.
-4. Dodaj release flow:
+4. Zablokuj publiczne `exports` w pakietach.
+5. Usuń API frameworka nieużywane przez TERYT.
+6. Dodaj release flow:
 
 ```text
 changesets albo prosty release script
 ```
 
-5. Przygotuj pakiety do publikacji:
+7. Przygotuj pakiety do publikacji:
 
 ```text
 @mcp-kit/core

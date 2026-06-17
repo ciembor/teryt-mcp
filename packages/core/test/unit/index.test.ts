@@ -17,7 +17,7 @@ import {
   defineTool,
   validateRegistry,
   type CapabilityRegistry,
-} from "../src/index";
+} from "../../src/index.js";
 
 const limitInputSchema = {
   type: "object",
