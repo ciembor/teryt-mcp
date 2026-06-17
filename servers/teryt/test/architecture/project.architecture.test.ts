@@ -5,6 +5,9 @@ import { createRegistry } from "../../src/mcp/registry.js";
 describe("project architecture", () => {
   it("keeps the capability registry valid", () => {
     const registry = createRegistry({
+      addressRepository: {
+        listAddresses: async () => [],
+      },
       config: {
         dataDir: "test-data/teryt-mcp",
         port: 3000,
@@ -55,6 +58,7 @@ describe("project architecture", () => {
 
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
       "health_status",
+      "resolve_address",
       "search_places",
       "search_streets",
       "search_units",

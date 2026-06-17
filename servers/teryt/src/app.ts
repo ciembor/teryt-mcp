@@ -1,6 +1,7 @@
 import { createMcpApp } from "@mcp-kit/core";
 import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-kit/node";
 
+import { InMemoryAddressRepository } from "./features/resolve-address/infrastructure/in-memory-address-repository.js";
 import { InMemoryPlaceRepository } from "./features/search-places/infrastructure/in-memory-place-repository.js";
 import { InMemoryStreetRepository } from "./features/search-streets/infrastructure/in-memory-street-repository.js";
 import { InMemoryUnitRepository } from "./features/search-units/infrastructure/in-memory-unit-repository.js";
@@ -25,6 +26,7 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig()) {
     name: "teryt-mcp",
     version: "0.0.0",
     registry: createRegistry({
+      addressRepository: new InMemoryAddressRepository(),
       config,
       manifestStore,
       placeRepository: new InMemoryPlaceRepository(),

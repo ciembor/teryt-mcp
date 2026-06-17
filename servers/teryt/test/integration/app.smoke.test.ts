@@ -11,6 +11,7 @@ describe("app", () => {
     });
 
     expect(app.registry.get("health_status")).toBeDefined();
+    expect(app.registry.get("resolve_address")).toBeDefined();
     expect(app.registry.get("search_places")).toBeDefined();
     expect(app.registry.get("search_streets")).toBeDefined();
     expect(app.registry.get("search_units")).toBeDefined();

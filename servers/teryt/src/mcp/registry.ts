@@ -2,6 +2,7 @@ import { createCapabilityRegistry } from "@mcp-kit/core";
 import type { RuntimeConfig } from "@mcp-kit/node";
 
 import { healthTool } from "../features/health/index.js";
+import { createResolveAddressTool, type AddressRepository } from "../features/resolve-address/index.js";
 import { createSearchPlacesTool, type PlaceRepository } from "../features/search-places/index.js";
 import { createSearchStreetsTool, type StreetRepository } from "../features/search-streets/index.js";
 import { createSearchUnitsTool, type UnitRepository } from "../features/search-units/index.js";
@@ -17,6 +18,7 @@ import {
 } from "../features/sync-database/index.js";
 
 type CreateRegistryInput = {
+  readonly addressRepository: AddressRepository;
   readonly config: RuntimeConfig;
   readonly manifestStore: ManifestStore;
   readonly placeRepository: PlaceRepository;
@@ -43,6 +45,9 @@ export function createRegistry(input: CreateRegistryInput) {
     createSourceStatusTool({
       manifestStore: input.manifestStore,
       sourceCatalog: input.sourceCatalog,
+    }),
+    createResolveAddressTool({
+      addressRepository: input.addressRepository,
     }),
     createSearchPlacesTool({
       placeRepository: input.placeRepository,
