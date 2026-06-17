@@ -87,6 +87,11 @@ export type McpAppDefinition = {
   readonly registry: CapabilityRegistry;
 };
 
+export type SourceFile = {
+  readonly path: string;
+  readonly content: string;
+};
+
 const CAPABILITY_NAME_PATTERN = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
 
 export function defineTool<TInput = unknown, TStructuredContent = unknown>(
@@ -181,6 +186,58 @@ export function assertValidRegistry(registry: CapabilityRegistry): void {
   }
 }
 
+export function assertNoDependencyCycles(files: readonly SourceFile[]): void {
+  const errors = validateNoDependencyCycles(files);
+
+  if (errors.length > 0) {
+    throw new Error(`Dependency cycles detected:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+}
+
+export function assertFeatureBoundaries(files: readonly SourceFile[]): void {
+  const errors = validateFeatureBoundaries(files);
+
+  if (errors.length > 0) {
+    throw new Error(`Feature boundary violations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+}
+
+export function assertCleanArchitectureLayers(files: readonly SourceFile[]): void {
+  const errors = validateCleanArchitectureLayers(files);
+
+  if (errors.length > 0) {
+    throw new Error(`Clean architecture violations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+}
+
+export function assertCapabilityRegistry(registry: CapabilityRegistry): void {
+  assertValidRegistry(registry);
+}
+
+export function assertMcpAnnotations(registry: CapabilityRegistry): void {
+  const errors = registry.capabilities.flatMap((capability) => {
+    const capabilityErrors: string[] = [];
+    validateAnnotations(capability, capabilityErrors);
+    return capabilityErrors;
+  });
+
+  if (errors.length > 0) {
+    throw new Error(`Invalid MCP annotations:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+}
+
+export function assertToolSchemas(registry: CapabilityRegistry): void {
+  const errors = registry.tools().flatMap((tool) => {
+    const toolErrors: string[] = [];
+    validateTool(tool, toolErrors);
+    return toolErrors;
+  });
+
+  if (errors.length > 0) {
+    throw new Error(`Invalid tool schemas:\n${errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+}
+
 export function validateRegistry(registry: CapabilityRegistry): string[] {
   const errors: string[] = [];
   const seenNames = new Set<string>();
@@ -236,6 +293,205 @@ function validateAnnotations(capability: Capability, errors: string[]): void {
   if (capability.policy === "write" && capability.annotations?.readOnlyHint === true) {
     errors.push(`Capability "${capability.name}" is write-capable and cannot set annotations.readOnlyHint to true.`);
   }
+}
+
+function validateCleanArchitectureLayers(files: readonly SourceFile[]): string[] {
+  const errors: string[] = [];
+
+  for (const file of files) {
+    const layer = getLayer(file.path);
+    const imports = extractImports(file.content);
+
+    if (!layer) {
+      continue;
+    }
+
+    for (const importPath of imports) {
+      if (layer === "domain" && importPath.includes("/mcp")) {
+        errors.push(`${file.path} imports MCP from ${importPath}.`);
+      }
+
+      if (layer === "domain" && importPath.includes("@modelcontextprotocol")) {
+        errors.push(`${file.path} imports MCP SDK from ${importPath}.`);
+      }
+
+      if (layer === "application" && importPath.includes("/mcp")) {
+        errors.push(`${file.path} imports MCP from ${importPath}.`);
+      }
+
+      if (layer === "application" && importPath.includes("/infrastructure")) {
+        errors.push(`${file.path} imports infrastructure from ${importPath}.`);
+      }
+
+      if (layer === "application" && importPath.includes("@modelcontextprotocol")) {
+        errors.push(`${file.path} imports MCP SDK from ${importPath}.`);
+      }
+
+      if (layer === "mcp" && importPath.includes("/infrastructure")) {
+        errors.push(`${file.path} imports infrastructure from ${importPath}.`);
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateFeatureBoundaries(files: readonly SourceFile[]): string[] {
+  const errors: string[] = [];
+
+  for (const file of files) {
+    const sourceFeature = getFeatureName(file.path);
+
+    if (!sourceFeature) {
+      continue;
+    }
+
+    for (const importPath of extractImports(file.content)) {
+      const normalizedImportPath = importPath.startsWith(".")
+        ? resolveRelativePathWithoutExtension(file.path, importPath)
+        : importPath;
+      const targetFeature = getImportedFeatureName(normalizedImportPath);
+
+      if (
+        targetFeature &&
+        targetFeature !== sourceFeature &&
+        !normalizedImportPath.endsWith(`/features/${targetFeature}`)
+      ) {
+        errors.push(`${file.path} imports feature "${targetFeature}" without using its index.ts boundary.`);
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateNoDependencyCycles(files: readonly SourceFile[]): string[] {
+  const graph = createImportGraph(files);
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const errors: string[] = [];
+
+  for (const file of graph.keys()) {
+    visitFile(file, graph, visiting, visited, [], errors);
+  }
+
+  return errors;
+}
+
+function createImportGraph(files: readonly SourceFile[]): Map<string, readonly string[]> {
+  const knownPaths = new Set(files.map((file) => normalizePath(file.path)));
+  const graph = new Map<string, readonly string[]>();
+
+  for (const file of files) {
+    const filePath = normalizePath(file.path);
+    const imports = extractImports(file.content)
+      .filter((importPath) => importPath.startsWith("."))
+      .map((importPath) => resolveRelativeImport(filePath, importPath, knownPaths))
+      .filter((importPath): importPath is string => Boolean(importPath));
+
+    graph.set(filePath, imports);
+  }
+
+  return graph;
+}
+
+function visitFile(
+  file: string,
+  graph: Map<string, readonly string[]>,
+  visiting: Set<string>,
+  visited: Set<string>,
+  stack: readonly string[],
+  errors: string[],
+): void {
+  if (visiting.has(file)) {
+    const cycleStart = stack.indexOf(file);
+    errors.push([...stack.slice(cycleStart), file].join(" -> "));
+    return;
+  }
+
+  if (visited.has(file)) {
+    return;
+  }
+
+  visiting.add(file);
+
+  for (const dependency of graph.get(file) ?? []) {
+    visitFile(dependency, graph, visiting, visited, [...stack, file], errors);
+  }
+
+  visiting.delete(file);
+  visited.add(file);
+}
+
+function extractImports(content: string): readonly string[] {
+  const imports: string[] = [];
+  const importPattern = /import(?:\s+type)?(?:\s+[^'"]+?\s+from)?\s+["']([^"']+)["']/g;
+
+  for (const match of content.matchAll(importPattern)) {
+    imports.push(match[1] ?? "");
+  }
+
+  return imports;
+}
+
+function getLayer(path: string): "domain" | "application" | "mcp" | "infrastructure" | undefined {
+  if (path.includes("/domain/")) {
+    return "domain";
+  }
+
+  if (path.includes("/application/")) {
+    return "application";
+  }
+
+  if (path.includes("/mcp/")) {
+    return "mcp";
+  }
+
+  if (path.includes("/infrastructure/")) {
+    return "infrastructure";
+  }
+
+  return undefined;
+}
+
+function getFeatureName(path: string): string | undefined {
+  return path.match(/(?:^|\/)features\/([^/]+)\//)?.[1];
+}
+
+function getImportedFeatureName(path: string): string | undefined {
+  return path.match(/(?:^|\/)features\/([^/]+)(?:\/|$)/)?.[1];
+}
+
+function resolveRelativeImport(sourcePath: string, importPath: string, knownPaths: Set<string>): string | undefined {
+  const normalized = resolveRelativePathWithoutExtension(sourcePath, importPath);
+  const candidates = [normalized, `${normalized}.ts`, `${normalized}/index.ts`];
+
+  return candidates.find((candidate) => knownPaths.has(candidate));
+}
+
+function resolveRelativePathWithoutExtension(sourcePath: string, importPath: string): string {
+  const sourceDirectory = sourcePath.split("/").slice(0, -1);
+  const parts = [...sourceDirectory, ...importPath.split("/")];
+  const normalizedParts: string[] = [];
+
+  for (const part of parts) {
+    if (!part || part === ".") {
+      continue;
+    }
+
+    if (part === "..") {
+      normalizedParts.pop();
+      continue;
+    }
+
+    normalizedParts.push(part);
+  }
+
+  return normalizedParts.join("/");
+}
+
+function normalizePath(path: string): string {
+  return path.replaceAll("\\", "/").replaceAll(/^\.\//g, "");
 }
 
 function schemaHasLimit(schema: JsonSchema | undefined): boolean {
