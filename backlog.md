@@ -955,7 +955,7 @@ fuzzy only later if needed
 - [ ] CLI nie importuje prywatnych plików feature poza publicznym `index.ts`, chyba że jest composition rootem.
 - [ ] CLI działa lokalnie.
 - [ ] MCP i CLI zwracają spójne dane.
-- [ ] `pnpm quality` przechodzi.
+- [x] `pnpm quality` przechodzi.
 
 ### Zadania
 
@@ -999,12 +999,12 @@ teryt-mcp search places Kraków
 - [ ] Dodaj golden query `Stara Wieś`.
 - [ ] Dodaj golden query `Dąbrowa`.
 - [ ] Dodaj golden query `Marszałkowska`.
-- [ ] Dodaj integration test sync from fixtures.
+- [x] Dodaj integration test sync from fixtures.
 - [ ] Dodaj integration test sqlite search.
 - [x] Dodaj integration test stdio roundtrip.
 - [x] Dodaj integration test http roundtrip.
 - [x] Testy kontraktowe obejmują każde publiczne capability.
-- [ ] Integration tests obejmują minimalny realny flow.
+- [x] Integration tests obejmują minimalny realny flow.
 - [ ] `pnpm quality` przechodzi.
 
 ### Zadania
