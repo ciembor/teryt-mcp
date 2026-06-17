@@ -754,6 +754,29 @@ write manifest
 
 ## Faza 10 - import TERYT
 
+### Checklist
+
+- [ ] Obsłuż dataset `TERC`.
+- [ ] Obsłuż dataset `SIMC`.
+- [ ] Obsłuż dataset `ULIC`.
+- [ ] Obsłuż dataset `WMRODZ`.
+- [ ] Obsłuż CSV.
+- [ ] Obsłuż ZIP.
+- [ ] Dodaj dataset detection.
+- [ ] Dodaj column validation.
+- [ ] Dodaj SQLite schema.
+- [ ] Kody są przechowywane jako `TEXT` bez utraty zer wiodących.
+- [ ] Manifest zapisuje dataset, variant, stateDate, downloadedAt, publishedAtObserved, sha256, recordCount, columns, source.
+- [ ] Dodaj walidacje wymaganych kolumn.
+- [ ] Dodaj walidacje `STAN_NA`.
+- [ ] Dodaj minimalne liczby rekordów.
+- [ ] Dodaj spójność podstawowych relacji.
+- [ ] Dodaj walidację hash pliku.
+- [ ] Dodaj walidację `recordCount`.
+- [ ] Import fixture działa.
+- [ ] Import realnych plików jest możliwy.
+- [ ] `pnpm quality` przechodzi.
+
 ### Zadania
 
 Obsłuż dataset:
@@ -840,6 +863,30 @@ recordCount
 
 ## Faza 11 - wyszukiwanie
 
+### Checklist
+
+- [ ] Dodaj `search_units`.
+- [ ] Dodaj `search_places`.
+- [ ] Dodaj `search_streets`.
+- [ ] Dodaj `resolve_address`.
+- [ ] Dodaj `get_unit`.
+- [ ] Dodaj `get_place`.
+- [ ] Dodaj `get_street`.
+- [ ] Każda feature ma domain/application/ports/mcp/infrastructure/index.ts.
+- [ ] Search tools mają `limit` default 20.
+- [ ] Search tools mają `limit` max 100.
+- [ ] Search tools mają `outputSchema`.
+- [ ] Search tools zwracają `structuredContent`.
+- [ ] Search tools zwracają `stateDate`, `matchedBy`, `confidence`.
+- [ ] Ranking obsługuje exact code.
+- [ ] Ranking obsługuje exact normalized name.
+- [ ] Ranking obsługuje prefix.
+- [ ] Ranking obsługuje FTS.
+- [ ] `search_*` nie zwraca nieograniczonych list.
+- [ ] Każdy tool ma contract test.
+- [ ] Każdy repository jest za portem.
+- [ ] `pnpm quality` przechodzi po każdej feature.
+
 ### Zadania
 
 Dodaj feature:
@@ -896,6 +943,20 @@ fuzzy only later if needed
 
 ## Faza 12 - CLI TERYT
 
+### Checklist
+
+- [ ] Dodaj `teryt-mcp serve`.
+- [ ] Dodaj `teryt-mcp status`.
+- [ ] Dodaj `teryt-mcp source-status`.
+- [ ] Dodaj `teryt-mcp sync`.
+- [ ] Dodaj `teryt-mcp search places Kraków`.
+- [ ] CLI używa tych samych use case'ów co MCP.
+- [ ] CLI nie ma osobnej logiki domenowej.
+- [ ] CLI nie importuje prywatnych plików feature poza publicznym `index.ts`, chyba że jest composition rootem.
+- [ ] CLI działa lokalnie.
+- [ ] MCP i CLI zwracają spójne dane.
+- [ ] `pnpm quality` przechodzi.
+
 ### Zadania
 
 Dodaj CLI serwera TERYT:
@@ -921,6 +982,30 @@ teryt-mcp search places Kraków
 - `pnpm quality` przechodzi.
 
 ## Faza 13 - kontrakty i testy
+
+### Checklist
+
+- [ ] Contract tests sprawdzają `inputSchema`.
+- [ ] Contract tests sprawdzają `outputSchema`.
+- [ ] Contract tests sprawdzają annotations.
+- [ ] Contract tests sprawdzają `structuredContent`.
+- [ ] Contract tests sprawdzają error shape.
+- [ ] Dodaj TERC fixture.
+- [ ] Dodaj SIMC fixture.
+- [ ] Dodaj ULIC fixture.
+- [ ] Dodaj WMRODZ fixture.
+- [ ] Dodaj golden query `Kraków`.
+- [ ] Dodaj golden query `Warszawa`.
+- [ ] Dodaj golden query `Stara Wieś`.
+- [ ] Dodaj golden query `Dąbrowa`.
+- [ ] Dodaj golden query `Marszałkowska`.
+- [ ] Dodaj integration test sync from fixtures.
+- [ ] Dodaj integration test sqlite search.
+- [ ] Dodaj integration test stdio roundtrip.
+- [ ] Dodaj integration test http roundtrip.
+- [ ] Testy kontraktowe obejmują każde publiczne capability.
+- [ ] Integration tests obejmują minimalny realny flow.
+- [ ] `pnpm quality` przechodzi.
 
 ### Zadania
 
@@ -970,6 +1055,27 @@ http roundtrip
 
 ## Faza 14 - dokumentacja
 
+### Checklist
+
+- [ ] Dodaj `docs/architecture/bounded-context.md`.
+- [ ] Dodaj `docs/architecture/package-boundaries.md`.
+- [ ] Dodaj `docs/architecture/runtime-ecosystem.md`.
+- [ ] Dodaj `docs/architecture/feature-clean-architecture.md`.
+- [ ] Dodaj `docs/quality.md`.
+- [ ] Dodaj `docs/tutorial.md`.
+- [ ] Dodaj `servers/teryt/docs/data-sync.md`.
+- [ ] Dodaj `servers/teryt/docs/tools.md`.
+- [ ] Dokumentacja opisuje `mcp-kit init`.
+- [ ] Dokumentacja opisuje dodawanie feature.
+- [ ] Dokumentacja opisuje `quality`.
+- [ ] Dokumentacja opisuje testy architektoniczne.
+- [ ] Dokumentacja opisuje sync TERYT.
+- [ ] Dokumentacja opisuje źródła prawdy.
+- [ ] Dokumentacja opisuje granice TERYT MCP.
+- [ ] Nowy agent może zacząć pracę od dokumentacji.
+- [ ] Tutorial prowadzi od pustego repo do działającego toola MCP.
+- [ ] Dokumenty są spójne z wygenerowanym kodem.
+
 ### Zadania
 
 Dodaj dokumenty:
@@ -1005,6 +1111,19 @@ jakie są granice TERYT MCP
 - Dokumenty są spójne z wygenerowanym kodem.
 
 ## Faza 15 - gotowość do wydzielenia frameworka
+
+### Checklist
+
+- [ ] Sprawdź, że `servers/teryt` używa tylko publicznych importów frameworka.
+- [ ] Zablokuj publiczne `exports` w pakietach.
+- [ ] Usuń API frameworka nieużywane przez TERYT.
+- [ ] Dodaj release flow.
+- [ ] Przygotuj `@mcp-kit/core` do publikacji.
+- [ ] Przygotuj `@mcp-kit/node` do publikacji.
+- [ ] Przygotuj `@mcp-kit/cli` do publikacji.
+- [ ] Framework można przenieść do osobnego repo bez refaktoru TERYT.
+- [ ] Serwer TERYT nie używa prywatnych ścieżek frameworka.
+- [ ] `pnpm quality` przechodzi w root i w serwerze.
 
 ### Zadania
 
