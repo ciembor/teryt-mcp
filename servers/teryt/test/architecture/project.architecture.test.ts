@@ -16,6 +16,9 @@ describe("project architecture", () => {
       placeRepository: {
         listPlaces: async () => [],
       },
+      streetRepository: {
+        listStreets: async () => [],
+      },
       unitRepository: {
         listUnits: async () => [],
       },
@@ -53,6 +56,7 @@ describe("project architecture", () => {
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
       "health_status",
       "search_places",
+      "search_streets",
       "search_units",
       "server_status",
       "source_status",
