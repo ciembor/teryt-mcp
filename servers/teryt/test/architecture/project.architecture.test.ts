@@ -8,6 +8,9 @@ describe("project architecture", () => {
       addressRepository: {
         listAddresses: async () => [],
       },
+      unitDetailsRepository: {
+        getUnit: async () => null,
+      },
       config: {
         dataDir: "test-data/teryt-mcp",
         port: 3000,
@@ -57,6 +60,7 @@ describe("project architecture", () => {
     });
 
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
+      "get_unit",
       "health_status",
       "resolve_address",
       "search_places",

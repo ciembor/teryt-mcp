@@ -869,7 +869,7 @@ recordCount
 - [x] Dodaj `search_places`.
 - [x] Dodaj `search_streets`.
 - [x] Dodaj `resolve_address`.
-- [ ] Dodaj `get_unit`.
+- [x] Dodaj `get_unit`.
 - [ ] Dodaj `get_place`.
 - [ ] Dodaj `get_street`.
 - [ ] Każda feature ma domain/application/ports/mcp/infrastructure/index.ts.
