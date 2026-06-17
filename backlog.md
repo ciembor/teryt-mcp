@@ -947,7 +947,7 @@ fuzzy only later if needed
 
 - [x] Dodaj `teryt-mcp serve`.
 - [x] Dodaj `teryt-mcp status`.
-- [ ] Dodaj `teryt-mcp source-status`.
+- [x] Dodaj `teryt-mcp source-status`.
 - [ ] Dodaj `teryt-mcp sync`.
 - [ ] Dodaj `teryt-mcp search places Kraków`.
 - [x] CLI używa tych samych use case'ów co MCP.

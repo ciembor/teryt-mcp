@@ -30,6 +30,29 @@ describe("teryt-mcp CLI contract", () => {
 
     expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
   });
+
+  it("returns source status consistent with MCP", async () => {
+    const stdout = new MemoryWritable();
+    const env = {
+      MCP_DATA_DIR: "test-data/teryt-cli",
+      MCP_TRANSPORT: "stdio",
+      PORT: "3010",
+    };
+    const config = {
+      dataDir: resolve(env.MCP_DATA_DIR),
+      port: 3010,
+      transport: "stdio" as const,
+    };
+    const mcpResult = await callTool(createApp(config), "source_status", {});
+
+    await runCli(["source-status"], {
+      env,
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
+  });
 });
 
 class MemoryWritable extends Writable {
