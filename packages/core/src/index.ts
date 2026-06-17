@@ -1,5 +1,7 @@
 export type CapabilityKind = "tool" | "resource" | "prompt";
 
+export const mcpKitCoreVersion = "0.0.0";
+
 export type CapabilityPolicy = "read" | "write";
 
 export type JsonSchema = {
