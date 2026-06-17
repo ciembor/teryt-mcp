@@ -985,10 +985,10 @@ teryt-mcp search places Kraków
 
 ### Checklist
 
-- [ ] Contract tests sprawdzają `inputSchema`.
-- [ ] Contract tests sprawdzają `outputSchema`.
-- [ ] Contract tests sprawdzają annotations.
-- [ ] Contract tests sprawdzają `structuredContent`.
+- [x] Contract tests sprawdzają `inputSchema`.
+- [x] Contract tests sprawdzają `outputSchema`.
+- [x] Contract tests sprawdzają annotations.
+- [x] Contract tests sprawdzają `structuredContent`.
 - [ ] Contract tests sprawdzają error shape.
 - [x] Dodaj TERC fixture.
 - [x] Dodaj SIMC fixture.
@@ -1003,7 +1003,7 @@ teryt-mcp search places Kraków
 - [ ] Dodaj integration test sqlite search.
 - [ ] Dodaj integration test stdio roundtrip.
 - [ ] Dodaj integration test http roundtrip.
-- [ ] Testy kontraktowe obejmują każde publiczne capability.
+- [x] Testy kontraktowe obejmują każde publiczne capability.
 - [ ] Integration tests obejmują minimalny realny flow.
 - [ ] `pnpm quality` przechodzi.
 
