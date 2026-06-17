@@ -8,7 +8,13 @@ type TerytRow = {
 type TerytImport = {
   readonly columns: readonly string[];
   readonly dataset: DatasetCode;
+  readonly recordCount: number;
   readonly rows: readonly TerytRow[];
+  readonly stateDate: string;
+};
+
+type ImportTerytCsvOptions = {
+  readonly minRecordCount?: number;
 };
 
 const requiredColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
@@ -25,7 +31,7 @@ const detectionColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
   WMRODZ: ["NAZWA_RM"],
 };
 
-export function importTerytCsv(content: string): TerytImport {
+export function importTerytCsv(content: string, options: ImportTerytCsvOptions = {}): TerytImport {
   const [headerLine, ...recordLines] = content.trim().split(/\r?\n/);
 
   if (!headerLine) {
@@ -35,18 +41,23 @@ export function importTerytCsv(content: string): TerytImport {
   const columns = parseCsvLine(headerLine);
   const dataset = detectDataset(columns);
   validateColumns(dataset, columns);
+  const rows = recordLines.filter(Boolean).map((line) => {
+    const values = parseCsvLine(line);
+
+    return {
+      dataset,
+      values: Object.fromEntries(columns.map((column, index) => [column, values[index] ?? ""])),
+    };
+  });
+  const stateDate = validateStateDate(dataset, rows);
+  validateRecordCount(dataset, rows.length, options.minRecordCount);
 
   return {
     columns,
     dataset,
-    rows: recordLines.filter(Boolean).map((line) => {
-      const values = parseCsvLine(line);
-
-      return {
-        dataset,
-        values: Object.fromEntries(columns.map((column, index) => [column, values[index] ?? ""])),
-      };
-    }),
+    recordCount: rows.length,
+    rows,
+    stateDate,
   };
 }
 
@@ -69,6 +80,28 @@ function validateColumns(dataset: DatasetCode, columns: readonly string[]): void
 
   if (missing.length > 0) {
     throw new Error(`Missing ${dataset} columns: ${missing.join(", ")}`);
+  }
+}
+
+function validateStateDate(dataset: DatasetCode, rows: readonly TerytRow[]): string {
+  const stateDates = new Set(rows.map((row) => row.values.STAN_NA).filter(Boolean));
+
+  if (stateDates.size !== 1) {
+    throw new Error(`${dataset} must contain exactly one STAN_NA value.`);
+  }
+
+  const [stateDate] = stateDates;
+
+  if (!stateDate || !/^\d{4}-\d{2}-\d{2}$/.test(stateDate)) {
+    throw new Error(`${dataset} has invalid STAN_NA value.`);
+  }
+
+  return stateDate;
+}
+
+function validateRecordCount(dataset: DatasetCode, recordCount: number, minRecordCount = 1): void {
+  if (recordCount < minRecordCount) {
+    throw new Error(`${dataset} recordCount ${recordCount} is below minimum ${minRecordCount}.`);
   }
 }
 

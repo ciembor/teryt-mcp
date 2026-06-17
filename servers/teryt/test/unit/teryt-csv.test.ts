@@ -17,7 +17,9 @@ describe("importTerytCsv", () => {
     const result = importTerytCsv(csv);
 
     expect(result.dataset).toBe(dataset);
+    expect(result.recordCount).toBeGreaterThan(0);
     expect(result.rows.length).toBeGreaterThan(0);
+    expect(result.stateDate).toBe("2026-01-01");
   });
 
   it("keeps TERYT codes as text with leading zeroes", async () => {
@@ -29,6 +31,24 @@ describe("importTerytCsv", () => {
 
   it("rejects missing required columns", () => {
     expect(() => importTerytCsv("WOJ;POW;GMI;RODZ\n02;01;01;1")).toThrow(/Missing TERC columns/);
+  });
+
+  it("rejects inconsistent STAN_NA values", () => {
+    expect(() =>
+      importTerytCsv(
+        [
+          "RM;NAZWA_RM;STAN_NA",
+          "01;miasto;2026-01-01",
+          "02;wieś;2026-01-02",
+        ].join("\n"),
+      ),
+    ).toThrow(/STAN_NA/);
+  });
+
+  it("rejects fixtures below the minimum record count", async () => {
+    const csv = await readFile(join(fixtureDir, "WMRODZ.csv"), "utf8");
+
+    expect(() => importTerytCsv(csv, { minRecordCount: 3 })).toThrow(/recordCount/);
   });
 
   it("rejects ambiguous dataset detection", () => {

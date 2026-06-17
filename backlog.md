@@ -768,11 +768,11 @@ write manifest
 - [x] Kody są przechowywane jako `TEXT` bez utraty zer wiodących.
 - [ ] Manifest zapisuje dataset, variant, stateDate, downloadedAt, publishedAtObserved, sha256, recordCount, columns, source.
 - [x] Dodaj walidacje wymaganych kolumn.
-- [ ] Dodaj walidacje `STAN_NA`.
-- [ ] Dodaj minimalne liczby rekordów.
+- [x] Dodaj walidacje `STAN_NA`.
+- [x] Dodaj minimalne liczby rekordów.
 - [ ] Dodaj spójność podstawowych relacji.
 - [ ] Dodaj walidację hash pliku.
-- [ ] Dodaj walidację `recordCount`.
+- [x] Dodaj walidację `recordCount`.
 - [x] Import fixture działa.
 - [ ] Import realnych plików jest możliwy.
 - [ ] `pnpm quality` przechodzi.
