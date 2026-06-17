@@ -11,6 +11,7 @@
     "quality": "node -e \"console.log('quality placeholder')\""
   },
   "devDependencies": {
+    "@types/node": "^24.0.3",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
