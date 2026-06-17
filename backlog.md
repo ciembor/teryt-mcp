@@ -670,7 +670,7 @@ source errors
 - [x] Dodaj input `mode: missing | stale | force`.
 - [x] Dodaj strukturę `src/features/sync-database`.
 - [ ] Zaimplementuj flow: download, hash, extract, parse, build tmp sqlite, validate, build indexes, atomic swap, write manifest.
-- [ ] Nieudany sync nie rusza ostatniej dobrej bazy.
+- [x] Nieudany sync nie rusza ostatniej dobrej bazy.
 - [x] Sync działa pod lockiem.
 - [x] Nie ma równoległych synców.
 - [ ] Dane pobierane są z oficjalnych źródeł GUS.
