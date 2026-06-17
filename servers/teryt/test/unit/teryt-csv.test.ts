@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
+import { strToU8, zipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 
 import { detectDataset, importTerytCsv } from "../../src/features/sync-database/application/importers/teryt-csv.js";
+import { importTerytZip } from "../../src/features/sync-database/application/importers/teryt-zip.js";
 
 const fixtureDir = join(process.cwd(), "test", "fixtures", "teryt");
 
@@ -58,6 +60,23 @@ describe("importTerytCsv", () => {
 
     expect(importTerytCsv(csv, { expectedSha256 }).recordCount).toBe(3);
     expect(() => importTerytCsv(csv, { expectedSha256: "invalid" })).toThrow(/sha256 mismatch/);
+  });
+
+  it("imports TERYT CSV from ZIP archives", async () => {
+    const csv = await readFile(join(fixtureDir, "TERC.csv"), "utf8");
+    const zip = zipSync({
+      "TERC.csv": strToU8(csv),
+    });
+
+    expect(importTerytZip(zip).dataset).toBe("TERC");
+  });
+
+  it("rejects ZIP archives without CSV entries", () => {
+    const zip = zipSync({
+      "README.txt": strToU8("no csv"),
+    });
+
+    expect(() => importTerytZip(zip)).toThrow(/does not contain a CSV/);
   });
 
   it("rejects ambiguous dataset detection", () => {

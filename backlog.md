@@ -761,7 +761,7 @@ write manifest
 - [x] Obsłuż dataset `ULIC`.
 - [x] Obsłuż dataset `WMRODZ`.
 - [x] Obsłuż CSV.
-- [ ] Obsłuż ZIP.
+- [x] Obsłuż ZIP.
 - [x] Dodaj dataset detection.
 - [x] Dodaj column validation.
 - [ ] Dodaj SQLite schema.

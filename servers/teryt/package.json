@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@mcp-kit/core": "workspace:*",
-    "@mcp-kit/node": "workspace:*"
+    "@mcp-kit/node": "workspace:*",
+    "fflate": "^0.8.3"
   },
   "devDependencies": {
     "@mcp-kit/cli": "workspace:*",
@@ -21,8 +22,8 @@
     "eslint-plugin-sonarjs": "^3.0.3",
     "knip": "^5.61.3",
     "tsup": "^8.5.0",
-    "typescript-eslint": "^8.34.1",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1",
     "vitest": "^3.2.4"
   }
 }

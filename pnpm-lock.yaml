@@ -46,6 +46,9 @@ importers:
       '@mcp-kit/node':
         specifier: workspace:*
         version: link:../../packages/node
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
     devDependencies:
       '@mcp-kit/cli':
         specifier: workspace:*
@@ -1013,6 +1016,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   figures@5.0.0:
     resolution: {integrity: sha512-ej8ksPF4x6e5wvK9yevct0UCXh8TTFlWGVLlgjZuoBH1HwjIfKE/IdL5mq89sFA7zELi1VhKpmtDnrs7zWyeyg==}
@@ -2696,6 +2702,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
+
+  fflate@0.8.3: {}
 
   figures@5.0.0:
     dependencies:
