@@ -775,7 +775,7 @@ write manifest
 - [x] Dodaj walidację `recordCount`.
 - [x] Import fixture działa.
 - [ ] Import realnych plików jest możliwy.
-- [ ] `pnpm quality` przechodzi.
+- [x] `pnpm quality` przechodzi.
 
 ### Zadania
 
@@ -990,10 +990,10 @@ teryt-mcp search places Kraków
 - [ ] Contract tests sprawdzają annotations.
 - [ ] Contract tests sprawdzają `structuredContent`.
 - [ ] Contract tests sprawdzają error shape.
-- [ ] Dodaj TERC fixture.
-- [ ] Dodaj SIMC fixture.
-- [ ] Dodaj ULIC fixture.
-- [ ] Dodaj WMRODZ fixture.
+- [x] Dodaj TERC fixture.
+- [x] Dodaj SIMC fixture.
+- [x] Dodaj ULIC fixture.
+- [x] Dodaj WMRODZ fixture.
 - [ ] Dodaj golden query `Kraków`.
 - [ ] Dodaj golden query `Warszawa`.
 - [ ] Dodaj golden query `Stara Wieś`.
