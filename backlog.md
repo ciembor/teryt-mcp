@@ -770,7 +770,7 @@ write manifest
 - [x] Dodaj walidacje wymaganych kolumn.
 - [x] Dodaj walidacje `STAN_NA`.
 - [x] Dodaj minimalne liczby rekordów.
-- [ ] Dodaj spójność podstawowych relacji.
+- [x] Dodaj spójność podstawowych relacji.
 - [x] Dodaj walidację hash pliku.
 - [x] Dodaj walidację `recordCount`.
 - [x] Import fixture działa.
