@@ -172,6 +172,19 @@ Nie dodawaj `eslint-plugin-unicorn` na start.
 
 ## Faza 0 - przygotowanie
 
+### Checklist
+
+- [x] Utwórz repo jako monorepo.
+- [x] Ustal package manager: `pnpm`.
+- [x] Dodaj root `package.json`.
+- [x] Dodaj `pnpm-workspace.yaml`.
+- [x] Dodaj `tsconfig.base.json`.
+- [x] Dodaj `.gitignore`.
+- [x] Dodaj podstawowy `README.md`.
+- [x] Repo ma katalogi `packages`, `servers`, `docs`.
+- [x] Workspace widzi pakiety i serwer.
+- [x] Root ma script `quality`.
+
 ### Zadania
 
 1. Utwórz repo jako monorepo.
@@ -189,6 +202,20 @@ Nie dodawaj `eslint-plugin-unicorn` na start.
 - Root ma script `quality`, nawet jeśli na początku jest placeholderem.
 
 ## Faza 1 - bootstrap framework packages
+
+### Checklist
+
+- [x] Utwórz `packages/core`.
+- [x] Utwórz `packages/node`.
+- [x] Utwórz `packages/cli`.
+- [x] Każdy pakiet ma własny `package.json`.
+- [x] Każdy pakiet ma publiczne `exports`.
+- [x] Każdy pakiet ma `src/index.ts`.
+- [x] Dodaj build przez `tsup`.
+- [x] Dodaj testy przez `vitest`.
+- [x] Pakiety budują się niezależnie.
+- [x] Żaden pakiet nie importuje z `servers/*`.
+- [x] Publiczne API idzie przez `src/index.ts`.
 
 ### Zadania
 
@@ -208,6 +235,20 @@ Nie dodawaj `eslint-plugin-unicorn` na start.
 - Publiczne API idzie przez `src/index.ts`.
 
 ## Faza 2 - minimalny `@mcp-kit/core`
+
+### Checklist
+
+- [x] Zaimplementuj `createMcpApp`.
+- [x] Zaimplementuj `defineTool`.
+- [x] Zaimplementuj `defineResource`.
+- [x] Zaimplementuj `definePrompt`.
+- [x] Zaimplementuj `defineFeature`.
+- [x] Zaimplementuj `createCapabilityRegistry`.
+- [x] Dodaj typy `McpApp`, `Capability`, `ToolCapability`, `ResourceCapability`, `PromptCapability`, `CapabilityRegistry`.
+- [x] Dodaj walidacje registry.
+- [x] Dodaj helpery testowe `createTestApp`, `callTool`, `assertValidRegistry`.
+- [x] Registry sortuje deterministycznie.
+- [x] Błędne registry failuje testami.
 
 ### Zadania
 
@@ -261,6 +302,19 @@ assertValidRegistry
 
 ## Faza 3 - minimalny `@mcp-kit/node`
 
+### Checklist
+
+- [x] Zaimplementuj `startStdioServer(app)`.
+- [x] Zaimplementuj `startHttpServer(app, options)`.
+- [x] Zaimplementuj `loadRuntimeConfig()`.
+- [x] Zaimplementuj `createLogger()`.
+- [x] Zaimplementuj `resolveDataDir()`.
+- [x] Zaimplementuj `atomicWrite()`.
+- [x] Zaimplementuj `withLock()`.
+- [x] Stdio nie pisze logów aplikacyjnych na stdout.
+- [x] HTTP używa aplikacji z `@mcp-kit/core`.
+- [x] Transporty są cienkimi adapterami.
+
 ### Zadania
 
 Zaimplementuj:
@@ -294,6 +348,16 @@ Transport HTTP:
 - Transporty są cienkimi adapterami.
 
 ## Faza 4 - minimalny `@mcp-kit/cli`
+
+### Checklist
+
+- [x] Dodaj `mcp-kit init <path> --name <name>`.
+- [x] `init` generuje bazową strukturę serwera.
+- [x] Dodaj `mcp-kit quality`.
+- [x] `quality` wykonuje sekwencję narzędzi z backlogu.
+- [x] Dodaj pre-commit `pnpm quality`.
+- [x] `mcp-kit init` generuje działający serwer.
+- [x] `mcp-kit quality` działa w wygenerowanym serwerze.
 
 ### Zadania
 
@@ -355,6 +419,17 @@ pre-commit -> pnpm quality
 
 ## Faza 5 - testy architektoniczne frameworka
 
+### Checklist
+
+- [x] Dodaj `assertNoDependencyCycles`.
+- [x] Dodaj `assertFeatureBoundaries`.
+- [x] Dodaj `assertCleanArchitectureLayers`.
+- [x] Dodaj `assertCapabilityRegistry`.
+- [x] Dodaj `assertMcpAnnotations`.
+- [x] Dodaj `assertToolSchemas`.
+- [x] Naruszenie reguł failuje test.
+- [x] Reguły są dostępne dla wygenerowanego serwera.
+
 ### Zadania
 
 W `packages/core` dodaj helpery testów architektonicznych:
@@ -389,6 +464,17 @@ read/write policy jest spójne z annotations
 - Reguły są używane przez wygenerowany serwer.
 
 ## Faza 6 - wygenerowanie serwera TERYT
+
+### Checklist
+
+- [x] Użyj własnego CLI do wygenerowania `servers/teryt`.
+- [x] Ustal bounded context.
+- [x] Dodaj `servers/teryt/docs/bounded-context.md`.
+- [x] Dokument opisuje zakres TERYT MCP.
+- [x] Dokument opisuje wykluczenia.
+- [x] `servers/teryt` powstał przez framework.
+- [x] `pnpm quality` przechodzi.
+- [x] Braki generatora poprawione w generatorze.
 
 ### Zadania
 
@@ -440,6 +526,18 @@ nieoficjalnych danych adresowych
 
 ## Faza 7 - `health` i `server_status`
 
+### Checklist
+
+- [x] Feature `health` zostaje jako minimalny przykład.
+- [x] Dodaj feature `server_status`.
+- [x] Dodaj strukturę `src/features/server-status`.
+- [x] Dodaj tool `server_status`.
+- [x] Tool zwraca server name, server version, framework version, transport, data dir i basic database status.
+- [x] Tool ma `outputSchema`.
+- [x] Tool jest read-only.
+- [x] Tool jest zarejestrowany tylko w `src/mcp/registry.ts`.
+- [x] `pnpm quality` przechodzi.
+
 ### Zadania
 
 Feature `health` zostaje jako minimalny przykład.
@@ -485,6 +583,25 @@ database status basic
 - `pnpm quality` przechodzi.
 
 ## Faza 8 - `source_status`
+
+### Checklist
+
+- [x] Dodaj feature `source_status`.
+- [x] Dodaj strukturę feature z domain/application/ports/mcp/infrastructure.
+- [x] Tool zwraca local database status.
+- [x] Tool zwraca remote source status.
+- [x] Tool zwraca last checked at.
+- [x] Tool zwraca last successful sync.
+- [x] Tool zwraca `stateDate`.
+- [x] Tool zwraca `sha256` jeśli znany.
+- [x] Tool zwraca source errors.
+- [x] Brak internetu nie psuje serwera.
+- [x] Błąd remote source jest częścią statusu.
+- [x] Ostatnia dobra baza pozostaje używalna.
+- [x] `application` używa portów.
+- [x] `mcp` nie importuje `infrastructure`.
+- [x] `src/app.ts` składa use case z adapterami.
+- [x] `pnpm quality` przechodzi.
 
 ### Zadania
 
@@ -546,6 +663,22 @@ source errors
 - `pnpm quality` przechodzi.
 
 ## Faza 9 - `sync_database`
+
+### Checklist
+
+- [ ] Dodaj feature `sync_database`.
+- [ ] Dodaj input `mode: missing | stale | force`.
+- [ ] Dodaj strukturę `src/features/sync-database`.
+- [ ] Zaimplementuj flow: download, hash, extract, parse, build tmp sqlite, validate, build indexes, atomic swap, write manifest.
+- [ ] Nieudany sync nie rusza ostatniej dobrej bazy.
+- [ ] Sync działa pod lockiem.
+- [ ] Nie ma równoległych synców.
+- [ ] Dane pobierane są z oficjalnych źródeł GUS.
+- [ ] Tool ma `outputSchema`.
+- [ ] Tool ma write annotations.
+- [ ] `mode=missing` nie pobiera danych, jeśli baza istnieje.
+- [ ] `mode=force` buduje nową bazę atomowo.
+- [ ] `pnpm quality` przechodzi.
 
 ### Zadania
 
