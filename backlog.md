@@ -994,11 +994,11 @@ teryt-mcp search places Kraków
 - [x] Dodaj SIMC fixture.
 - [x] Dodaj ULIC fixture.
 - [x] Dodaj WMRODZ fixture.
-- [ ] Dodaj golden query `Kraków`.
-- [ ] Dodaj golden query `Warszawa`.
-- [ ] Dodaj golden query `Stara Wieś`.
-- [ ] Dodaj golden query `Dąbrowa`.
-- [ ] Dodaj golden query `Marszałkowska`.
+- [x] Dodaj golden query `Kraków`.
+- [x] Dodaj golden query `Warszawa`.
+- [x] Dodaj golden query `Stara Wieś`.
+- [x] Dodaj golden query `Dąbrowa`.
+- [x] Dodaj golden query `Marszałkowska`.
 - [x] Dodaj integration test sync from fixtures.
 - [ ] Dodaj integration test sqlite search.
 - [x] Dodaj integration test stdio roundtrip.

@@ -9,10 +9,28 @@ const fixturePlaces: readonly Place[] = [
     unitId: "02-01-01-1",
   },
   {
+    id: "0011111",
+    name: "Kraków",
+    stateDate: "2026-01-01",
+    unitId: "12-61-01-1",
+  },
+  {
+    id: "0012222",
+    name: "Warszawa",
+    stateDate: "2026-01-01",
+    unitId: "14-65-01-1",
+  },
+  {
     id: "0012345",
     name: "Stara Wieś",
     stateDate: "2026-01-01",
     unitId: "02-01-02-2",
+  },
+  {
+    id: "0013333",
+    name: "Dąbrowa",
+    stateDate: "2026-01-01",
+    unitId: "24-01-01-2",
   },
 ];
 
