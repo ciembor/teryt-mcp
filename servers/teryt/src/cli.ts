@@ -46,6 +46,11 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
     return;
   }
 
+  if (command === "search") {
+    await runSearchCommand(args, io);
+    return;
+  }
+
   throw new Error(`Unknown command: ${command ?? "<missing>"}`);
 }
 
@@ -70,6 +75,61 @@ function defaultIo(): CliIo {
     stderr: process.stderr,
     stdout: process.stdout,
   };
+}
+
+async function runSearchCommand(args: readonly string[], io: CliIo): Promise<void> {
+  const [scope, ...queryParts] = args;
+
+  if (scope !== "places") {
+    throw new Error("search requires scope: places.");
+  }
+
+  const { limit, query } = parseSearchArgs(queryParts);
+
+  await writeCliToolResult(
+    io.stdout,
+    "search_places",
+    {
+      limit,
+      query,
+    },
+    io.env,
+  );
+}
+
+function parseSearchArgs(args: readonly string[]): { readonly limit?: number; readonly query: string } {
+  const queryParts: string[] = [];
+  let limit: number | undefined;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+
+    if (value === "--limit") {
+      limit = parseLimit(args[index + 1]);
+      index += 1;
+      continue;
+    }
+
+    queryParts.push(value ?? "");
+  }
+
+  const query = queryParts.join(" ").trim();
+
+  if (!query) {
+    throw new Error("search places requires query.");
+  }
+
+  return limit === undefined ? { query } : { limit, query };
+}
+
+function parseLimit(value: string | undefined): number {
+  const limit = Number(value);
+
+  if (!Number.isInteger(limit) || limit < 1) {
+    throw new Error("search --limit requires a positive integer.");
+  }
+
+  return limit;
 }
 
 function parseSyncMode(args: readonly string[]): "missing" | "stale" | "force" {

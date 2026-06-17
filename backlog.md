@@ -949,12 +949,12 @@ fuzzy only later if needed
 - [x] Dodaj `teryt-mcp status`.
 - [x] Dodaj `teryt-mcp source-status`.
 - [x] Dodaj `teryt-mcp sync`.
-- [ ] Dodaj `teryt-mcp search places Kraków`.
+- [x] Dodaj `teryt-mcp search places Kraków`.
 - [x] CLI używa tych samych use case'ów co MCP.
 - [x] CLI nie ma osobnej logiki domenowej.
 - [x] CLI nie importuje prywatnych plików feature poza publicznym `index.ts`, chyba że jest composition rootem.
-- [ ] CLI działa lokalnie.
-- [ ] MCP i CLI zwracają spójne dane.
+- [x] CLI działa lokalnie.
+- [x] MCP i CLI zwracają spójne dane.
 - [x] `pnpm quality` przechodzi.
 
 ### Zadania

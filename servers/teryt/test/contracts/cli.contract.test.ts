@@ -108,6 +108,31 @@ describe("teryt-mcp CLI contract", () => {
     });
     await expect(stat(join(dataDir, "teryt.sqlite"))).resolves.toBeDefined();
   });
+
+  it("returns place search results consistent with MCP", async () => {
+    const stdout = new MemoryWritable();
+    const env = {
+      MCP_DATA_DIR: "test-data/teryt-cli",
+      MCP_TRANSPORT: "stdio",
+      PORT: "3010",
+    };
+    const config = {
+      dataDir: resolve(env.MCP_DATA_DIR),
+      port: 3010,
+      transport: "stdio" as const,
+    };
+    const mcpResult = await callTool(createApp(config), "search_places", {
+      query: "Kraków",
+    });
+
+    await runCli(["search", "places", "Kraków"], {
+      env,
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
+  });
 });
 
 async function createTempDir(): Promise<string> {
