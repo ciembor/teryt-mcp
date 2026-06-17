@@ -47,11 +47,16 @@ export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDataba
     const database = await input.databaseBuilder.build(sourceFiles);
     const databasePath = await input.fileStore.swapDatabase(database.content);
     const datasets = sourceFiles.map((sourceFile) => ({
+      columns: [],
       dataset: sourceFile.dataset,
       downloadedAt: input.now().toISOString(),
+      publishedAtObserved: null,
+      recordCount: 0,
       sha256: sha256(sourceFile.content),
+      source: "official-teryt-download",
       sourceUrl: sourceFile.sourceUrl,
       stateDate: sourceFile.stateDate,
+      variant: "full" as const,
     }));
     const snapshot: DatabaseSnapshot = {
       builtAt: input.now().toISOString(),

@@ -37,6 +37,12 @@ export function createSyncDatabaseTool(input: CreateSyncDatabaseToolInput) {
           items: {
             type: "object",
             properties: {
+              columns: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+              },
               dataset: {
                 type: "string",
                 enum: ["TERC", "SIMC", "ULIC", "WMRODZ"],
@@ -44,7 +50,23 @@ export function createSyncDatabaseTool(input: CreateSyncDatabaseToolInput) {
               downloadedAt: {
                 type: "string",
               },
+              publishedAtObserved: {
+                anyOf: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "null",
+                  },
+                ],
+              },
+              recordCount: {
+                type: "number",
+              },
               sha256: {
+                type: "string",
+              },
+              source: {
                 type: "string",
               },
               sourceUrl: {
@@ -53,8 +75,23 @@ export function createSyncDatabaseTool(input: CreateSyncDatabaseToolInput) {
               stateDate: {
                 type: "string",
               },
+              variant: {
+                type: "string",
+                enum: ["full"],
+              },
             },
-            required: ["dataset", "downloadedAt", "sha256", "sourceUrl", "stateDate"],
+            required: [
+              "columns",
+              "dataset",
+              "downloadedAt",
+              "publishedAtObserved",
+              "recordCount",
+              "sha256",
+              "source",
+              "sourceUrl",
+              "stateDate",
+              "variant",
+            ],
           },
         },
         mode: {
