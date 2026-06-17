@@ -881,7 +881,7 @@ recordCount
 - [x] Ranking obsługuje exact code.
 - [x] Ranking obsługuje exact normalized name.
 - [x] Ranking obsługuje prefix.
-- [ ] Ranking obsługuje FTS.
+- [x] Ranking obsługuje FTS.
 - [x] `search_*` nie zwraca nieograniczonych list.
 - [x] Każdy tool ma contract test.
 - [x] Każdy repository jest za portem.

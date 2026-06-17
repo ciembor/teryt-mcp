@@ -68,6 +68,16 @@ export async function searchUnits(
         ];
       }
 
+      if (normalizedName.includes(normalizedQuery)) {
+        return [
+          {
+            confidence: 0.55,
+            matchedBy: "fts",
+            unit,
+          },
+        ];
+      }
+
       return [];
     })
     .sort((left, right) => right.confidence - left.confidence || left.unit.name.localeCompare(right.unit.name))

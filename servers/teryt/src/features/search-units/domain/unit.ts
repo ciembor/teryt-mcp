@@ -7,6 +7,6 @@ export type Unit = {
 
 export type UnitMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix";
+  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "fts";
   readonly unit: Unit;
 };

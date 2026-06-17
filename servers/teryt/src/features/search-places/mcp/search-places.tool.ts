@@ -34,7 +34,7 @@ export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
               },
               matchedBy: {
                 type: "string",
-                enum: ["exact_code", "exact_normalized_name", "prefix"],
+                enum: ["exact_code", "exact_normalized_name", "prefix", "fts"],
               },
               place: {
                 type: "object",

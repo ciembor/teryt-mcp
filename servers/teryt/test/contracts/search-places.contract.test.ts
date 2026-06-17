@@ -62,4 +62,32 @@ describe("search_places contract", () => {
       },
     });
   });
+
+  it("returns FTS ranking for normalized infix matches", async () => {
+    await expect(
+      callTool(
+        createApp({
+          dataDir: "test-data/teryt-mcp",
+          port: 3000,
+          transport: "stdio",
+        }),
+        "search_places",
+        {
+          query: "sław",
+        },
+      ),
+    ).resolves.toMatchObject({
+      structuredContent: {
+        places: [
+          {
+            confidence: 0.55,
+            matchedBy: "fts",
+            place: {
+              name: "Bolesławiec",
+            },
+          },
+        ],
+      },
+    });
+  });
 });

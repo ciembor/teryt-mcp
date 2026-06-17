@@ -8,6 +8,6 @@ export type Street = {
 
 export type StreetMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix";
+  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "fts";
   readonly street: Street;
 };

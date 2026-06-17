@@ -7,6 +7,6 @@ export type Place = {
 
 export type PlaceMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix";
+  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "fts";
   readonly place: Place;
 };

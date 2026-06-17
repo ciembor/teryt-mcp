@@ -68,6 +68,16 @@ export async function searchPlaces(
         ];
       }
 
+      if (normalizedName.includes(normalizedQuery)) {
+        return [
+          {
+            confidence: 0.55,
+            matchedBy: "fts",
+            place,
+          },
+        ];
+      }
+
       return [];
     })
     .sort((left, right) => right.confidence - left.confidence || left.place.name.localeCompare(right.place.name))
