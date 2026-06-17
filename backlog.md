@@ -1059,7 +1059,7 @@ http roundtrip
 
 - [x] Dodaj `docs/architecture/bounded-context.md`.
 - [x] Dodaj `docs/architecture/package-boundaries.md`.
-- [ ] Dodaj `docs/architecture/runtime-ecosystem.md`.
+- [x] Dodaj `docs/architecture/runtime-ecosystem.md`.
 - [ ] Dodaj `docs/architecture/feature-clean-architecture.md`.
 - [ ] Dodaj `docs/quality.md`.
 - [ ] Dodaj `docs/tutorial.md`.
