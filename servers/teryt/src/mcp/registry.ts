@@ -1,6 +1,7 @@
 import { createCapabilityRegistry } from "@mcp-kit/core";
 import type { RuntimeConfig } from "@mcp-kit/node";
 
+import { createGetPlaceTool, type PlaceDetailsRepository } from "../features/get-place/index.js";
 import { createGetUnitTool, type UnitDetailsRepository } from "../features/get-unit/index.js";
 import { healthTool } from "../features/health/index.js";
 import { createResolveAddressTool, type AddressRepository } from "../features/resolve-address/index.js";
@@ -22,6 +23,7 @@ type CreateRegistryInput = {
   readonly addressRepository: AddressRepository;
   readonly config: RuntimeConfig;
   readonly manifestStore: ManifestStore;
+  readonly placeDetailsRepository: PlaceDetailsRepository;
   readonly unitDetailsRepository: UnitDetailsRepository;
   readonly placeRepository: PlaceRepository;
   readonly sourceCatalog: TerytSourceCatalog;
@@ -47,6 +49,9 @@ export function createRegistry(input: CreateRegistryInput) {
     createSourceStatusTool({
       manifestStore: input.manifestStore,
       sourceCatalog: input.sourceCatalog,
+    }),
+    createGetPlaceTool({
+      placeDetailsRepository: input.placeDetailsRepository,
     }),
     createGetUnitTool({
       unitDetailsRepository: input.unitDetailsRepository,

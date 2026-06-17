@@ -870,7 +870,7 @@ recordCount
 - [x] Dodaj `search_streets`.
 - [x] Dodaj `resolve_address`.
 - [x] Dodaj `get_unit`.
-- [ ] Dodaj `get_place`.
+- [x] Dodaj `get_place`.
 - [ ] Dodaj `get_street`.
 - [ ] Każda feature ma domain/application/ports/mcp/infrastructure/index.ts.
 - [x] Search tools mają `limit` default 20.

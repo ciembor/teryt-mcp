@@ -19,6 +19,9 @@ describe("project architecture", () => {
       manifestStore: {
         getSnapshot: async () => undefined,
       },
+      placeDetailsRepository: {
+        getPlace: async () => null,
+      },
       placeRepository: {
         listPlaces: async () => [],
       },
@@ -60,6 +63,7 @@ describe("project architecture", () => {
     });
 
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
+      "get_place",
       "get_unit",
       "health_status",
       "resolve_address",

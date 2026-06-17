@@ -1,6 +1,7 @@
 import { createMcpApp } from "@mcp-kit/core";
 import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-kit/node";
 
+import { InMemoryPlaceDetailsRepository } from "./features/get-place/infrastructure/in-memory-place-details-repository.js";
 import { InMemoryUnitDetailsRepository } from "./features/get-unit/infrastructure/in-memory-unit-details-repository.js";
 import { InMemoryAddressRepository } from "./features/resolve-address/infrastructure/in-memory-address-repository.js";
 import { InMemoryPlaceRepository } from "./features/search-places/infrastructure/in-memory-place-repository.js";
@@ -29,6 +30,7 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig()) {
     registry: createRegistry({
       addressRepository: new InMemoryAddressRepository(),
       config,
+      placeDetailsRepository: new InMemoryPlaceDetailsRepository(),
       unitDetailsRepository: new InMemoryUnitDetailsRepository(),
       manifestStore,
       placeRepository: new InMemoryPlaceRepository(),
