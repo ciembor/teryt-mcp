@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
@@ -77,6 +77,23 @@ describe("@mcp-kit/cli", () => {
     });
     await expect(readFile(join(projectPath, "package.json"), "utf8")).resolves.toContain('"name": "teryt-mcp"');
     await expect(readFile(join(projectPath, "src/mcp/registry.ts"), "utf8")).resolves.toContain("healthTool");
+  });
+
+  it("installs a root pre-commit hook that runs pnpm quality", async () => {
+    const directory = await createTempDir();
+    await mkdir(join(directory, ".git", "hooks"), {
+      recursive: true,
+    });
+
+    await initProject({
+      path: join(directory, "servers", "teryt"),
+      name: "teryt-mcp",
+    });
+
+    await expect(readFile(join(directory, ".git", "hooks", "pre-commit"), "utf8")).resolves.toBe(`#!/bin/sh
+set -e
+pnpm quality
+`);
   });
 });
 

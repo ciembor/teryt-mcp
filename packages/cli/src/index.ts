@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, writeFile, chmod, stat } from "node:fs/promises";
 import { spawn } from "node:child_process";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 export type InitProjectOptions = {
   readonly path: string;
@@ -391,14 +391,12 @@ async function installPreCommitHook(projectPath: string): Promise<void> {
   }
 
   const hookPath = join(gitRoot, ".git", "hooks", "pre-commit");
-  const relativeProjectPath = relative(gitRoot, projectPath);
-  const command = relativeProjectPath ? `cd "${relativeProjectPath}" && pnpm quality` : "pnpm quality";
 
   await writeFile(
     hookPath,
     `#!/bin/sh
 set -e
-${command}
+pnpm quality
 `,
   );
   await chmod(hookPath, 0o755);
