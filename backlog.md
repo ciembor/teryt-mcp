@@ -1001,8 +1001,8 @@ teryt-mcp search places Kraków
 - [ ] Dodaj golden query `Marszałkowska`.
 - [ ] Dodaj integration test sync from fixtures.
 - [ ] Dodaj integration test sqlite search.
-- [ ] Dodaj integration test stdio roundtrip.
-- [ ] Dodaj integration test http roundtrip.
+- [x] Dodaj integration test stdio roundtrip.
+- [x] Dodaj integration test http roundtrip.
 - [x] Testy kontraktowe obejmują każde publiczne capability.
 - [ ] Integration tests obejmują minimalny realny flow.
 - [ ] `pnpm quality` przechodzi.
