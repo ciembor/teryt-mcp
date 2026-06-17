@@ -1000,12 +1000,12 @@ teryt-mcp search places Kraków
 - [x] Dodaj golden query `Dąbrowa`.
 - [x] Dodaj golden query `Marszałkowska`.
 - [x] Dodaj integration test sync from fixtures.
-- [ ] Dodaj integration test sqlite search.
+- [x] Dodaj integration test sqlite search.
 - [x] Dodaj integration test stdio roundtrip.
 - [x] Dodaj integration test http roundtrip.
 - [x] Testy kontraktowe obejmują każde publiczne capability.
 - [x] Integration tests obejmują minimalny realny flow.
-- [ ] `pnpm quality` przechodzi.
+- [x] `pnpm quality` przechodzi.
 
 ### Zadania
 
