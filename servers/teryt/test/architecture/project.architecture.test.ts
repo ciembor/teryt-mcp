@@ -16,12 +16,39 @@ describe("project architecture", () => {
       sourceCatalog: {
         listDatasets: async () => [],
       },
+      sync: {
+        databaseBuilder: {
+          build: async () => ({
+            content: new Uint8Array(),
+          }),
+        },
+        fileStore: {
+          databaseExists: async () => false,
+          swapDatabase: async () => "test-data/teryt.sqlite",
+        },
+        lockStore: {
+          withSyncLock: async (callback) => callback(),
+        },
+        manifestStore: {
+          writeSnapshot: async () => undefined,
+        },
+        now: () => new Date("2026-01-01T00:00:00.000Z"),
+        source: {
+          download: async (dataset) => ({
+            content: new Uint8Array(),
+            dataset,
+            sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
+            stateDate: "unknown",
+          }),
+        },
+      },
     });
 
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
       "health_status",
       "server_status",
       "source_status",
+      "sync_database",
     ]);
   });
 });

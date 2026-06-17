@@ -1,0 +1,97 @@
+import { defineTool } from "@mcp-kit/core";
+
+import { syncDatabase, type SyncDatabaseInput } from "../application/sync-database.js";
+import type { SyncMode } from "../domain/sync-plan.js";
+
+type CreateSyncDatabaseToolInput = Omit<SyncDatabaseInput, "mode">;
+
+export function createSyncDatabaseTool(input: CreateSyncDatabaseToolInput) {
+  return defineTool({
+    name: "sync_database",
+    description: "Synchronizes the local TERYT database.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        mode: {
+          type: "string",
+          enum: ["missing", "stale", "force"],
+        },
+      },
+      required: ["mode"],
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        databasePath: {
+          anyOf: [
+            {
+              type: "string",
+            },
+            {
+              type: "null",
+            },
+          ],
+        },
+        datasets: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              dataset: {
+                type: "string",
+                enum: ["TERC", "SIMC", "ULIC", "WMRODZ"],
+              },
+              downloadedAt: {
+                type: "string",
+              },
+              sha256: {
+                type: "string",
+              },
+              sourceUrl: {
+                type: "string",
+              },
+              stateDate: {
+                type: "string",
+              },
+            },
+            required: ["dataset", "downloadedAt", "sha256", "sourceUrl", "stateDate"],
+          },
+        },
+        mode: {
+          type: "string",
+          enum: ["missing", "stale", "force"],
+        },
+        status: {
+          type: "string",
+          enum: ["skipped", "synced"],
+        },
+      },
+      required: ["databasePath", "datasets", "mode", "status"],
+    },
+    policy: "write",
+    returnsStructuredContent: true,
+    annotations: {
+      destructiveHint: false,
+      idempotentHint: false,
+      readOnlyHint: false,
+    },
+    handler: async (toolInput) => ({
+      structuredContent: await syncDatabase({
+        ...input,
+        mode: parseMode(toolInput),
+      }),
+    }),
+  });
+}
+
+function parseMode(input: unknown): SyncMode {
+  if (typeof input === "object" && input !== null && "mode" in input) {
+    const mode = input.mode;
+
+    if (mode === "missing" || mode === "stale" || mode === "force") {
+      return mode;
+    }
+  }
+
+  throw new Error("sync_database requires mode: missing | stale | force.");
+}

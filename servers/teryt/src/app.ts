@@ -3,11 +3,20 @@ import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-kit/node";
 
 import { EterytSourceCatalog } from "./features/source-status/infrastructure/eteryt-source-catalog.js";
 import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
+import { EterytSource } from "./features/sync-database/infrastructure/eteryt-source.js";
+import { FileLockStore } from "./features/sync-database/infrastructure/file-lock-store.js";
+import { JsonSyncManifestStore } from "./features/sync-database/infrastructure/json-manifest-store.js";
+import { LocalFileStore } from "./features/sync-database/infrastructure/local-file-store.js";
+import { SqliteDatabaseBuilder } from "./features/sync-database/infrastructure/sqlite-database-builder.js";
 import { createRegistry } from "./mcp/registry.js";
 
 export function createApp(config: RuntimeConfig = loadRuntimeConfig()) {
   const sourceCatalog = new EterytSourceCatalog();
   const manifestStore = new JsonManifestStore(config.dataDir);
+  const syncFileStore = new LocalFileStore(config.dataDir);
+  const syncLockStore = new FileLockStore(config.dataDir);
+  const syncManifestStore = new JsonSyncManifestStore(config.dataDir);
+  const syncSource = new EterytSource();
 
   return createMcpApp({
     name: "teryt-mcp",
@@ -16,6 +25,14 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig()) {
       config,
       manifestStore,
       sourceCatalog,
+      sync: {
+        databaseBuilder: new SqliteDatabaseBuilder(),
+        fileStore: syncFileStore,
+        lockStore: syncLockStore,
+        manifestStore: syncManifestStore,
+        now: () => new Date(),
+        source: syncSource,
+      },
     }),
   });
 }

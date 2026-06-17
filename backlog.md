@@ -666,19 +666,19 @@ source errors
 
 ### Checklist
 
-- [ ] Dodaj feature `sync_database`.
-- [ ] Dodaj input `mode: missing | stale | force`.
-- [ ] Dodaj strukturę `src/features/sync-database`.
+- [x] Dodaj feature `sync_database`.
+- [x] Dodaj input `mode: missing | stale | force`.
+- [x] Dodaj strukturę `src/features/sync-database`.
 - [ ] Zaimplementuj flow: download, hash, extract, parse, build tmp sqlite, validate, build indexes, atomic swap, write manifest.
 - [ ] Nieudany sync nie rusza ostatniej dobrej bazy.
-- [ ] Sync działa pod lockiem.
-- [ ] Nie ma równoległych synców.
+- [x] Sync działa pod lockiem.
+- [x] Nie ma równoległych synców.
 - [ ] Dane pobierane są z oficjalnych źródeł GUS.
-- [ ] Tool ma `outputSchema`.
-- [ ] Tool ma write annotations.
-- [ ] `mode=missing` nie pobiera danych, jeśli baza istnieje.
-- [ ] `mode=force` buduje nową bazę atomowo.
-- [ ] `pnpm quality` przechodzi.
+- [x] Tool ma `outputSchema`.
+- [x] Tool ma write annotations.
+- [x] `mode=missing` nie pobiera danych, jeśli baza istnieje.
+- [x] `mode=force` buduje nową bazę atomowo.
+- [x] `pnpm quality` przechodzi.
 
 ### Zadania
 

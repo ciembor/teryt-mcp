@@ -4,11 +4,27 @@ import type { RuntimeConfig } from "@mcp-kit/node";
 import { healthTool } from "../features/health/index.js";
 import { createServerStatusTool } from "../features/server-status/index.js";
 import { createSourceStatusTool, type ManifestStore, type TerytSourceCatalog } from "../features/source-status/index.js";
+import {
+  createSyncDatabaseTool,
+  type DatabaseBuilder,
+  type FileStore,
+  type LockStore,
+  type SyncManifestStore,
+  type TerytSource,
+} from "../features/sync-database/index.js";
 
 type CreateRegistryInput = {
   readonly config: RuntimeConfig;
   readonly manifestStore: ManifestStore;
   readonly sourceCatalog: TerytSourceCatalog;
+  readonly sync: {
+    readonly databaseBuilder: DatabaseBuilder;
+    readonly fileStore: FileStore;
+    readonly lockStore: LockStore;
+    readonly manifestStore: SyncManifestStore;
+    readonly now: () => Date;
+    readonly source: TerytSource;
+  };
 };
 
 export function createRegistry(input: CreateRegistryInput) {
@@ -22,5 +38,6 @@ export function createRegistry(input: CreateRegistryInput) {
       manifestStore: input.manifestStore,
       sourceCatalog: input.sourceCatalog,
     }),
+    createSyncDatabaseTool(input.sync),
   ]);
 }
