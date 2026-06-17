@@ -1058,7 +1058,7 @@ http roundtrip
 ### Checklist
 
 - [x] Dodaj `docs/architecture/bounded-context.md`.
-- [ ] Dodaj `docs/architecture/package-boundaries.md`.
+- [x] Dodaj `docs/architecture/package-boundaries.md`.
 - [ ] Dodaj `docs/architecture/runtime-ecosystem.md`.
 - [ ] Dodaj `docs/architecture/feature-clean-architecture.md`.
 - [ ] Dodaj `docs/quality.md`.
