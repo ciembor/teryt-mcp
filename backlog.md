@@ -945,14 +945,14 @@ fuzzy only later if needed
 
 ### Checklist
 
-- [ ] Dodaj `teryt-mcp serve`.
-- [ ] Dodaj `teryt-mcp status`.
+- [x] Dodaj `teryt-mcp serve`.
+- [x] Dodaj `teryt-mcp status`.
 - [ ] Dodaj `teryt-mcp source-status`.
 - [ ] Dodaj `teryt-mcp sync`.
 - [ ] Dodaj `teryt-mcp search places Kraków`.
-- [ ] CLI używa tych samych use case'ów co MCP.
-- [ ] CLI nie ma osobnej logiki domenowej.
-- [ ] CLI nie importuje prywatnych plików feature poza publicznym `index.ts`, chyba że jest composition rootem.
+- [x] CLI używa tych samych use case'ów co MCP.
+- [x] CLI nie ma osobnej logiki domenowej.
+- [x] CLI nie importuje prywatnych plików feature poza publicznym `index.ts`, chyba że jest composition rootem.
 - [ ] CLI działa lokalnie.
 - [ ] MCP i CLI zwracają spójne dane.
 - [x] `pnpm quality` przechodzi.

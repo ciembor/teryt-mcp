@@ -3,8 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "teryt-mcp": "dist/cli.js"
+  },
   "scripts": {
-    "build": "tsup src/main.ts --format esm --dts",
+    "build": "tsup src/main.ts src/cli.ts --format esm --dts",
     "quality": "mcp-kit quality",
     "test": "vitest run"
   },
