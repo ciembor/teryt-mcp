@@ -756,24 +756,24 @@ write manifest
 
 ### Checklist
 
-- [ ] Obsłuż dataset `TERC`.
-- [ ] Obsłuż dataset `SIMC`.
-- [ ] Obsłuż dataset `ULIC`.
-- [ ] Obsłuż dataset `WMRODZ`.
-- [ ] Obsłuż CSV.
+- [x] Obsłuż dataset `TERC`.
+- [x] Obsłuż dataset `SIMC`.
+- [x] Obsłuż dataset `ULIC`.
+- [x] Obsłuż dataset `WMRODZ`.
+- [x] Obsłuż CSV.
 - [ ] Obsłuż ZIP.
-- [ ] Dodaj dataset detection.
-- [ ] Dodaj column validation.
+- [x] Dodaj dataset detection.
+- [x] Dodaj column validation.
 - [ ] Dodaj SQLite schema.
-- [ ] Kody są przechowywane jako `TEXT` bez utraty zer wiodących.
+- [x] Kody są przechowywane jako `TEXT` bez utraty zer wiodących.
 - [ ] Manifest zapisuje dataset, variant, stateDate, downloadedAt, publishedAtObserved, sha256, recordCount, columns, source.
-- [ ] Dodaj walidacje wymaganych kolumn.
+- [x] Dodaj walidacje wymaganych kolumn.
 - [ ] Dodaj walidacje `STAN_NA`.
 - [ ] Dodaj minimalne liczby rekordów.
 - [ ] Dodaj spójność podstawowych relacji.
 - [ ] Dodaj walidację hash pliku.
 - [ ] Dodaj walidację `recordCount`.
-- [ ] Import fixture działa.
+- [x] Import fixture działa.
 - [ ] Import realnych plików jest możliwy.
 - [ ] `pnpm quality` przechodzi.
 
