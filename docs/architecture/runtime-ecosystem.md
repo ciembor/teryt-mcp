@@ -1,8 +1,8 @@
 # Runtime Ecosystem
 
-The runtime ecosystem connects framework primitives, Node.js transports, generated server structure, and server-specific CLI commands.
+The server has one capability registry that is reused by MCP transports, tests, and CLI commands.
 
-## Runtime Flow
+## Flow
 
 ```text
 feature use case
@@ -12,48 +12,30 @@ feature use case
   -> transport or CLI
 ```
 
-The same registry powers stdio, HTTP, tests, and the server CLI. Behavior should be implemented once in feature application code and exposed through capabilities.
+Domain behavior belongs in feature application code. Transport code should only decode requests, call capabilities, and encode responses.
 
-## Core Runtime
+## Framework Runtime
 
-`@mcp-kit/core` is runtime-independent. It owns:
+`@mcp-craftman/core` provides:
 
-- `defineTool`;
-- `defineResource`;
-- `definePrompt`;
-- `defineFeature`;
-- `createCapabilityRegistry`;
-- `createMcpApp`;
-- `callTool`;
-- schema and annotation types.
+- `defineTool`
+- `createCapabilityRegistry`
+- `createMcpApp`
+- `callTool`
+- tool schema and annotation types
 
-Core does not know whether a tool is called over stdio, HTTP, direct tests, or a server CLI. It only validates registry shape and dispatches capability handlers.
-
-## Node Runtime
-
-`@mcp-kit/node` owns Node.js concerns:
+`@mcp-craftman/node` provides:
 
 - stdio transport;
 - HTTP transport;
 - runtime config from environment variables;
-- logger creation;
+- stderr-safe logger;
 - atomic writes;
 - file locks.
 
-Runtime config currently includes:
-
-```text
-MCP_TRANSPORT
-MCP_PORT / PORT
-MCP_DATA_DIR
-XDG_CACHE_HOME
-```
-
-The Node package may call `@mcp-kit/core` helpers, but it should keep protocol routing and filesystem behavior separate from server domains.
-
 ## Server Composition
 
-`servers/teryt/src/app.ts` is the server composition root. It wires:
+`src/app.ts` wires concrete runtime dependencies:
 
 - runtime config;
 - source catalogs;
@@ -64,54 +46,44 @@ The Node package may call `@mcp-kit/core` helpers, but it should keep protocol r
 - feature repositories;
 - capability registry.
 
-The composition root may import concrete infrastructure because it owns runtime assembly. Feature application and domain layers should stay infrastructure-free.
+Feature domain and application layers should not import concrete infrastructure.
 
-`servers/teryt/src/server/serve.ts` selects the transport:
+## Entrypoints
+
+`src/main.ts`
+
+Executable MCP server entrypoint. It delegates to `src/server/serve.ts`.
+
+`src/server/serve.ts`
+
+Chooses the transport:
 
 ```text
 MCP_TRANSPORT=http -> HTTP
 default            -> stdio
 ```
 
-`servers/teryt/src/main.ts` is only the executable entrypoint and delegates to `serve`.
+`src/cli.ts`
 
-## CLI Runtime
-
-The server CLI is `teryt-mcp`.
-
-Commands:
-
-```text
-teryt-mcp serve
-teryt-mcp status
-teryt-mcp source-status
-teryt-mcp sync
-teryt-mcp search places Kraków
-```
-
-`serve` uses the same transport startup path as `main.ts`.
-
-Read/write commands should either call the same public feature use case as MCP or dispatch through `callTool(createApp(config), toolName, input)`. This keeps CLI output consistent with MCP `structuredContent`.
+Implements `teryt-mcp` commands. Commands either call a shared use case directly or dispatch through `callTool(createApp(config), toolName, input)` to keep CLI output aligned with MCP `structuredContent`.
 
 ## Transport Contracts
 
-Stdio receives JSON-RPC-like lines and routes `tools/call` to `callTool`.
+Stdio receives JSON-RPC-like lines and routes `tools/call` through `callTool`.
 
 HTTP exposes:
 
-- `GET /health`;
-- `POST /tools/:toolName`.
+```text
+GET /health
+POST /tools/:toolName
+```
 
-Both transports return tool results from the same capability handlers. Transport code should not contain domain logic.
+Both transports return the same capability results.
 
 ## Tests
-
-Runtime behavior is covered at several layers:
 
 - unit tests for pure importers and use cases;
 - contract tests for tool schemas and structured content;
 - CLI contract tests comparing CLI output with MCP tool output;
 - stdio and HTTP roundtrip integration tests;
 - architecture tests for registry and package boundaries.
-
-When a new runtime entrypoint is added, it should prove that it reaches the same capability registry as existing entrypoints.

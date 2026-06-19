@@ -1,107 +1,80 @@
 # Package Boundaries
 
-MCP Kit is split into three framework packages and one example production server. Package boundaries are part of the public architecture, not only build configuration.
+This repository owns only the TERYT MCP server. The reusable framework is published as npm packages under `@mcp-craftman/*`.
 
-## Packages
+## External Framework Boundary
 
-`@mcp-kit/core`
-
-- Owns runtime-independent primitives.
-- Exposes capability and tool definitions, registry behavior, structured content contracts, and test-friendly helpers.
-- Must not import Node.js runtime adapters or server-specific code.
-
-`@mcp-kit/node`
-
-- Owns Node.js runtime integration.
-- Exposes stdio and HTTP transports, runtime config, logging, atomic writes, and lock helpers.
-- May depend on `@mcp-kit/core`.
-- Must not depend on `@mcp-kit/cli` or any server package.
-
-`@mcp-kit/cli`
-
-- Owns developer tooling.
-- Exposes `mcp-kit init` and `mcp-kit quality`.
-- May depend on `@mcp-kit/core` and `@mcp-kit/node` when generated projects or quality checks need framework knowledge.
-- Must not import TERYT server code.
-
-`servers/teryt`
-
-- Owns TERYT domain features and server composition.
-- May depend on public framework package APIs.
-- Must not import framework internals outside package exports.
-
-## Allowed Dependency Direction
+Allowed imports:
 
 ```text
-@mcp-kit/core
-  <- @mcp-kit/node
-  <- @mcp-kit/cli
-  <- servers/teryt
+@mcp-craftman/core
+@mcp-craftman/node
+@mcp-craftman/cli
 ```
 
-`servers/teryt` may import all framework packages, but framework packages must never import from `servers/*`.
-
-## Public API Boundary
-
-Each framework package exposes only its root export:
+Forbidden imports:
 
 ```text
-@mcp-kit/core
-@mcp-kit/node
-@mcp-kit/cli
+@mcp-craftman/core/src/...
+@mcp-craftman/node/src/...
+@mcp-craftman/cli/src/...
 ```
 
-Deep imports are not part of the contract:
+TERYT may depend on framework public APIs. Framework packages must not depend on this server.
 
-```text
-@mcp-kit/core/src/...
-@mcp-kit/node/src/...
-@mcp-kit/cli/src/...
-```
+## Responsibility Split
 
-Before publication, every API needed by TERYT or generated projects must either be exported intentionally from the package root or removed from consumers.
+`@mcp-craftman/core`
 
-## Server Feature Boundary
+- capability and tool definitions;
+- capability registry;
+- app creation;
+- direct tool calls for tests and CLIs;
+- runtime-independent types.
 
-Inside `servers/teryt`, each feature exposes a local public boundary through `index.ts`.
+`@mcp-craftman/node`
 
-Allowed:
+- stdio and HTTP transports;
+- runtime config;
+- logging;
+- filesystem helpers such as atomic writes and locks.
+
+`@mcp-craftman/cli`
+
+- `mcp-craftman init`;
+- `mcp-craftman quality`;
+- generated server templates and quality command orchestration.
+
+TERYT MCP
+
+- official TERYT data model;
+- source synchronization;
+- SQLite build and search indexes;
+- TERYT search, lookup, address-resolution, and status tools;
+- `teryt-mcp` CLI.
+
+## Local Feature Boundary
+
+Each feature exposes a public boundary through `src/features/<feature>/index.ts`.
+
+Allowed outside a feature:
 
 ```ts
 import { searchPlaces } from "./features/search-places/index.js";
 ```
 
-Avoid outside a feature implementation:
+Avoid outside that feature implementation:
 
 ```ts
 import { searchPlaces } from "./features/search-places/application/search-places.js";
 ```
 
-The server composition root may wire infrastructure directly because it owns runtime assembly.
+The composition root in `src/app.ts` may import concrete infrastructure because it owns runtime assembly.
 
 ## Enforcement
 
-Current enforcement lives in:
-
-- `dependency-cruiser.config.cjs`: blocks `packages/* -> servers/*` and dependency cycles.
-- package `exports`: exposes only package roots.
-- architecture tests under `packages/*/test/architecture`.
-- root `pnpm quality`: runs framework and server gates.
-
-Additional pre-publication enforcement should verify:
-
-- server code imports framework packages only through package roots;
-- every exported framework symbol has a consumer or documented purpose;
-- package-level architecture tests describe allowed imports;
-- release artifacts contain only `dist` and package metadata.
-
-## Refactoring Rule
-
-When code does not fit a package boundary:
-
-- generic MCP behavior belongs in `@mcp-kit/core`;
-- Node-specific runtime behavior belongs in `@mcp-kit/node`;
-- scaffolding or quality automation belongs in `@mcp-kit/cli`;
-- Polish TERYT behavior belongs in `servers/teryt`.
-
-Do not move code into the framework only because one server uses it. Promote server code only after it is clearly generic and has a framework-level contract.
+- `package.json` consumes `@mcp-craftman/*` from npm.
+- package `exports` in framework packages prevent private deep imports.
+- `dependency-cruiser.config.cjs` blocks cycles and local boundary violations.
+- architecture tests in `test/architecture` verify registry and project shape.
+- `pnpm quality` runs all of the above.

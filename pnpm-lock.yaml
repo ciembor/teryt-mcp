@@ -7,63 +7,13 @@ settings:
 importers:
 
   .:
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.3
-        version: 24.13.2
-      '@vitest/coverage-v8':
-        specifier: ^3.2.4
-        version: 3.2.6(vitest@3.2.6(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
-      dependency-cruiser:
-        specifier: ^13.1.5
-        version: 13.1.5
-      eslint:
-        specifier: ^9.29.0
-        version: 9.39.4(jiti@2.7.0)
-      eslint-plugin-sonarjs:
-        specifier: ^3.0.3
-        version: 3.0.7(eslint@9.39.4(jiti@2.7.0))
-      knip:
-        specifier: ^5.61.3
-        version: 5.88.1(@types/node@24.13.2)(typescript@5.9.3)
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@5.9.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
-      typescript-eslint:
-        specifier: ^8.34.1
-        version: 8.61.1(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.6(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0)
-
-  packages/cli:
     dependencies:
-      '@mcp-kit/core':
-        specifier: workspace:*
-        version: link:../core
-      '@mcp-kit/node':
-        specifier: workspace:*
-        version: link:../node
-
-  packages/core: {}
-
-  packages/node:
-    dependencies:
-      '@mcp-kit/core':
-        specifier: workspace:*
-        version: link:../core
-
-  servers/teryt:
-    dependencies:
-      '@mcp-kit/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@mcp-kit/node':
-        specifier: workspace:*
-        version: link:../../packages/node
+      '@mcp-craftman/core':
+        specifier: ^0.1.1
+        version: 0.1.1
+      '@mcp-craftman/node':
+        specifier: ^0.1.1
+        version: 0.1.1
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -71,9 +21,9 @@ importers:
         specifier: ^1.14.1
         version: 1.14.1
     devDependencies:
-      '@mcp-kit/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
+      '@mcp-craftman/cli':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@types/node':
         specifier: ^24.0.3
         version: 24.13.2
@@ -386,6 +336,16 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@mcp-craftman/cli@0.1.1':
+    resolution: {integrity: sha512-dpTfD8mrKvIz7kAueORTrYEl6ESWYjMQhZkmk7leY2JfBbmrBCD1nakN3DWUOPbx/TaloTLOyYuJBMRsUqFbeA==}
+    hasBin: true
+
+  '@mcp-craftman/core@0.1.1':
+    resolution: {integrity: sha512-3NLOEgNFBBhOhQ6UXRBy2ZvVNHxi+iNC3ImhSSSSbgYenDl65JPTPQOpjwHeliIy5XDy1tOPo9pTtfFUVP4KuQ==}
+
+  '@mcp-craftman/node@0.1.1':
+    resolution: {integrity: sha512-tIpWd88gY2vCLleFsx8qhVWoybDmXRQcL5OwAIQ/sIwPnD52RQ7c7u2gIQ5WgyYNQ0//jVUoZURihJUA9Su6xA==}
 
   '@napi-rs/wasm-runtime@1.1.5':
     resolution: {integrity: sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q==}
@@ -2066,6 +2026,17 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mcp-craftman/cli@0.1.1':
+    dependencies:
+      '@mcp-craftman/core': 0.1.1
+      '@mcp-craftman/node': 0.1.1
+
+  '@mcp-craftman/core@0.1.1': {}
+
+  '@mcp-craftman/node@0.1.1':
+    dependencies:
+      '@mcp-craftman/core': 0.1.1
 
   '@napi-rs/wasm-runtime@1.1.5(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
