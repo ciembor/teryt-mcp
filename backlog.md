@@ -42,10 +42,10 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [ ] Consider `MCP_CONFIG_DIR` and `MCP_LOG_LEVEL`.
 
 3. Add a CLI builder.
-   - `createMcpCli({ appName, createApp })`.
-   - Standard commands: `serve`, `status`, `tools`, `call`, `setup`.
-   - JSON output by default.
-   - Allow applications to add domain aliases, e.g. `search places`.
+   - [x] `createMcpCli({ appName, createApp })`.
+   - [x] Standard commands: `serve`, `status`, `tools`, `call`, `setup`.
+   - [x] JSON output by default.
+   - [x] Allow applications to add domain aliases, e.g. `search places`.
 
 4. Add library-backed schema and validation ergonomics.
    - Keep `@mcp-craftman/core` capable of accepting raw JSON Schema.
