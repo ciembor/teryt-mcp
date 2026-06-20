@@ -1,1 +1,1 @@
-export const terytMcpVersion = "0.1.3";
+export const terytMcpVersion = "0.1.4";

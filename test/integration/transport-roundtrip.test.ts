@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createLogger, startHttpServer, startStdioServer } from "@mcp-craftman/node";
 
 import { createApp } from "../../src/app.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 const tempDirs: string[] = [];
 
@@ -96,11 +97,9 @@ function createSilentLogger() {
 }
 
 function createTerytApp() {
-  return createApp({
+  return createApp(createTestRuntimeConfig({
     dataDir: createTempDirSync(),
-    port: 3000,
-    transport: "stdio",
-  });
+  }));
 }
 
 function createTempDirSync(): string {

@@ -3,16 +3,15 @@ import { describe, expect, it } from "vitest";
 import { callTool } from "@mcp-craftman/core";
 
 import { createApp } from "../../src/app.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 describe("source_status contract", () => {
   it("returns official TERYT datasets", async () => {
     await expect(
       callTool(
-        createApp({
+        createApp(createTestRuntimeConfig({
           dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        })),
         "source_status",
         {},
       ),

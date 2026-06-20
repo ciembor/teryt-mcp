@@ -5,6 +5,7 @@ import { createCapabilityRegistry, createMcpApp, defineTool, type McpApp } from 
 import type { RuntimeConfig } from "@mcp-craftman/node";
 
 import { runPostinstallSync } from "../../src/postinstall.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 describe("postinstall sync", () => {
   it("runs missing sync using the TERYT data directory", async () => {
@@ -24,7 +25,9 @@ describe("postinstall sync", () => {
     expect(calls).toEqual([
       {
         config: {
+          configDir: expect.any(String) as string,
           dataDir: expect.stringContaining("install-data") as string,
+          logLevel: "info",
           port: 3000,
           transport: "stdio",
         },
@@ -81,11 +84,9 @@ function createSyncCaptureApp(config: RuntimeConfig, calls: unknown[]): McpApp {
 }
 
 function defaultConfig(): RuntimeConfig {
-  return {
+  return createTestRuntimeConfig({
     dataDir: "test-data",
-    port: 3000,
-    transport: "stdio",
-  };
+  });
 }
 
 class MemoryWritable extends Writable {

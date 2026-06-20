@@ -9,6 +9,7 @@ import { callTool } from "@mcp-craftman/core";
 import { createApp } from "../../src/app.js";
 import { runCli } from "../../src/cli.js";
 import { createFixtureSyncSource } from "../support/fixture-sync-source.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 const tempDirs: string[] = [];
 
@@ -32,11 +33,11 @@ describe("teryt-mcp CLI contract", () => {
       MCP_TRANSPORT: "http",
       PORT: "3010",
     };
-    const config = {
+    const config = createTestRuntimeConfig({
       dataDir: resolve(env.MCP_DATA_DIR),
       port: 3010,
-      transport: "http" as const,
-    };
+      transport: "http",
+    });
     const mcpResult = await callTool(createApp(config), "server_status", {});
 
     await runCli(["status"], {
@@ -55,11 +56,10 @@ describe("teryt-mcp CLI contract", () => {
       MCP_TRANSPORT: "stdio",
       PORT: "3010",
     };
-    const config = {
+    const config = createTestRuntimeConfig({
       dataDir: resolve(env.MCP_DATA_DIR),
       port: 3010,
-      transport: "stdio" as const,
-    };
+    });
     const mcpResult = await callTool(createApp(config), "source_status", {});
 
     await runCli(["source-status"], {
@@ -121,11 +121,10 @@ describe("teryt-mcp CLI contract", () => {
       MCP_TRANSPORT: "stdio",
       PORT: "3010",
     };
-    const config = {
+    const config = createTestRuntimeConfig({
       dataDir: resolve(env.MCP_DATA_DIR),
       port: 3010,
-      transport: "stdio" as const,
-    };
+    });
     const mcpResult = await callTool(createApp(config), "search_places", {
       query: "Kraków",
     });

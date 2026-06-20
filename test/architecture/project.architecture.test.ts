@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import { createRegistry } from "../../src/mcp/registry.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 describe("project architecture", () => {
   it("keeps the capability registry valid", () => {
@@ -12,11 +13,7 @@ describe("project architecture", () => {
       unitDetailsRepository: {
         getUnit: async () => null,
       },
-      config: {
-        dataDir: "test-data/teryt-mcp",
-        port: 3000,
-        transport: "stdio",
-      },
+      config: createTestRuntimeConfig(),
       manifestStore: {
         getSnapshot: async () => undefined,
       },

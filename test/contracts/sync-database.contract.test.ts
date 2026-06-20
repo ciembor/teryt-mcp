@@ -7,6 +7,7 @@ import { callTool } from "@mcp-craftman/core";
 
 import { createApp } from "../../src/app.js";
 import { createFixtureSyncSource } from "../support/fixture-sync-source.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 const tempDirs: string[] = [];
 
@@ -25,11 +26,9 @@ afterEach(async () => {
 describe("sync_database contract", () => {
   it("skips missing sync when the database already exists", async () => {
     const dataDir = await createTempDir();
-    await createApp({
+    await createApp(createTestRuntimeConfig({
       dataDir,
-      port: 3000,
-      transport: "stdio",
-    }).registry.get("sync_database");
+    })).registry.get("sync_database");
 
     await expect(
       callTool(
@@ -137,11 +136,9 @@ async function createTempDir(): Promise<string> {
 
 function createFixtureApp(dataDir: string) {
   return createApp(
-    {
+    createTestRuntimeConfig({
       dataDir,
-      port: 3000,
-      transport: "stdio",
-    },
+    }),
     {
       syncSource: createFixtureSyncSource(),
     },

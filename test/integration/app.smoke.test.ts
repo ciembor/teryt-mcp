@@ -1,14 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { createApp } from "../../src/app.js";
+import { createTestRuntimeConfig } from "../support/runtime-config.js";
 
 describe("app", () => {
   it("creates an MCP app", () => {
-    const app = createApp({
-      dataDir: "test-data/teryt-mcp",
-      port: 3000,
-      transport: "stdio",
-    });
+    const app = createApp(createTestRuntimeConfig());
 
     expect(app.registry.get("get_place")).toBeDefined();
     expect(app.registry.get("get_street")).toBeDefined();
