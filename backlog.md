@@ -73,14 +73,14 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Applications do not import private framework paths.
 
 7. Improve feature generation.
-   - Generate domain type.
-   - Generate application use-case.
-   - Generate port.
-   - Generate MCP tool.
-   - Generate contract test.
-   - Update registry.
-   - Optionally generate an infrastructure adapter stub.
-   - Default generated tools should use Zod once `@mcp-craftman/zod` exists.
+   - [x] Generate domain type.
+   - [x] Generate application use-case.
+   - [x] Generate port.
+   - [x] Generate MCP tool.
+   - [x] Generate contract test.
+   - [x] Update registry.
+   - [x] Optionally generate an infrastructure adapter stub.
+   - [x] Default generated tools should use Zod once `@mcp-craftman/zod` exists.
 
 8. Add generic local resource lifecycle helpers.
    - File resource store.
