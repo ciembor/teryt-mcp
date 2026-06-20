@@ -1,5 +1,5 @@
-import { callTool, type McpApp } from "@mcp-craftman/core";
-import { isCliEntrypoint } from "@mcp-craftman/node";
+import { callTool, type McpApp } from "@mcp-craftsman/core";
+import { isCliEntrypoint } from "@mcp-craftsman/node";
 
 import { createApp } from "./app.js";
 import { loadTerytRuntimeConfig } from "./runtime/config.js";

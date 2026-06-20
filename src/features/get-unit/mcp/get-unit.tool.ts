@@ -1,4 +1,4 @@
-import { defineTool, readRequiredStringField } from "@mcp-craftman/core";
+import { defineTool, readRequiredStringField } from "@mcp-craftsman/core";
 
 import { getUnit, type GetUnitDependencies } from "../application/get-unit.js";
 

@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-craftman/node";
+import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-craftsman/node";
 
 export function loadTerytRuntimeConfig(env: NodeJS.ProcessEnv = process.env): RuntimeConfig {
   const config = loadRuntimeConfig(env);

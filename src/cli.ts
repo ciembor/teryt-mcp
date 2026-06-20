@@ -5,8 +5,8 @@ import {
   writeCliToolStructuredContent,
   writeJson,
   type CliIo,
-} from "@mcp-craftman/node";
-import { mcpCraftmanCoreVersion } from "@mcp-craftman/core";
+} from "@mcp-craftsman/node";
+import { mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { createApp } from "./app.js";
 import { getServerStatus } from "./features/server-status/index.js";
@@ -32,7 +32,7 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
       io.stdout,
       getServerStatus({
         dataDir: config.dataDir,
-        frameworkVersion: mcpCraftmanCoreVersion,
+        frameworkVersion: mcpCraftsmanCoreVersion,
         transport: config.transport,
       }),
     );

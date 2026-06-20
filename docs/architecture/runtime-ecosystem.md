@@ -16,7 +16,7 @@ Domain behavior belongs in feature application code. Transport code should only 
 
 ## Framework Runtime
 
-`@mcp-craftman/core` provides:
+`@mcp-craftsman/core` provides:
 
 - `defineTool`
 - `createCapabilityRegistry`
@@ -24,7 +24,7 @@ Domain behavior belongs in feature application code. Transport code should only 
 - `callTool`
 - tool schema and annotation types
 
-`@mcp-craftman/node` provides:
+`@mcp-craftsman/node` provides:
 
 - stdio transport;
 - HTTP transport;

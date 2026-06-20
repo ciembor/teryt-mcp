@@ -8,10 +8,10 @@ importers:
 
   .:
     dependencies:
-      '@mcp-craftman/core':
+      '@mcp-craftsman/core':
         specifier: ^0.2.0
         version: 0.2.0
-      '@mcp-craftman/node':
+      '@mcp-craftsman/node':
         specifier: ^0.2.0
         version: 0.2.0
       fflate:
@@ -21,7 +21,7 @@ importers:
         specifier: ^1.14.1
         version: 1.14.1
     devDependencies:
-      '@mcp-craftman/cli':
+      '@mcp-craftsman/cli':
         specifier: ^0.2.0
         version: 0.2.0
       '@types/node':
@@ -341,15 +341,15 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@mcp-craftman/cli@0.2.0':
-    resolution: {integrity: sha512-9EfClEV9i/zRXLfnQQI763UtMgy2sN8ued6Qm/1EV+6D4Ff/pHVa+d0TcIdl06PtQ1QTp3FgnGmarhbaD+LO4A==}
+  '@mcp-craftsman/cli@0.2.0':
+    resolution: {integrity: sha512-7LQoIF9Z8x9wpFq0N6Hoa+f4QvbKCfHaT7fLgl+CYV0swigK1UYAbzY+IMgWlVBIBi+gVLJ80zCPHsd5IFTJEQ==}
     hasBin: true
 
-  '@mcp-craftman/core@0.2.0':
-    resolution: {integrity: sha512-tz1vbEycCgXKozi+QRd1Qv41zi4MROXqs7wGFfWx1B9t31Gv++9wdCkvUZPtQPKJV1NJ6wC3KX7ySmAAVlYSsQ==}
+  '@mcp-craftsman/core@0.2.0':
+    resolution: {integrity: sha512-qinx2ut8KdcFKlsZV7jyEnpq9G5CaZW7RAx1Pa9lFVKaTJdcQaEPfboG76BUuq/nbf4aySGlQ6uLISxr/4nu3A==}
 
-  '@mcp-craftman/node@0.2.0':
-    resolution: {integrity: sha512-xp2XWY1gN70zhu8FxfFZ1LiCPKtpcBsEoyNHe61km2IVJdByGNPZM+tj9QIU50hbObSTbvuYh/yEo1nfH95rOg==}
+  '@mcp-craftsman/node@0.2.0':
+    resolution: {integrity: sha512-446tvjKllIXgnyC7AKDImsq5x/5itkeZxuV7BP2EcPfgLfw5LpPrEtmzwiFYDXCveqN+i/l6UnEDMG8Z/4n7Jg==}
 
   '@napi-rs/wasm-runtime@1.1.5':
     resolution: {integrity: sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q==}
@@ -2066,18 +2066,18 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mcp-craftman/cli@0.2.0':
+  '@mcp-craftsman/cli@0.2.0':
     dependencies:
-      '@mcp-craftman/core': 0.2.0
-      '@mcp-craftman/node': 0.2.0
+      '@mcp-craftsman/core': 0.2.0
+      '@mcp-craftsman/node': 0.2.0
       cosmiconfig: 9.0.2(typescript@5.9.3)
       typescript: 5.9.3
 
-  '@mcp-craftman/core@0.2.0': {}
+  '@mcp-craftsman/core@0.2.0': {}
 
-  '@mcp-craftman/node@0.2.0':
+  '@mcp-craftsman/node@0.2.0':
     dependencies:
-      '@mcp-craftman/core': 0.2.0
+      '@mcp-craftsman/core': 0.2.0
 
   '@napi-rs/wasm-runtime@1.1.5(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:

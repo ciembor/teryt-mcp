@@ -1,4 +1,4 @@
-import { defineTool, readRequiredStringField } from "@mcp-craftman/core";
+import { defineTool, readRequiredStringField } from "@mcp-craftsman/core";
 
 import { getPlace, type GetPlaceDependencies } from "../application/get-place.js";
 

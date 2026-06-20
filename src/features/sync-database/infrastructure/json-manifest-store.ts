@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-import { atomicWrite } from "@mcp-craftman/node";
+import { atomicWrite } from "@mcp-craftsman/node";
 
 import type { SyncManifestStore } from "../application/ports/manifest-store.js";
 import type { DatabaseSnapshot } from "../domain/snapshot.js";

@@ -1,8 +1,8 @@
 import { Writable } from "node:stream";
 import { describe, expect, it } from "vitest";
 
-import { createCapabilityRegistry, createMcpApp, defineTool, type McpApp } from "@mcp-craftman/core";
-import type { RuntimeConfig } from "@mcp-craftman/node";
+import { createCapabilityRegistry, createMcpApp, defineTool, type McpApp } from "@mcp-craftsman/core";
+import type { RuntimeConfig } from "@mcp-craftsman/node";
 
 import { runPostinstallSync } from "../../src/postinstall.js";
 import { createTestRuntimeConfig } from "../support/runtime-config.js";

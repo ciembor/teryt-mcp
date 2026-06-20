@@ -26,13 +26,13 @@ Those concerns need separate bounded contexts or separate MCP servers. They shou
 ## Dependency Direction
 
 ```text
-TERYT MCP -> @mcp-craftman/*
+TERYT MCP -> @mcp-craftsman/*
 ```
 
-The reverse dependency is forbidden. MCP Craftman must remain reusable by servers that know nothing about Polish registry data.
+The reverse dependency is forbidden. MCP Craftsman must remain reusable by servers that know nothing about Polish registry data.
 
 ## Source Of Truth
 
-Framework behavior is defined by public `@mcp-craftman/*` APIs.
+Framework behavior is defined by public `@mcp-craftsman/*` APIs.
 
 TERYT behavior is defined by official TERYT datasets, local fixtures, and contract tests that preserve Polish identifiers as text.
