@@ -69,8 +69,8 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Every tool has output schema.
    - [x] Read/write annotations are consistent.
    - [x] Tools return structured content.
-   - Invalid input errors are stable.
-   - Applications do not import private framework paths.
+   - [x] Invalid input errors are stable.
+   - [x] Applications do not import private framework paths.
 
 7. Improve feature generation.
    - Generate domain type.
