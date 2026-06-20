@@ -65,10 +65,10 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Do not use beta config loaders as framework foundations.
 
 6. Generate standard quality contracts for applications.
-   - Registry contains expected tools.
-   - Every tool has output schema.
-   - Read/write annotations are consistent.
-   - Tools return structured content.
+   - [x] Registry contains expected tools.
+   - [x] Every tool has output schema.
+   - [x] Read/write annotations are consistent.
+   - [x] Tools return structured content.
    - Invalid input errors are stable.
    - Applications do not import private framework paths.
 
