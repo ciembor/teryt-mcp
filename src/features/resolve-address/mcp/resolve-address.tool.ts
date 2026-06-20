@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
 
 import { resolveAddress, type ResolveAddressDependencies } from "../application/resolve-address.js";
 
@@ -14,7 +14,7 @@ export function createResolveAddressTool(dependencies: ResolveAddressDependencie
       readOnlyHint: true,
     },
     handler: async (input) => ({
-      structuredContent: await resolveAddress(parseInput(input), dependencies),
+      structuredContent: await resolveAddress(readQueryLimitInput(input, "resolve_address"), dependencies),
     }),
   });
 }
@@ -128,20 +128,3 @@ const outputSchema = {
   },
   required: ["addresses", "stateDate"],
 };
-
-function parseInput(input: unknown): { readonly limit?: number; readonly query: string } {
-  if (typeof input !== "object" || input === null || !("query" in input) || typeof input.query !== "string") {
-    throw new Error("resolve_address requires query.");
-  }
-
-  const limit = "limit" in input ? input.limit : undefined;
-
-  if (limit !== undefined && typeof limit !== "number") {
-    throw new Error("resolve_address limit must be a number.");
-  }
-
-  return {
-    limit,
-    query: input.query,
-  };
-}

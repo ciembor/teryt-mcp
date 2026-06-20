@@ -1,4 +1,5 @@
 import type { ServerStatus } from "../domain/server-status.js";
+import { terytMcpVersion } from "../../../version.js";
 
 export type GetServerStatusInput = {
   readonly dataDir: string;
@@ -9,7 +10,7 @@ export type GetServerStatusInput = {
 export function getServerStatus(input: GetServerStatusInput): ServerStatus {
   return {
     serverName: "teryt-mcp",
-    serverVersion: "0.1.0",
+    serverVersion: terytMcpVersion,
     frameworkVersion: input.frameworkVersion,
     transport: input.transport,
     dataDir: input.dataDir,

@@ -87,8 +87,6 @@ describe("project architecture", () => {
       "src/cli.ts",
       "src/mcp/registry.ts",
       "src/server/serve.ts",
-      "src/server/transports/http.ts",
-      "src/server/transports/stdio.ts",
       "src/features/health/mcp/health.tool.ts",
       "src/features/server-status/mcp/server-status.tool.ts",
       "src/features/source-status/mcp/source-status.tool.ts",

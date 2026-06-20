@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
 
 import { searchPlaces, type SearchPlacesDependencies } from "../application/search-places.js";
 
@@ -77,24 +77,7 @@ export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
       readOnlyHint: true,
     },
     handler: async (input) => ({
-      structuredContent: await searchPlaces(parseInput(input), dependencies),
+      structuredContent: await searchPlaces(readQueryLimitInput(input, "search_places"), dependencies),
     }),
   });
-}
-
-function parseInput(input: unknown): { readonly limit?: number; readonly query: string } {
-  if (typeof input !== "object" || input === null || !("query" in input) || typeof input.query !== "string") {
-    throw new Error("search_places requires query.");
-  }
-
-  const limit = "limit" in input ? input.limit : undefined;
-
-  if (limit !== undefined && typeof limit !== "number") {
-    throw new Error("search_places limit must be a number.");
-  }
-
-  return {
-    limit,
-    query: input.query,
-  };
 }

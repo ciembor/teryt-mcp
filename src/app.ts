@@ -17,6 +17,7 @@ import { LocalFileStore } from "./features/sync-database/infrastructure/local-fi
 import { SqliteDatabaseBuilder } from "./features/sync-database/infrastructure/sqlite-database-builder.js";
 import type { TerytSource } from "./features/sync-database/application/ports/teryt-source.js";
 import { createRegistry } from "./mcp/registry.js";
+import { terytMcpVersion } from "./version.js";
 
 type CreateAppOverrides = {
   readonly syncSource?: TerytSource;
@@ -32,7 +33,7 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig(), overrides
 
   return createMcpApp({
     name: "teryt-mcp",
-    version: "0.1.0",
+    version: terytMcpVersion,
     registry: createRegistry({
       config,
       manifestStore,

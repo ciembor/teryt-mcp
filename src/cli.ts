@@ -1,21 +1,23 @@
 #!/usr/bin/env node
-import { basename } from "node:path";
-
-import { loadRuntimeConfig } from "@mcp-craftman/node";
-import { callTool, mcpCraftmanCoreVersion } from "@mcp-craftman/core";
+import {
+  createDefaultCliIo,
+  isCliEntrypoint,
+  loadRuntimeConfig,
+  writeCliToolStructuredContent,
+  writeJson,
+  type CliIo,
+} from "@mcp-craftman/node";
+import { mcpCraftmanCoreVersion } from "@mcp-craftman/core";
 
 import { createApp } from "./app.js";
 import { getServerStatus } from "./features/server-status/index.js";
 import { serve } from "./server/serve.js";
 
-type CliIo = {
+type TerytCliIo = CliIo & {
   readonly appFactory?: typeof createApp;
-  readonly env: NodeJS.ProcessEnv;
-  readonly stderr: NodeJS.WritableStream;
-  readonly stdout: NodeJS.WritableStream;
 };
 
-export async function runCli(argv: readonly string[] = process.argv.slice(2), io: CliIo = defaultIo()): Promise<void> {
+export async function runCli(argv: readonly string[] = process.argv.slice(2), io: TerytCliIo = defaultIo()): Promise<void> {
   const [command, ...args] = argv;
 
   if (command === "serve") {
@@ -55,30 +57,20 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
   throw new Error(`Unknown command: ${command ?? "<missing>"}`);
 }
 
-function writeJson(stream: NodeJS.WritableStream, value: unknown): void {
-  stream.write(`${JSON.stringify(value, null, 2)}\n`);
-}
-
 async function writeCliToolResult(
   stream: NodeJS.WritableStream,
   toolName: string,
   input: unknown,
-  io: CliIo,
+  io: TerytCliIo,
 ): Promise<void> {
-  const result = await callTool((io.appFactory ?? createApp)(loadRuntimeConfig(io.env)), toolName, input);
-
-  writeJson(stream, result.structuredContent);
+  await writeCliToolStructuredContent(stream, io.appFactory ?? createApp, toolName, input, io.env);
 }
 
-function defaultIo(): CliIo {
-  return {
-    env: process.env,
-    stderr: process.stderr,
-    stdout: process.stdout,
-  };
+function defaultIo(): TerytCliIo {
+  return createDefaultCliIo();
 }
 
-async function runSearchCommand(args: readonly string[], io: CliIo): Promise<void> {
+async function runSearchCommand(args: readonly string[], io: TerytCliIo): Promise<void> {
   const [scope, ...queryParts] = args;
 
   if (scope !== "places") {
@@ -153,13 +145,7 @@ function parseSyncMode(args: readonly string[]): "missing" | "stale" | "force" {
   return "missing";
 }
 
-function isCliEntrypoint(argvPath: string | undefined = process.argv[1]): boolean {
-  const entrypoint = argvPath ? basename(argvPath) : "";
-
-  return entrypoint === "teryt-mcp" || entrypoint === "cli.js";
-}
-
-if (isCliEntrypoint()) {
+if (isCliEntrypoint("teryt-mcp")) {
   runCli().catch((error: unknown) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;

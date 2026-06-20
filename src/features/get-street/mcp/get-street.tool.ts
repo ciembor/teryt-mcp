@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readRequiredStringField } from "@mcp-craftman/core";
 
 import { getStreet, type GetStreetDependencies } from "../application/get-street.js";
 
@@ -71,11 +71,7 @@ export function createGetStreetTool(dependencies: GetStreetDependencies) {
 }
 
 function parseInput(input: unknown): { readonly id: string } {
-  if (typeof input !== "object" || input === null || !("id" in input) || typeof input.id !== "string") {
-    throw new Error("get_street requires id.");
-  }
-
   return {
-    id: input.id,
+    id: readRequiredStringField(input, "id", "get_street"),
   };
 }

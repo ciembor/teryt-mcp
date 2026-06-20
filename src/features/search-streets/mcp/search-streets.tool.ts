@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
 
 import { searchStreets, type SearchStreetsDependencies } from "../application/search-streets.js";
 
@@ -14,7 +14,7 @@ export function createSearchStreetsTool(dependencies: SearchStreetsDependencies)
       readOnlyHint: true,
     },
     handler: async (input) => ({
-      structuredContent: await searchStreets(parseInput(input), dependencies),
+      structuredContent: await searchStreets(readQueryLimitInput(input, "search_streets"), dependencies),
     }),
   });
 }
@@ -88,20 +88,3 @@ const outputSchema = {
   },
   required: ["stateDate", "streets"],
 };
-
-function parseInput(input: unknown): { readonly limit?: number; readonly query: string } {
-  if (typeof input !== "object" || input === null || !("query" in input) || typeof input.query !== "string") {
-    throw new Error("search_streets requires query.");
-  }
-
-  const limit = "limit" in input ? input.limit : undefined;
-
-  if (limit !== undefined && typeof limit !== "number") {
-    throw new Error("search_streets limit must be a number.");
-  }
-
-  return {
-    limit,
-    query: input.query,
-  };
-}

@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readRequiredStringField } from "@mcp-craftman/core";
 
 import { getUnit, type GetUnitDependencies } from "../application/get-unit.js";
 
@@ -68,11 +68,7 @@ export function createGetUnitTool(dependencies: GetUnitDependencies) {
 }
 
 function parseInput(input: unknown): { readonly id: string } {
-  if (typeof input !== "object" || input === null || !("id" in input) || typeof input.id !== "string") {
-    throw new Error("get_unit requires id.");
-  }
-
   return {
-    id: input.id,
+    id: readRequiredStringField(input, "id", "get_unit"),
   };
 }

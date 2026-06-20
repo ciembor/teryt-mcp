@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
 
 import { searchUnits, type SearchUnitsDependencies } from "../application/search-units.js";
 
@@ -77,24 +77,7 @@ export function createSearchUnitsTool(dependencies: SearchUnitsDependencies) {
       readOnlyHint: true,
     },
     handler: async (input) => ({
-      structuredContent: await searchUnits(parseInput(input), dependencies),
+      structuredContent: await searchUnits(readQueryLimitInput(input, "search_units"), dependencies),
     }),
   });
-}
-
-function parseInput(input: unknown): { readonly limit?: number; readonly query: string } {
-  if (typeof input !== "object" || input === null || !("query" in input) || typeof input.query !== "string") {
-    throw new Error("search_units requires query.");
-  }
-
-  const limit = "limit" in input ? input.limit : undefined;
-
-  if (limit !== undefined && typeof limit !== "number") {
-    throw new Error("search_units limit must be a number.");
-  }
-
-  return {
-    limit,
-    query: input.query,
-  };
 }

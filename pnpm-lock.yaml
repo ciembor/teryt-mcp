@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@mcp-craftman/core':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.3
+        version: 0.1.3
       '@mcp-craftman/node':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.2
+        version: 0.1.2
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -22,8 +22,8 @@ importers:
         version: 1.14.1
     devDependencies:
       '@mcp-craftman/cli':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.1.5
+        version: 0.1.5
       '@types/node':
         specifier: ^24.0.3
         version: 24.13.2
@@ -337,15 +337,15 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@mcp-craftman/cli@0.1.1':
-    resolution: {integrity: sha512-dpTfD8mrKvIz7kAueORTrYEl6ESWYjMQhZkmk7leY2JfBbmrBCD1nakN3DWUOPbx/TaloTLOyYuJBMRsUqFbeA==}
+  '@mcp-craftman/cli@0.1.5':
+    resolution: {integrity: sha512-w/A5ov7LkqUkUPKxv3gwbCWx+TV9hxQrCZZoAWH1g8OpV1NFoOOERQqw7u29XAeaqNr/oqZdy1BauRWuMJvfAw==}
     hasBin: true
 
-  '@mcp-craftman/core@0.1.1':
-    resolution: {integrity: sha512-3NLOEgNFBBhOhQ6UXRBy2ZvVNHxi+iNC3ImhSSSSbgYenDl65JPTPQOpjwHeliIy5XDy1tOPo9pTtfFUVP4KuQ==}
+  '@mcp-craftman/core@0.1.3':
+    resolution: {integrity: sha512-4Qa3vLNWWR6cC6JckEgCXdCuGcrADQaKb7QHEFomzoCc4JI3gVq9EBa2KO9SbCIgQ6oNfDji0vnxcpw5sIO5HA==}
 
-  '@mcp-craftman/node@0.1.1':
-    resolution: {integrity: sha512-tIpWd88gY2vCLleFsx8qhVWoybDmXRQcL5OwAIQ/sIwPnD52RQ7c7u2gIQ5WgyYNQ0//jVUoZURihJUA9Su6xA==}
+  '@mcp-craftman/node@0.1.2':
+    resolution: {integrity: sha512-1WqWJhfJpbujKWc1Z2tH3tQGUhml464ijXO4UgYfH9VXQdPf3ZMh/17kKKfJ3sB2QTxJbRaj/Z4XYL4albZRJw==}
 
   '@napi-rs/wasm-runtime@1.1.5':
     resolution: {integrity: sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q==}
@@ -2027,16 +2027,17 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mcp-craftman/cli@0.1.1':
+  '@mcp-craftman/cli@0.1.5':
     dependencies:
-      '@mcp-craftman/core': 0.1.1
-      '@mcp-craftman/node': 0.1.1
+      '@mcp-craftman/core': 0.1.3
+      '@mcp-craftman/node': 0.1.2
+      typescript: 5.9.3
 
-  '@mcp-craftman/core@0.1.1': {}
+  '@mcp-craftman/core@0.1.3': {}
 
-  '@mcp-craftman/node@0.1.1':
+  '@mcp-craftman/node@0.1.2':
     dependencies:
-      '@mcp-craftman/core': 0.1.1
+      '@mcp-craftman/core': 0.1.3
 
   '@napi-rs/wasm-runtime@1.1.5(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
