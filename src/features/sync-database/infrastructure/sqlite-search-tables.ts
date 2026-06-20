@@ -75,7 +75,7 @@ function insertStreets(db: Database, rows: readonly ImportedRow[]): void {
         `${row.values.SYM ?? ""}-${row.values.SYM_UL ?? ""}`,
         row.values.SYM ?? "",
         row.values.SYM_UL ?? "",
-        [row.values.CECHA, row.values.NAZWA_1, row.values.NAZWA_2].filter(Boolean).join(" "),
+        [row.values.NAZWA_1, row.values.NAZWA_2].filter(Boolean).join(" "),
         row.values.SYM ?? "",
         row.values.STAN_NA ?? "",
       ]);
@@ -96,5 +96,5 @@ function findImport(imports: readonly ImportedDataset[], dataset: DatasetCode): 
 }
 
 function createUnitId(values: Readonly<Record<string, string>>): string {
-  return [values.WOJ ?? "", values.POW ?? "", values.GMI ?? "", values.RODZ ?? values.RODZ_GMI ?? ""].join("-");
+  return [values.WOJ, values.POW, values.GMI, values.RODZ ?? values.RODZ_GMI].filter(Boolean).join("-");
 }

@@ -1,18 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-craftman/core";
 
-import { createApp } from "../../src/app.js";
+import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
+
+afterEach(cleanupSyncedFixtureApps);
 
 describe("get_street contract", () => {
   it("returns street details with structured content", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "get_street",
         {
           id: "0009876-0000123",
@@ -35,11 +33,7 @@ describe("get_street contract", () => {
   it("returns null for missing street", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "get_street",
         {
           id: "missing",

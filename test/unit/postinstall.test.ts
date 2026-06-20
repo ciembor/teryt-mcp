@@ -1,0 +1,102 @@
+import { Writable } from "node:stream";
+import { describe, expect, it } from "vitest";
+
+import { createCapabilityRegistry, createMcpApp, defineTool, type McpApp } from "@mcp-craftman/core";
+import type { RuntimeConfig } from "@mcp-craftman/node";
+
+import { runPostinstallSync } from "../../src/postinstall.js";
+
+describe("postinstall sync", () => {
+  it("runs missing sync using the TERYT data directory", async () => {
+    const calls: Array<{ readonly config: RuntimeConfig; readonly input: unknown }> = [];
+    const stderr = new MemoryWritable();
+
+    await runPostinstallSync({
+      appFactory: (config = defaultConfig()) => createSyncCaptureApp(config, calls),
+      io: {
+        env: {
+          MCP_DATA_DIR: "install-data",
+        },
+        stderr,
+      },
+    });
+
+    expect(calls).toEqual([
+      {
+        config: {
+          dataDir: expect.stringContaining("install-data") as string,
+          port: 3000,
+          transport: "stdio",
+        },
+        input: {
+          mode: "missing",
+        },
+      },
+    ]);
+    expect(stderr.content).toContain("initial sync synced");
+  });
+
+  it("can skip install-time sync", async () => {
+    const calls: unknown[] = [];
+    const stderr = new MemoryWritable();
+
+    await runPostinstallSync({
+      appFactory: (config = defaultConfig()) => createSyncCaptureApp(config, calls),
+      io: {
+        env: {
+          TERYT_MCP_SKIP_POSTINSTALL_SYNC: "1",
+        },
+        stderr,
+      },
+    });
+
+    expect(calls).toEqual([]);
+    expect(stderr.content).toContain("skipping initial sync");
+  });
+});
+
+function createSyncCaptureApp(config: RuntimeConfig, calls: unknown[]): McpApp {
+  return createMcpApp({
+    name: "test",
+    version: "0.0.0",
+    registry: createCapabilityRegistry([
+      defineTool({
+        name: "sync_database",
+        policy: "write",
+        handler: (input) => {
+          calls.push({
+            config,
+            input,
+          });
+
+          return {
+            structuredContent: {
+              status: "synced",
+            },
+          };
+        },
+      }),
+    ]),
+  });
+}
+
+function defaultConfig(): RuntimeConfig {
+  return {
+    dataDir: "test-data",
+    port: 3000,
+    transport: "stdio",
+  };
+}
+
+class MemoryWritable extends Writable {
+  readonly chunks: string[] = [];
+
+  get content(): string {
+    return this.chunks.join("");
+  }
+
+  override _write(chunk: Buffer, _encoding: BufferEncoding, callback: (error?: Error | null) => void): void {
+    this.chunks.push(chunk.toString("utf8"));
+    callback();
+  }
+}

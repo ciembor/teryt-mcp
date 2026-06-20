@@ -1,18 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-craftman/core";
 
-import { createApp } from "../../src/app.js";
+import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
+
+afterEach(cleanupSyncedFixtureApps);
 
 describe("search_streets contract", () => {
   it("returns exact normalized name matches with structured content", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "search_streets",
         {
           query: "Marszalkowska",
@@ -41,11 +39,7 @@ describe("search_streets contract", () => {
   it("respects limit and exact code ranking", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "search_streets",
         {
           limit: 1,

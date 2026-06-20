@@ -2,7 +2,6 @@
 import {
   createDefaultCliIo,
   isCliEntrypoint,
-  loadRuntimeConfig,
   writeCliToolStructuredContent,
   writeJson,
   type CliIo,
@@ -11,6 +10,7 @@ import { mcpCraftmanCoreVersion } from "@mcp-craftman/core";
 
 import { createApp } from "./app.js";
 import { getServerStatus } from "./features/server-status/index.js";
+import { loadTerytRuntimeConfig } from "./runtime/config.js";
 import { serve } from "./server/serve.js";
 
 type TerytCliIo = CliIo & {
@@ -21,12 +21,12 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
   const [command, ...args] = argv;
 
   if (command === "serve") {
-    await serve(loadRuntimeConfig(io.env));
+    await serve(loadTerytRuntimeConfig(io.env));
     return;
   }
 
   if (command === "status") {
-    const config = loadRuntimeConfig(io.env);
+    const config = loadTerytRuntimeConfig(io.env);
 
     writeJson(
       io.stdout,
@@ -63,7 +63,10 @@ async function writeCliToolResult(
   input: unknown,
   io: TerytCliIo,
 ): Promise<void> {
-  await writeCliToolStructuredContent(stream, io.appFactory ?? createApp, toolName, input, io.env);
+  await writeCliToolStructuredContent(stream, io.appFactory ?? createApp, toolName, input, {
+    ...io.env,
+    MCP_DATA_DIR: loadTerytRuntimeConfig(io.env).dataDir,
+  });
 }
 
 function defaultIo(): TerytCliIo {

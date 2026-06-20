@@ -67,8 +67,8 @@ describe("syncDatabase from TERYT fixtures", () => {
     expect(swaps).toHaveLength(1);
     expect(JSON.parse(decoder.decode(swaps[0]))).toEqual({
       datasets: [
-        { dataset: "TERC", recordCount: 4, stateDate: "2026-01-01" },
-        { dataset: "SIMC", recordCount: 2, stateDate: "2026-01-01" },
+        { dataset: "TERC", recordCount: 7, stateDate: "2026-01-01" },
+        { dataset: "SIMC", recordCount: 5, stateDate: "2026-01-01" },
         { dataset: "ULIC", recordCount: 2, stateDate: "2026-01-01" },
         { dataset: "WMRODZ", recordCount: 2, stateDate: "2026-01-01" },
       ],

@@ -1,14 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-craftman/core";
 
-import { createApp } from "../../src/app.js";
+import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
 
-const appConfig = {
-  dataDir: "test-data/teryt-mcp",
-  port: 3000,
-  transport: "stdio" as const,
-};
+afterEach(cleanupSyncedFixtureApps);
 
 describe("golden query contracts", () => {
   it.each([
@@ -17,7 +13,7 @@ describe("golden query contracts", () => {
     ["Stara Wieś", "Stara Wieś"],
     ["Dąbrowa", "Dąbrowa"],
   ])("finds place %s", async (query, expectedName) => {
-    const result = await callTool(createApp(appConfig), "search_places", { query });
+    const result = await callTool(await createSyncedFixtureApp(), "search_places", { query });
 
     expect(result).toMatchObject({
       structuredContent: {
@@ -37,7 +33,7 @@ describe("golden query contracts", () => {
   });
 
   it("finds street Marszałkowska", async () => {
-    const result = await callTool(createApp(appConfig), "search_streets", { query: "Marszałkowska" });
+    const result = await callTool(await createSyncedFixtureApp(), "search_streets", { query: "Marszałkowska" });
 
     expect(result).toMatchObject({
       structuredContent: {

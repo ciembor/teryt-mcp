@@ -1,18 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-craftman/core";
 
-import { createApp } from "../../src/app.js";
+import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
+
+afterEach(cleanupSyncedFixtureApps);
 
 describe("search_units contract", () => {
   it("returns exact normalized name matches with structured content", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "search_units",
         {
           query: "dolnoslaskie",
@@ -40,11 +38,7 @@ describe("search_units contract", () => {
   it("respects limit and exact code ranking", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "search_units",
         {
           limit: 1,

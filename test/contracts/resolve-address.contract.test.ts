@@ -1,18 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { callTool } from "@mcp-craftman/core";
 
-import { createApp } from "../../src/app.js";
+import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
+
+afterEach(cleanupSyncedFixtureApps);
 
 describe("resolve_address contract", () => {
   it("returns exact normalized address matches with structured content", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "resolve_address",
         {
           query: "Boleslawiec Marszalkowska",
@@ -52,11 +50,7 @@ describe("resolve_address contract", () => {
   it("respects limit and exact code ranking", async () => {
     await expect(
       callTool(
-        createApp({
-          dataDir: "test-data/teryt-mcp",
-          port: 3000,
-          transport: "stdio",
-        }),
+        await createSyncedFixtureApp(),
         "resolve_address",
         {
           limit: 1,

@@ -20,7 +20,7 @@ describe("SQLite search integration", () => {
 
     try {
       expect(queryNames(db, "places", "Stara")).toEqual(["Stara Wieś"]);
-      expect(queryNames(db, "streets", "Marszałkowska")).toEqual(["ul. Marszałkowska"]);
+      expect(queryNames(db, "streets", "Marszałkowska")).toEqual(["Marszałkowska"]);
     } finally {
       db.close();
     }
