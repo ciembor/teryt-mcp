@@ -103,9 +103,9 @@ describe("project architecture", () => {
     for (const file of sourceFiles) {
       const source = await readFile(new URL(`../../${file}`, import.meta.url), "utf8");
 
-      expect(source, file).not.toContain("@mcp-craftman/core/");
-      expect(source, file).not.toContain("@mcp-craftman/node/");
-      expect(source, file).not.toContain("@mcp-craftman/cli/");
+      expect(source, file).not.toContain("@mcp-craftsman/core/");
+      expect(source, file).not.toContain("@mcp-craftsman/node/");
+      expect(source, file).not.toContain("@mcp-craftsman/cli/");
     }
   });
 });

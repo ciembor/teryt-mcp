@@ -1,4 +1,4 @@
-import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftsman/core";
 
 import { searchPlaces, type SearchPlacesDependencies } from "../application/search-places.js";
 

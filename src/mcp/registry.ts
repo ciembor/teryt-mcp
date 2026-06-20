@@ -1,5 +1,5 @@
-import { createCapabilityRegistry } from "@mcp-craftman/core";
-import type { RuntimeConfig } from "@mcp-craftman/node";
+import { createCapabilityRegistry } from "@mcp-craftsman/core";
+import type { RuntimeConfig } from "@mcp-craftsman/node";
 
 import { createGetPlaceTool, type PlaceDetailsRepository } from "../features/get-place/index.js";
 import { createGetStreetTool, type StreetDetailsRepository } from "../features/get-street/index.js";

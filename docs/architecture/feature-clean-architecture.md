@@ -47,7 +47,7 @@ src/features/<feature>/
 
 `mcp`
 
-- Defines MCP capabilities with `@mcp-craftman/core`.
+- Defines MCP capabilities with `@mcp-craftsman/core`.
 - Parses tool input, declares schemas and annotations, and calls application use cases.
 - Does not import infrastructure.
 

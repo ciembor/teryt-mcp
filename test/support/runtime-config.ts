@@ -1,4 +1,4 @@
-import type { RuntimeConfig } from "@mcp-craftman/node";
+import type { RuntimeConfig } from "@mcp-craftsman/node";
 
 export function createTestRuntimeConfig(config: Partial<RuntimeConfig> = {}): RuntimeConfig {
   return {

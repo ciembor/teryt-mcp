@@ -1,4 +1,4 @@
-import { defineTool, mcpCraftmanCoreVersion } from "@mcp-craftman/core";
+import { defineTool, mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { getServerStatus, type GetServerStatusInput } from "../application/get-server-status.js";
 
@@ -48,7 +48,7 @@ export function createServerStatusTool(input: CreateServerStatusToolInput) {
     handler: () => ({
       structuredContent: getServerStatus({
         ...input,
-        frameworkVersion: mcpCraftmanCoreVersion,
+        frameworkVersion: mcpCraftsmanCoreVersion,
       }),
     }),
   });

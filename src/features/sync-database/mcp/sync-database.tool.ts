@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool } from "@mcp-craftsman/core";
 
 import { syncDatabase, type SyncDatabaseInput } from "../application/sync-database.js";
 import type { SyncMode } from "../domain/sync-plan.js";

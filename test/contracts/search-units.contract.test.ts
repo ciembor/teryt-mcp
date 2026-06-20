@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { callTool } from "@mcp-craftman/core";
+import { callTool } from "@mcp-craftsman/core";
 
 import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
 

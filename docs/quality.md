@@ -6,7 +6,7 @@ The project quality gate is:
 pnpm quality
 ```
 
-It runs `mcp-craftman quality` from `@mcp-craftman/cli`.
+It runs `mcp-craftsman quality` from `@mcp-craftsman/cli`.
 
 ## Steps
 

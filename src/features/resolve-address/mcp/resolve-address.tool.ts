@@ -1,4 +1,4 @@
-import { defineTool, readQueryLimitInput } from "@mcp-craftman/core";
+import { defineTool, readQueryLimitInput } from "@mcp-craftsman/core";
 
 import { resolveAddress, type ResolveAddressDependencies } from "../application/resolve-address.js";
 

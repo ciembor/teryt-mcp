@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import { join } from "node:path";
 
-import { atomicWrite } from "@mcp-craftman/node";
+import { atomicWrite } from "@mcp-craftsman/node";
 
 import type { FileStore } from "../application/ports/file-store.js";
 

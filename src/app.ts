@@ -1,5 +1,5 @@
-import { createMcpApp } from "@mcp-craftman/core";
-import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-craftman/node";
+import { createMcpApp } from "@mcp-craftsman/core";
+import { loadRuntimeConfig, type RuntimeConfig } from "@mcp-craftsman/node";
 
 import { EterytSourceCatalog } from "./features/source-status/infrastructure/eteryt-source-catalog.js";
 import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";

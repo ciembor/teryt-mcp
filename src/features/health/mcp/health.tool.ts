@@ -1,4 +1,4 @@
-import { defineTool } from "@mcp-craftman/core";
+import { defineTool } from "@mcp-craftsman/core";
 
 import { getHealth } from "../application/get-health.js";
 

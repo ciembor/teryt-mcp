@@ -2,7 +2,7 @@
 
 This tutorial runs the TERYT MCP server locally and exercises one read-only search path.
 
-For creating a new generic MCP server, use the framework documentation in the `mcp-craftman` repository.
+For creating a new generic MCP server, use the framework documentation in the `mcp-craftsman` repository.
 
 ## 1. Install
 

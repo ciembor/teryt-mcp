@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { PassThrough, Writable } from "node:stream";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { createLogger, startHttpServer, startStdioServer } from "@mcp-craftman/node";
+import { createLogger, startHttpServer, startStdioServer } from "@mcp-craftsman/node";
 
 import { createApp } from "../../src/app.js";
 import { createTestRuntimeConfig } from "../support/runtime-config.js";

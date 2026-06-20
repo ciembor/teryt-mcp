@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-import { withLock } from "@mcp-craftman/node";
+import { withLock } from "@mcp-craftsman/node";
 
 import type { LockStore } from "../application/ports/lock-store.js";
 

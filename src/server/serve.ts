@@ -1,4 +1,4 @@
-import { serveMcpApp, type RuntimeConfig } from "@mcp-craftman/node";
+import { serveMcpApp, type RuntimeConfig } from "@mcp-craftsman/node";
 
 import { createApp } from "../app.js";
 import { loadTerytRuntimeConfig } from "../runtime/config.js";

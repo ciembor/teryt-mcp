@@ -17,7 +17,7 @@ describe("TERYT runtime config", () => {
     const config = loadTerytRuntimeConfig({});
 
     expect(config.dataDir).toContain("teryt-mcp");
-    expect(config.dataDir).not.toContain("mcp-craftman");
+    expect(config.dataDir).not.toContain("mcp-craftsman");
   });
 
   it("uses XDG_CACHE_HOME when available", () => {

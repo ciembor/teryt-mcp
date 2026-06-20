@@ -1,15 +1,15 @@
 # Backlog
 
-This file tracks current follow-up work. Historical framework extraction notes were removed because MCP Craftman now lives in its own repository and is published as `@mcp-craftman/*`.
+This file tracks current follow-up work. Historical framework extraction notes were removed because MCP Craftsman now lives in its own repository and is published as `@mcp-craftsman/*`.
 
 ## Done
 
 - TERYT MCP is a single server package.
-- MCP Craftman framework packages were extracted to `/Users/maciej/Projects/mcp-craftman`.
+- MCP Craftsman framework packages were extracted to `/Users/maciej/Projects/mcp-craftman`.
 - Published packages:
-  - `@mcp-craftman/core@0.1.3`
-  - `@mcp-craftman/node@0.1.2`
-  - `@mcp-craftman/cli@0.1.5`
+  - `@mcp-craftsman/core@0.1.3`
+  - `@mcp-craftsman/node@0.1.2`
+  - `@mcp-craftsman/cli@0.1.5`
 - TERYT consumes the framework from npm.
 - `teryt-mcp@0.1.3` is published.
 - TERYT reads runtime data from synced SQLite instead of in-memory repositories.
@@ -20,12 +20,12 @@ This file tracks current follow-up work. Historical framework extraction notes w
 
 - Move local development to Node.js `>=20.19.0`.
 - Add installation and first-run examples for `teryt-mcp`.
-- Add release notes for current MCP Craftman and TERYT MCP releases.
-- Add a smoke test that installs `@mcp-craftman/cli` from npm in a temporary project and runs generated project quality.
+- Add release notes for current MCP Craftsman and TERYT MCP releases.
+- Add a smoke test that installs `@mcp-craftsman/cli` from npm in a temporary project and runs generated project quality.
 
 ## Framework Next
 
-These should stay generic. MCP Craftman is intended for any MCP server, not only TERYT.
+These should stay generic. MCP Craftsman is intended for any MCP server, not only TERYT.
 
 1. Add setup lifecycle primitives.
    - [x] `defineSetupTask`
@@ -48,19 +48,19 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Allow applications to add domain aliases, e.g. `search places`.
 
 4. Add library-backed schema and validation ergonomics.
-   - [x] Keep `@mcp-craftman/core` capable of accepting raw JSON Schema.
-   - [x] Add an optional Zod integration package, e.g. `@mcp-craftman/zod`.
+   - [x] Keep `@mcp-craftsman/core` capable of accepting raw JSON Schema.
+   - [x] Add an optional Zod integration package, e.g. `@mcp-craftsman/zod`.
    - [x] Provide `defineZodTool({ input, output, handler })` that:
      - [x] validates input with Zod,
      - [x] infers typed handler input,
      - [x] generates MCP `inputSchema` and `outputSchema` from the same source.
    - Use Ajv for raw JSON Schema validation if/when raw schemas are validated at runtime.
-   - [x] Do not build a large custom schema DSL in MCP Craftman.
+   - [x] Do not build a large custom schema DSL in MCP Craftsman.
    - [x] Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
 
 5. Add project configuration loading for CLI/tooling.
    - [x] Use `cosmiconfig` for project config discovery.
-   - [x] Support `mcp-craftman.config.ts`, `.mcp-craftmanrc`, and `package.json` config.
+   - [x] Support `mcp-craftsman.config.ts`, `.mcp-craftsmanrc`, and `package.json` config.
    - [x] Keep runtime env/data-dir config separate from project/tooling config.
    - [x] Do not use beta config loaders as framework foundations.
 
@@ -80,7 +80,7 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Generate contract test.
    - [x] Update registry.
    - [x] Optionally generate an infrastructure adapter stub.
-   - [x] Default generated tools should use Zod once `@mcp-craftman/zod` exists.
+   - [x] Default generated tools should use Zod once `@mcp-craftsman/zod` exists.
 
 8. Add generic local resource lifecycle helpers.
    - [x] File resource store.
