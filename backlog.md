@@ -59,10 +59,10 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
 
 5. Add project configuration loading for CLI/tooling.
-   - Use `cosmiconfig` for project config discovery.
-   - Support `mcp-craftman.config.ts`, `.mcp-craftmanrc`, and `package.json` config.
-   - Keep runtime env/data-dir config separate from project/tooling config.
-   - Do not use beta config loaders as framework foundations.
+   - [x] Use `cosmiconfig` for project config discovery.
+   - [x] Support `mcp-craftman.config.ts`, `.mcp-craftmanrc`, and `package.json` config.
+   - [x] Keep runtime env/data-dir config separate from project/tooling config.
+   - [x] Do not use beta config loaders as framework foundations.
 
 6. Generate standard quality contracts for applications.
    - Registry contains expected tools.
