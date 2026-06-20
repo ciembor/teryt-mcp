@@ -83,12 +83,12 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Default generated tools should use Zod once `@mcp-craftman/zod` exists.
 
 8. Add generic local resource lifecycle helpers.
-   - File resource store.
-   - Manifest store.
-   - Resource lock.
-   - Atomic resource swap.
-   - Snapshot metadata.
-   - Generic resource sync flow for local indexes, caches, downloaded dictionaries, embedding stores, or model files.
+   - [x] File resource store.
+   - [x] Manifest store.
+   - [x] Resource lock.
+   - [x] Atomic resource swap.
+   - [x] Snapshot metadata.
+   - [x] Generic resource sync flow for local indexes, caches, downloaded dictionaries, embedding stores, or model files.
 
 ## TERYT Next
 
