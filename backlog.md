@@ -7,16 +7,90 @@ This file tracks current follow-up work. Historical framework extraction notes w
 - TERYT MCP is a single server package.
 - MCP Craftman framework packages were extracted to `/Users/maciej/Projects/mcp-craftman`.
 - Published packages:
-  - `@mcp-craftman/core@0.1.1`
-  - `@mcp-craftman/node@0.1.1`
-  - `@mcp-craftman/cli@0.1.1`
-- TERYT consumes the framework from npm with `^0.1.1`.
+  - `@mcp-craftman/core@0.1.3`
+  - `@mcp-craftman/node@0.1.2`
+  - `@mcp-craftman/cli@0.1.5`
+- TERYT consumes the framework from npm.
+- `teryt-mcp@0.1.3` is published.
+- TERYT reads runtime data from synced SQLite instead of in-memory repositories.
+- TERYT runs first sync during package installation with `TERYT_MCP_SKIP_POSTINSTALL_SYNC=1` opt-out.
 - `pnpm quality` and `pnpm build` pass in TERYT.
 
 ## Next
 
 - Move local development to Node.js `>=20.19.0`.
-- Add an installation example for running `teryt-mcp` from a package manager once the server itself is published.
-- Decide whether TERYT should publish as an npm package or remain repository-only.
-- Add release notes for MCP Craftman `0.1.1`.
+- Add installation and first-run examples for `teryt-mcp`.
+- Add release notes for current MCP Craftman and TERYT MCP releases.
 - Add a smoke test that installs `@mcp-craftman/cli` from npm in a temporary project and runs generated project quality.
+
+## Framework Next
+
+These should stay generic. MCP Craftman is intended for any MCP server, not only TERYT.
+
+1. Add setup lifecycle primitives.
+   - [x] `defineSetupTask`
+   - [x] `runSetupTasks({ mode: "missing" | "force" })`
+   - [x] a postinstall helper for best-effort setup
+   - [x] env opt-out such as `MCP_SKIP_POSTINSTALL_SETUP`
+   - [x] stable setup logging that does not fail package installation unless explicitly configured
+
+2. Improve runtime config.
+   - [x] Accept an application name, e.g. `loadRuntimeConfig({ appName: "teryt-mcp" })`.
+   - [x] Resolve app-specific data/cache directories.
+   - [x] Keep `MCP_DATA_DIR` override.
+   - [x] Support `XDG_CACHE_HOME`, macOS user cache, and Windows `LOCALAPPDATA`.
+   - [ ] Consider `MCP_CONFIG_DIR` and `MCP_LOG_LEVEL`.
+
+3. Add a CLI builder.
+   - `createMcpCli({ appName, createApp })`.
+   - Standard commands: `serve`, `status`, `tools`, `call`, `setup`.
+   - JSON output by default.
+   - Allow applications to add domain aliases, e.g. `search places`.
+
+4. Add library-backed schema and validation ergonomics.
+   - Keep `@mcp-craftman/core` capable of accepting raw JSON Schema.
+   - Add an optional Zod integration package, e.g. `@mcp-craftman/zod`.
+   - Provide `defineZodTool({ input, output, handler })` that:
+     - validates input with Zod,
+     - infers typed handler input,
+     - generates MCP `inputSchema` and `outputSchema` from the same source.
+   - Use Ajv for raw JSON Schema validation if/when raw schemas are validated at runtime.
+   - Do not build a large custom schema DSL in MCP Craftman.
+   - Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
+
+5. Add project configuration loading for CLI/tooling.
+   - Use `cosmiconfig` for project config discovery.
+   - Support `mcp-craftman.config.ts`, `.mcp-craftmanrc`, and `package.json` config.
+   - Keep runtime env/data-dir config separate from project/tooling config.
+   - Do not use beta config loaders as framework foundations.
+
+6. Generate standard quality contracts for applications.
+   - Registry contains expected tools.
+   - Every tool has output schema.
+   - Read/write annotations are consistent.
+   - Tools return structured content.
+   - Invalid input errors are stable.
+   - Applications do not import private framework paths.
+
+7. Improve feature generation.
+   - Generate domain type.
+   - Generate application use-case.
+   - Generate port.
+   - Generate MCP tool.
+   - Generate contract test.
+   - Update registry.
+   - Optionally generate an infrastructure adapter stub.
+   - Default generated tools should use Zod once `@mcp-craftman/zod` exists.
+
+8. Add generic local resource lifecycle helpers.
+   - File resource store.
+   - Manifest store.
+   - Resource lock.
+   - Atomic resource swap.
+   - Snapshot metadata.
+   - Generic resource sync flow for local indexes, caches, downloaded dictionaries, embedding stores, or model files.
+
+## TERYT Next
+
+- Decide whether search should keep JS ranking with SQL preselection, or move more ranking into SQLite.
+- If optimizing search, preserve current MCP output contracts and use SQL/FTS only to reduce candidate sets first.
