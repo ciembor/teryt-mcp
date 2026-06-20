@@ -39,7 +39,7 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Resolve app-specific data/cache directories.
    - [x] Keep `MCP_DATA_DIR` override.
    - [x] Support `XDG_CACHE_HOME`, macOS user cache, and Windows `LOCALAPPDATA`.
-   - [ ] Consider `MCP_CONFIG_DIR` and `MCP_LOG_LEVEL`.
+   - [x] Consider `MCP_CONFIG_DIR` and `MCP_LOG_LEVEL`.
 
 3. Add a CLI builder.
    - [x] `createMcpCli({ appName, createApp })`.
