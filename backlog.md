@@ -48,15 +48,15 @@ These should stay generic. MCP Craftman is intended for any MCP server, not only
    - [x] Allow applications to add domain aliases, e.g. `search places`.
 
 4. Add library-backed schema and validation ergonomics.
-   - Keep `@mcp-craftman/core` capable of accepting raw JSON Schema.
-   - Add an optional Zod integration package, e.g. `@mcp-craftman/zod`.
-   - Provide `defineZodTool({ input, output, handler })` that:
-     - validates input with Zod,
-     - infers typed handler input,
-     - generates MCP `inputSchema` and `outputSchema` from the same source.
+   - [x] Keep `@mcp-craftman/core` capable of accepting raw JSON Schema.
+   - [x] Add an optional Zod integration package, e.g. `@mcp-craftman/zod`.
+   - [x] Provide `defineZodTool({ input, output, handler })` that:
+     - [x] validates input with Zod,
+     - [x] infers typed handler input,
+     - [x] generates MCP `inputSchema` and `outputSchema` from the same source.
    - Use Ajv for raw JSON Schema validation if/when raw schemas are validated at runtime.
-   - Do not build a large custom schema DSL in MCP Craftman.
-   - Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
+   - [x] Do not build a large custom schema DSL in MCP Craftman.
+   - [x] Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
 
 5. Add project configuration loading for CLI/tooling.
    - Use `cosmiconfig` for project config discovery.
