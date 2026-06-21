@@ -19,4 +19,20 @@ describe("findSearchCandidates", () => {
     expect(result).toEqual(["exact"]);
     db.close();
   });
+
+  it("treats SQL LIKE wildcard characters as literals", async () => {
+    const SQL = await initSqlJs();
+    const db = new SQL.Database();
+    db.run("CREATE TABLE places (id TEXT, name TEXT, normalizedName TEXT)");
+    db.run("INSERT INTO places VALUES (?, ?, ?)", ["plain", "Kraków", "krakow"]);
+    db.run("INSERT INTO places VALUES (?, ?, ?)", ["percent", "100% Test", "100% test"]);
+    db.run("INSERT INTO places VALUES (?, ?, ?)", ["underscore", "A_B Test", "a_b test"]);
+
+    try {
+      expect(findSearchCandidates(db, "places", "%", 10, (row) => row.id)).toEqual(["percent"]);
+      expect(findSearchCandidates(db, "places", "_", 10, (row) => row.id)).toEqual(["underscore"]);
+    } finally {
+      db.close();
+    }
+  });
 });

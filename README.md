@@ -293,7 +293,7 @@ Odpowiedź ma postać:
   },
   "server": {
     "name": "teryt-mcp",
-    "version": "0.1.11"
+    "version": "0.1.12"
   },
   "data": {
     "status": "available",
@@ -346,7 +346,7 @@ Odpowiedź ma postać:
 ```json
 {
   "serverName": "teryt-mcp",
-  "serverVersion": "0.1.11",
+  "serverVersion": "0.1.12",
   "frameworkVersion": "0.2.1",
   "transport": "stdio",
   "dataDir": "/path/to/teryt-data",

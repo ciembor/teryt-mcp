@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.12
+
+- Show consistent colorized package and synchronization details after installation and in `teryt-mcp about`.
+- Match addresses embedded in longer natural-language queries.
+- Ignore common street type prefixes such as `ul.`, `al.`, and `plac` in `search_streets` queries.
+- Keep synchronization compatible with additional columns in official TERYT CSV files.
+- Treat SQL `LIKE` wildcard characters in search input as literals.
+
 ## 0.1.11
 
 - Add `teryt-mcp about` and `teryt-mcp help` CLI commands.

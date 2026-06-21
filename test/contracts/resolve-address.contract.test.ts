@@ -86,6 +86,25 @@ describe("resolve_address contract", () => {
     });
   });
 
+  it("matches an address embedded in a longer query", async () => {
+    await expect(
+      callTool(await createSyncedFixtureApp(), "resolve_address", {
+        query: "prosze sprawdz Boleslawiec Marszalkowska w TERYT",
+      }),
+    ).resolves.toMatchObject({
+      structuredContent: {
+        addresses: [
+          {
+            matchedBy: "contains",
+            address: {
+              id: "0009876-00123",
+            },
+          },
+        ],
+      },
+    });
+  });
+
   it("does not reject numeric street names as building numbers", async () => {
     await expect(
       callTool(await createSyncedFixtureApp(), "resolve_address", {

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { TextDecoder, TextEncoder } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import initSqlJs from "sql.js";
@@ -12,6 +13,8 @@ import type { DatasetCode } from "../../src/features/sync-database/domain/datase
 
 const fixtureDir = join(process.cwd(), "test", "fixtures", "teryt");
 const datasets: readonly DatasetCode[] = ["TERC", "SIMC", "ULIC", "WMRODZ"];
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
 describe("SQLite search integration", () => {
   it("builds a searchable SQLite database from TERYT fixtures", async () => {
@@ -27,6 +30,12 @@ describe("SQLite search integration", () => {
       db.close();
     }
   });
+
+  it("ignores additional CSV columns when inserting fixed raw tables", async () => {
+    const sources = await loadFixtureSourcesWithExtraTercColumn();
+
+    await expect(new SqliteDatabaseBuilder().build(sources.map(importTerytSourceFile))).resolves.toBeDefined();
+  });
 });
 
 async function loadFixtureSources(): Promise<readonly SourceFile[]> {
@@ -38,6 +47,26 @@ async function loadFixtureSources(): Promise<readonly SourceFile[]> {
       stateDate: "2026-01-01",
     })),
   );
+}
+
+async function loadFixtureSourcesWithExtraTercColumn(): Promise<readonly SourceFile[]> {
+  const sources = await loadFixtureSources();
+
+  return sources.map((source) =>
+    source.dataset === "TERC"
+      ? {
+          ...source,
+          content: encoder.encode(addCsvColumn(decoder.decode(source.content), "EXTRA", "ignored")),
+        }
+      : source,
+  );
+}
+
+function addCsvColumn(csv: string, column: string, value: string): string {
+  return csv
+    .split("\n")
+    .map((line, index) => `${line};${index === 0 ? column : value}`)
+    .join("\n");
 }
 
 function queryNames(db: Database, table: "places" | "streets", query: string) {

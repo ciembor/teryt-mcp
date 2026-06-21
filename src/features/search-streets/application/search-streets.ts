@@ -1,6 +1,6 @@
 import type { StreetMatch } from "../domain/street.js";
 import type { StreetRepository } from "./ports/street-repository.js";
-import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
+import { normalizeStreetText } from "../../../shared/normalize-street-text.js";
 
 type SearchStreetsInput = {
   readonly limit?: number;
@@ -33,8 +33,16 @@ export async function searchStreets(
     };
   }
 
-  const normalizedQuery = normalizePolishText(query);
-  const streets = await dependencies.streetRepository.findStreets(query, candidateLimit(limit));
+  const normalizedQuery = normalizeStreetText(query);
+
+  if (!normalizedQuery) {
+    return {
+      stateDate: null,
+      streets: [],
+    };
+  }
+
+  const streets = await dependencies.streetRepository.findStreets(normalizedQuery, candidateLimit(limit));
   const matches = streets
     .flatMap((street): readonly StreetMatch[] => {
       if (street.id === query || street.code === query) {
@@ -47,7 +55,7 @@ export async function searchStreets(
         ];
       }
 
-      const normalizedName = normalizePolishText(street.name);
+      const normalizedName = normalizeStreetText(street.name);
 
       if (normalizedName === normalizedQuery) {
         return [

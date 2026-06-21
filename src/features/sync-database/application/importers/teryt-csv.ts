@@ -21,7 +21,7 @@ type ImportTerytCsvOptions = {
   readonly minRecordCount?: number;
 };
 
-const requiredColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
+export const terytRequiredColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
   SIMC: ["WOJ", "POW", "GMI", "RODZ_GMI", "RM", "MZ", "NAZWA", "SYM", "SYMPOD", "STAN_NA"],
   TERC: ["WOJ", "POW", "GMI", "RODZ", "NAZWA", "NAZDOD", "STAN_NA"],
   ULIC: ["WOJ", "POW", "GMI", "RODZ_GMI", "SYM", "SYM_UL", "CECHA", "NAZWA_1", "NAZWA_2", "STAN_NA"],
@@ -86,7 +86,7 @@ export function detectDataset(columns: readonly string[]): DatasetCode {
 
 function validateColumns(dataset: DatasetCode, columns: readonly string[]): void {
   const columnSet = new Set(columns);
-  const missing = requiredColumns[dataset].filter((column) => !columnSet.has(column));
+  const missing = terytRequiredColumns[dataset].filter((column) => !columnSet.has(column));
 
   if (missing.length > 0) {
     throw new Error(`Missing ${dataset} columns: ${missing.join(", ")}`);

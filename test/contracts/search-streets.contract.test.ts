@@ -57,4 +57,23 @@ describe("search_streets contract", () => {
       },
     });
   });
+
+  it.each(["ulica Marszałkowska", "ul. Marszalkowska", "al. Marszałkowska", "plac Marszałkowska"])(
+    "ignores a street type in query: %s",
+    async (query) => {
+      await expect(callTool(await createSyncedFixtureApp(), "search_streets", { query })).resolves.toMatchObject({
+        structuredContent: {
+          streets: [
+            {
+              confidence: 0.95,
+              matchedBy: "exact_normalized_name",
+              street: {
+                name: "Marszałkowska",
+              },
+            },
+          ],
+        },
+      });
+    },
+  );
 });

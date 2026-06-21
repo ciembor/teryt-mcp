@@ -85,6 +85,13 @@ function matchAddress(address: ResolvedAddress, context: MatchContext): AddressM
     return { address, confidence: 0.75, matchedBy: "prefix" };
   }
 
+  if (
+    context.normalizedQuery &&
+    addressTexts.some((value) => value.includes(context.normalizedQuery) || context.normalizedQuery.includes(value))
+  ) {
+    return { address, confidence: 0.6, matchedBy: "contains" };
+  }
+
   return null;
 }
 

@@ -54,7 +54,7 @@ describe("teryt-mcp CLI contract", () => {
     });
 
     expect(stdout.content).toContain("\u001B[35m\n████████╗");
-    expect(stdout.content).toContain("teryt-mcp 0.1.11");
+    expect(stdout.content).toContain("teryt-mcp 0.1.12");
     expect(stdout.content).toContain("Author: Maciej Ciemborowicz <maciej.ciemborowicz@gmail.com>");
     expect(stdout.content).toContain("Repository: https://github.com/ciembor/teryt-mcp");
     expect(stdout.content).toContain("\u001B[31mData sync: ✗ unavailable.\u001B[0m");
