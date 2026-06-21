@@ -10,7 +10,7 @@ Usage:
   teryt-mcp serve
 
 Commands:
-  about          Show author, contact, repository, server version, and local data sync status as JSON.
+  about          Show package information and local data sync status.
   help           Show this help.
   status         Show server runtime status as JSON.
   source-status  Show official source and local manifest status as JSON.

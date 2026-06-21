@@ -9,6 +9,7 @@ import {
 import { mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { createApp } from "./app.js";
+import { writeAbout } from "./cli-about.js";
 import { helpText } from "./cli-help.js";
 import { getServerStatus } from "./features/server-status/index.js";
 import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
@@ -24,7 +25,7 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
 
   switch (normalizeCommand(command)) {
     case "about":
-      await writeCliToolResult(io.stdout, "about", {}, io);
+      await writeAbout(io);
       return;
     case "help":
       io.stdout.write(helpText);

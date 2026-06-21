@@ -41,24 +41,45 @@ describe("teryt-mcp CLI contract", () => {
     expect(stdout.content).toContain("teryt-mcp serve");
   });
 
-  it("returns about information consistent with MCP", async () => {
+  it("shows postinstall-style about information", async () => {
     const stdout = new MemoryWritable();
     const env = {
       MCP_DATA_DIR: "test-data/teryt-cli",
       MCP_TRANSPORT: "stdio",
     };
-    const config = createTestRuntimeConfig({
-      dataDir: resolve(env.MCP_DATA_DIR),
-    });
-    const mcpResult = await callTool(createApp(config), "about", {});
-
     await runCli(["about"], {
       env,
       stderr: new MemoryWritable(),
       stdout,
     });
 
-    expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
+    expect(stdout.content).toContain("\u001B[35m\n████████╗");
+    expect(stdout.content).toContain("teryt-mcp 0.1.11");
+    expect(stdout.content).toContain("Author: Maciej Ciemborowicz <maciej.ciemborowicz@gmail.com>");
+    expect(stdout.content).toContain("Repository: https://github.com/ciembor/teryt-mcp");
+    expect(stdout.content).toContain("\u001B[31mData sync: ✗ unavailable.\u001B[0m");
+    expect(stdout.content).toContain(`Data directory: ${resolve(env.MCP_DATA_DIR)}`);
+    expect(stdout.content).toContain("TERYT data state dates: unavailable.");
+  });
+
+  it("shows synchronized dataset dates in the about output", async () => {
+    const stdout = new MemoryWritable();
+    const dataDir = await createTempDir();
+    const config = createTestRuntimeConfig({ dataDir });
+    const appFactory = (runtimeConfig: Parameters<typeof createApp>[0]) =>
+      createApp(runtimeConfig, { syncSource: createFixtureSyncSource() });
+
+    await callTool(appFactory(config), "sync_database", { mode: "force" });
+    await runCli(["about"], {
+      appFactory,
+      env: { MCP_DATA_DIR: dataDir },
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(stdout.content).toContain("\u001B[32mData sync: ✓ already synchronized.\u001B[0m");
+    expect(stdout.content).toContain("TERYT data state dates:");
+    expect(stdout.content).toContain("\u001B[34m  - TERC: 2026-01-01\u001B[0m");
   });
 
   it("returns server status consistent with MCP", async () => {
