@@ -35,8 +35,11 @@ const detectionColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
   WMRODZ: ["NAZWA_RM"],
 };
 
-export function importTerytCsv(content: string, options: ImportTerytCsvOptions = {}): TerytImport {
-  const records = parseCsvRecords(content);
+export async function importTerytCsv(
+  content: string | Uint8Array,
+  options: ImportTerytCsvOptions = {},
+): Promise<TerytImport> {
+  const records = await parseCsvRecords(content);
   const [header, ...recordValues] = records;
 
   if (!header) {
@@ -115,7 +118,7 @@ function validateRecordCount(dataset: DatasetCode, recordCount: number, minRecor
   }
 }
 
-function validateSha256(content: string, expectedSha256: string | undefined): void {
+function validateSha256(content: string | Uint8Array, expectedSha256: string | undefined): void {
   if (!expectedSha256) {
     return;
   }

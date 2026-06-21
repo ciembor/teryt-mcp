@@ -19,7 +19,8 @@ const encoder = new TextEncoder();
 describe("SQLite search integration", () => {
   it("builds a searchable SQLite database from TERYT fixtures", async () => {
     const sources = await loadFixtureSources();
-    const database = await new SqliteDatabaseBuilder().build(sources.map(importTerytSourceFile));
+    const imports = await Promise.all(sources.map(importTerytSourceFile));
+    const database = await new SqliteDatabaseBuilder().build(imports);
     const SQL = await initSqlJs();
     const db = new SQL.Database(database.content);
 
@@ -33,8 +34,9 @@ describe("SQLite search integration", () => {
 
   it("ignores additional CSV columns when inserting fixed raw tables", async () => {
     const sources = await loadFixtureSourcesWithExtraTercColumn();
+    const imports = await Promise.all(sources.map(importTerytSourceFile));
 
-    await expect(new SqliteDatabaseBuilder().build(sources.map(importTerytSourceFile))).resolves.toBeDefined();
+    await expect(new SqliteDatabaseBuilder().build(imports)).resolves.toBeDefined();
   });
 });
 
@@ -65,8 +67,12 @@ async function loadFixtureSourcesWithExtraTercColumn(): Promise<readonly SourceF
 function addCsvColumn(csv: string, column: string, value: string): string {
   return csv
     .split("\n")
-    .map((line, index) => `${line};${index === 0 ? column : value}`)
+    .map((line, index) => appendCsvValue(line, index === 0 ? column : value))
     .join("\n");
+}
+
+function appendCsvValue(line: string, value: string): string {
+  return line ? `${line};${value}` : line;
 }
 
 function queryNames(db: Database, table: "places" | "streets", query: string) {

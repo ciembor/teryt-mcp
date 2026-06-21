@@ -1,5 +1,7 @@
-import type { DatasetCode } from "../domain/dataset.js";
 import type { SourceFile, TerytSource } from "../application/ports/teryt-source.js";
+import type { DatasetCode } from "../domain/dataset.js";
+import { createAspNetPostbackForm } from "./aspnet-form.js";
+import { extractCookieHeader } from "./cookie-header.js";
 import { fetchWithRetry } from "./eteryt-fetch.js";
 
 type Fetch = typeof fetch;
@@ -37,16 +39,13 @@ export class EterytSource implements TerytSource {
     }
 
     return {
-      cookies: extractCookies(response.headers),
+      cookies: extractCookieHeader(response.headers),
       html: await response.text(),
     };
   }
 
   private async postDownload(page: { readonly cookies: string; readonly html: string }, eventTarget: string) {
-    const form = parseHiddenInputs(page.html);
-
-    form.set("__EVENTTARGET", eventTarget);
-    form.set("__EVENTARGUMENT", "");
+    const form = createAspNetPostbackForm(page.html, eventTarget);
 
     const response = await fetchWithRetry(this.fetchFn, DOWNLOAD_PAGE_URL, {
       body: form,
@@ -76,115 +75,4 @@ function looksLikeHtml(content: Uint8Array): boolean {
   const prefix = new TextDecoder().decode(content.subarray(0, 256)).trimStart().toLowerCase();
 
   return prefix.startsWith("<!doctype html") || prefix.startsWith("<html");
-}
-
-function parseHiddenInputs(html: string): URLSearchParams {
-  const form = new URLSearchParams();
-
-  for (const input of findInputTags(html)) {
-    const name = getAttribute(input, "name");
-
-    if (getAttribute(input, "type")?.toLowerCase() === "hidden" && name) {
-      form.set(name, decodeHtmlEntities(getAttribute(input, "value") ?? ""));
-    }
-  }
-
-  return form;
-}
-
-function findInputTags(html: string): readonly string[] {
-  const inputs: string[] = [];
-  let searchFrom = 0;
-  let start = html.toLowerCase().indexOf("<input", searchFrom);
-
-  while (start >= 0) {
-    const end = html.indexOf(">", start);
-
-    if (end < 0) {
-      break;
-    }
-
-    inputs.push(html.slice(start, end + 1));
-    searchFrom = end + 1;
-    start = html.toLowerCase().indexOf("<input", searchFrom);
-  }
-
-  return inputs;
-}
-
-function getAttribute(input: string, name: string): string | null {
-  const marker = `${name}=`;
-  const markerIndex = input.toLowerCase().indexOf(marker.toLowerCase());
-
-  if (markerIndex < 0) {
-    return null;
-  }
-
-  const quote = input[markerIndex + marker.length];
-
-  if (quote !== '"' && quote !== "'") {
-    return null;
-  }
-
-  const valueStart = markerIndex + marker.length + 1;
-  const valueEnd = input.indexOf(quote, valueStart);
-
-  if (valueEnd < 0) {
-    return null;
-  }
-
-  return input.slice(valueStart, valueEnd);
-}
-
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replaceAll("&amp;", "&")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
-}
-
-function extractCookies(headers: Headers): string {
-  const rawCookies = headers.get("set-cookie");
-
-  if (!rawCookies) {
-    return "";
-  }
-
-  return splitSetCookieHeader(rawCookies)
-    .map((cookie) => cookie.split(";")[0]?.trim())
-    .filter((cookie) => cookie)
-    .join("; ");
-}
-
-function splitSetCookieHeader(value: string): readonly string[] {
-  const cookies: string[] = [];
-  let start = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    if (value[index] !== "," || !isCookieBoundary(value, index + 1)) {
-      continue;
-    }
-
-    cookies.push(value.slice(start, index));
-    start = index + 1;
-  }
-
-  cookies.push(value.slice(start));
-
-  return cookies;
-}
-
-function isCookieBoundary(value: string, start: number): boolean {
-  let index = start;
-
-  while (value[index] === " ") {
-    index += 1;
-  }
-
-  const semicolonIndex = value.indexOf(";", index);
-  const equalsIndex = value.indexOf("=", index);
-
-  return equalsIndex >= 0 && (semicolonIndex < 0 || equalsIndex < semicolonIndex);
 }

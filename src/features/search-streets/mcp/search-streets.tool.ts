@@ -1,11 +1,22 @@
 import { defineTool, readQueryLimitInput } from "@mcp-craftsman/core";
 
+import { createSearchOutputSchema, queryLimitInputSchema } from "../../../mcp/search-schemas.js";
 import { searchStreets, type SearchStreetsDependencies } from "../application/search-streets.js";
 
 export function createSearchStreetsTool(dependencies: SearchStreetsDependencies) {
   return defineTool({
-    inputSchema,
-    outputSchema,
+    inputSchema: queryLimitInputSchema,
+    outputSchema: createSearchOutputSchema("streets", "street", {
+      type: "object",
+      properties: {
+        code: { type: "string" },
+        id: { type: "string" },
+        name: { type: "string" },
+        placeId: { type: "string" },
+        stateDate: { type: "string" },
+      },
+      required: ["code", "id", "name", "placeId", "stateDate"],
+    }),
     name: "search_streets",
     description:
       "Search ULIC street names across all localities. Use when the user asks for a street without a specific locality. If both locality/miejscowość and street/ulica are provided, use resolve_address instead.",
@@ -19,73 +30,3 @@ export function createSearchStreetsTool(dependencies: SearchStreetsDependencies)
     }),
   });
 }
-
-const inputSchema = {
-  type: "object",
-  properties: {
-    query: {
-      type: "string",
-    },
-    limit: {
-      type: "number",
-      default: 20,
-      maximum: 100,
-      minimum: 1,
-    },
-  },
-  required: ["query"],
-};
-
-const outputSchema = {
-  type: "object",
-  properties: {
-    stateDate: {
-      anyOf: [
-        {
-          type: "string",
-        },
-        {
-          type: "null",
-        },
-      ],
-    },
-    streets: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          confidence: {
-            type: "number",
-          },
-          matchedBy: {
-            type: "string",
-            enum: ["exact_code", "exact_normalized_name", "prefix", "contains"],
-          },
-          street: {
-            type: "object",
-            properties: {
-              code: {
-                type: "string",
-              },
-              id: {
-                type: "string",
-              },
-              name: {
-                type: "string",
-              },
-              placeId: {
-                type: "string",
-              },
-              stateDate: {
-                type: "string",
-              },
-            },
-            required: ["code", "id", "name", "placeId", "stateDate"],
-          },
-        },
-        required: ["confidence", "matchedBy", "street"],
-      },
-    },
-  },
-  required: ["stateDate", "streets"],
-};

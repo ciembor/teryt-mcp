@@ -1,13 +1,6 @@
 import { callTool, type McpApp } from "@mcp-craftsman/core";
-import type { CliIo } from "@mcp-craftsman/node";
 
-import { createApp } from "./app.js";
 import { formatDataSummary, formatHeader } from "./cli-output.js";
-import { loadTerytRuntimeConfig } from "./runtime/config.js";
-
-type AboutIo = CliIo & {
-  readonly appFactory?: typeof createApp;
-};
 
 type AboutContent = {
   readonly author: { readonly name: string };
@@ -20,20 +13,19 @@ type AboutContent = {
   readonly server: { readonly name: string; readonly version: string };
 };
 
-export async function writeAbout(io: AboutIo): Promise<void> {
-  const config = loadTerytRuntimeConfig(io.env);
-  const result = await callTool((io.appFactory ?? createApp)(config) as McpApp, "about", {});
+export async function writeAbout(app: McpApp, dataDir: string, stream: NodeJS.WritableStream): Promise<void> {
+  const result = await callTool(app, "about", {});
   const about = result.structuredContent as AboutContent;
 
-  io.stdout.write(formatHeader({
+  stream.write(formatHeader({
     authorEmail: about.contact.email,
     authorName: about.author.name,
     repositoryUrl: about.repository.url,
     serverName: about.server.name,
     serverVersion: about.server.version,
   }));
-  io.stdout.write(formatDataSummary({
-    dataDir: config.dataDir,
+  stream.write(formatDataSummary({
+    dataDir,
     datasets: about.data.datasets,
     status: about.data.synchronizedSuccessfully ? "✓ already synchronized" : "✗ unavailable",
     successful: about.data.synchronizedSuccessfully,

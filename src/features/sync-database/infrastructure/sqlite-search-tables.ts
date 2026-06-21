@@ -1,10 +1,10 @@
 import type { Database } from "sql.js";
 
-import { importTerytCsv } from "../application/importers/teryt-csv.js";
+import type { TerytImport } from "../application/importers/teryt-csv.js";
 import type { DatasetCode } from "../domain/dataset.js";
 import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
 
-type ImportedDataset = ReturnType<typeof importTerytCsv>;
+type ImportedDataset = TerytImport;
 type ImportedRow = ImportedDataset["rows"][number];
 
 export function insertSearchTables(db: Database, imports: readonly ImportedDataset[]): void {

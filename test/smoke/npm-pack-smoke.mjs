@@ -50,7 +50,9 @@ function run(command, args, options = {}) {
   });
 
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status}.`);
+    const details = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+    const output = details ? `\n${details}` : "";
+    throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status}.${output}`);
   }
 
   return result.stdout;

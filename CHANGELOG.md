@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.13
+
+- Replace custom HTML and CSV parsing with `cheerio` and streaming `csv-parse`, including compatibility with current official ULIC irregularities.
+- Share search scoring, limits, match kinds, and MCP schemas across units, places, and streets.
+- Split ASP.NET postback form and cookie handling into tested infrastructure modules.
+- Delegate runtime paths and CLI dispatch to `@mcp-craftsman/node` while preserving existing TERYT commands and default help output.
+- Improve ZIP import and packaged smoke-test diagnostics with original parser errors.
+
 ## 0.1.12
 
 - Show consistent colorized package and synchronization details after installation and in `teryt-mcp about`.

@@ -41,6 +41,18 @@ describe("teryt-mcp CLI contract", () => {
     expect(stdout.content).toContain("teryt-mcp serve");
   });
 
+  it("prints help when invoked without a command", async () => {
+    const stdout = new MemoryWritable();
+
+    await runCli([], {
+      env: {},
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(stdout.content).toContain("Usage:");
+  });
+
   it("shows postinstall-style about information", async () => {
     const stdout = new MemoryWritable();
     const env = {
@@ -54,7 +66,7 @@ describe("teryt-mcp CLI contract", () => {
     });
 
     expect(stdout.content).toContain("\u001B[35m\n████████╗");
-    expect(stdout.content).toContain("teryt-mcp 0.1.12");
+    expect(stdout.content).toContain("teryt-mcp 0.1.13");
     expect(stdout.content).toContain("Author: Maciej Ciemborowicz <maciej.ciemborowicz@gmail.com>");
     expect(stdout.content).toContain("Repository: https://github.com/ciembor/teryt-mcp");
     expect(stdout.content).toContain("\u001B[31mData sync: ✗ unavailable.\u001B[0m");

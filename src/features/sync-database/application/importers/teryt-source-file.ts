@@ -1,17 +1,13 @@
-import { TextDecoder } from "node:util";
-
 import { importTerytCsv, type TerytImport } from "./teryt-csv.js";
 import { importTerytZip } from "./teryt-zip.js";
 import type { SourceFile } from "../ports/teryt-source.js";
 
-const decoder = new TextDecoder();
-
-export function importTerytSourceFile(sourceFile: SourceFile): TerytImport {
+export async function importTerytSourceFile(sourceFile: SourceFile): Promise<TerytImport> {
   if (isZip(sourceFile.content)) {
     return importTerytZip(sourceFile.content, sourceFile.dataset);
   }
 
-  const imported = importTerytCsv(decoder.decode(sourceFile.content));
+  const imported = await importTerytCsv(sourceFile.content);
 
   if (imported.dataset !== sourceFile.dataset) {
     throw new Error(`Expected ${sourceFile.dataset} source file, received ${imported.dataset}.`);

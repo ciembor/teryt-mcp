@@ -15,8 +15,8 @@ describe("EterytSource", () => {
       if (init?.method !== "POST") {
         return new Response(
           [
-            '<input type="hidden" name="__VIEWSTATE" value="view&amp;state" />',
-            '<input type="hidden" name="__VIEWSTATEGENERATOR" value="generator" />',
+            '<input value="view&amp;state&nbsp;value" name="__VIEWSTATE" type = "hidden" />',
+            "<input value='generator' type='HIDDEN' name='__VIEWSTATEGENERATOR'>",
           ].join(""),
           {
             headers: {
@@ -42,6 +42,7 @@ describe("EterytSource", () => {
     expect(requests[0]?.[1]?.signal).toBeInstanceOf(AbortSignal);
     expect(requests[1]?.[1]?.signal).toBeInstanceOf(AbortSignal);
     expect(String(requests[1]?.[1]?.body)).toContain("__EVENTTARGET=ctl00%24body%24BTERCUrzedowyPobierz");
+    expect(String(requests[1]?.[1]?.body)).toContain("__VIEWSTATE=view%26state%C2%A0value");
     expect(requests[1]?.[1]?.headers).toMatchObject({
       cookie: "ASP.NET_SessionId=session-id",
     });
