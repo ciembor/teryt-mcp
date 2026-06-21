@@ -8,6 +8,7 @@ import { callTool, type Capability } from "@mcp-craftsman/core";
 import { createApp } from "../../src/app.js";
 import { createFixtureSyncSource } from "../support/fixture-sync-source.js";
 import { createTestRuntimeConfig } from "../support/runtime-config.js";
+import { createTestSourceCatalog } from "../support/test-source-catalog.js";
 
 const tempDirs: string[] = [];
 
@@ -16,7 +17,7 @@ const toolInputs: Readonly<Record<string, unknown>> = {
     id: "0009876",
   },
   get_street: {
-    id: "0009876-0000123",
+    id: "0009876-00123",
   },
   get_unit: {
     id: "02-01-01-1",
@@ -47,7 +48,7 @@ const invalidInputErrors: Readonly<Record<string, string>> = {
   get_place: "get_place requires id.",
   get_street: "get_street requires id.",
   get_unit: "get_unit requires id.",
-  resolve_address: "resolve_address requires query.",
+  resolve_address: "resolve_address requires query or both place and street.",
   search_places: "search_places requires query.",
   search_streets: "search_streets requires query.",
   search_units: "search_units requires query.",
@@ -94,6 +95,7 @@ describe("public capability contracts", () => {
 
   it("returns structured content for every public tool", async () => {
     const app = createContractApp(await createTempDir());
+    await callTool(app, "sync_database", { mode: "force" });
 
     for (const [toolName, input] of Object.entries(toolInputs)) {
       const result = await callTool(app, toolName, input);
@@ -141,6 +143,7 @@ function createContractApp(dataDir: string) {
       dataDir,
     }),
     {
+      sourceCatalog: createTestSourceCatalog(),
       syncSource: createFixtureSyncSource(),
     },
   );

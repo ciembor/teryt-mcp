@@ -1,5 +1,6 @@
 import type { UnitMatch } from "../domain/unit.js";
 import type { UnitRepository } from "./ports/unit-repository.js";
+import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
 
 type SearchUnitsInput = {
   readonly limit?: number;
@@ -32,8 +33,8 @@ export async function searchUnits(
     };
   }
 
-  const normalizedQuery = normalizeName(query);
-  const units = await dependencies.unitRepository.listUnits();
+  const normalizedQuery = normalizePolishText(query);
+  const units = await dependencies.unitRepository.findUnits(query, candidateLimit(limit));
   const matches = units
     .flatMap((unit): readonly UnitMatch[] => {
       if (unit.id === query) {
@@ -46,7 +47,7 @@ export async function searchUnits(
         ];
       }
 
-      const normalizedName = normalizeName(unit.name);
+      const normalizedName = normalizePolishText(unit.name);
 
       if (normalizedName === normalizedQuery) {
         return [
@@ -72,7 +73,7 @@ export async function searchUnits(
         return [
           {
             confidence: 0.55,
-            matchedBy: "fts",
+            matchedBy: "contains",
             unit,
           },
         ];
@@ -101,11 +102,6 @@ function normalizeLimit(limit: number | undefined): number {
   return Math.min(limit, MAX_LIMIT);
 }
 
-function normalizeName(value: string): string {
-  return value
-    .replaceAll("ł", "l")
-    .replaceAll("Ł", "L")
-    .normalize("NFKD")
-    .replaceAll(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("pl-PL");
+function candidateLimit(limit: number): number {
+  return Math.max(100, limit * 10);
 }

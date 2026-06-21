@@ -8,10 +8,16 @@ const decoder = new TextDecoder();
 
 export function importTerytSourceFile(sourceFile: SourceFile) {
   if (isZip(sourceFile.content)) {
-    return importTerytZip(sourceFile.content);
+    return importTerytZip(sourceFile.content, sourceFile.dataset);
   }
 
-  return importTerytCsv(decoder.decode(sourceFile.content));
+  const imported = importTerytCsv(decoder.decode(sourceFile.content));
+
+  if (imported.dataset !== sourceFile.dataset) {
+    throw new Error(`Expected ${sourceFile.dataset} source file, received ${imported.dataset}.`);
+  }
+
+  return imported;
 }
 
 function isZip(content: Uint8Array): boolean {

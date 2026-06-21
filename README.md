@@ -123,8 +123,8 @@ Odpowiedź ma postać:
       "confidence": 0.95,
       "matchedBy": "exact_normalized_name",
       "street": {
-        "id": "0009876-0000123",
-        "code": "0000123",
+        "id": "0009876-00123",
+        "code": "00123",
         "name": "Marszałkowska",
         "placeId": "0009876",
         "stateDate": "2026-01-01"
@@ -140,7 +140,7 @@ Odpowiedź ma postać:
 Prompt:
 
 ```text
-Rozpoznaj "Boleslawiec Marszalkowska" i zwróć identyfikatory TERC, SIMC i ULIC.
+Rozpoznaj "Wieliszew Marszalkowska" i zwróć identyfikatory TERC, SIMC i ULIC.
 ```
 
 Narzędzie: `resolve_address`
@@ -149,7 +149,7 @@ Input:
 
 ```json
 {
-  "query": "Boleslawiec Marszalkowska",
+  "query": "Wieliszew Marszalkowska",
   "limit": 5
 }
 ```
@@ -163,31 +163,33 @@ Odpowiedź ma postać:
       "confidence": 0.95,
       "matchedBy": "exact_normalized_address",
       "address": {
-        "id": "0009876-0000123",
+        "id": "0008639-12400",
         "unit": {
-          "id": "02-01-01-1",
-          "name": "Bolesławiec",
-          "type": "gmina miejska"
+          "id": "14-08-05-2",
+          "name": "Wieliszew",
+          "type": "gmina wiejska"
         },
         "place": {
-          "id": "0009876",
-          "name": "Bolesławiec"
+          "id": "0008639",
+          "name": "Wieliszew"
         },
         "street": {
-          "id": "0009876-0000123",
-          "code": "0000123",
+          "id": "0008639-12400",
+          "code": "12400",
           "name": "Marszałkowska"
         },
-        "stateDate": "2026-01-01"
+        "stateDate": "2026-06-19"
       }
     }
   ],
-  "stateDate": "2026-01-01"
+  "stateDate": "2026-06-19"
 }
 ```
 
 To nie jest geokodowanie. Narzędzie rozpoznaje identyfikatory rejestrowe do
-poziomu miejscowości i ulicy.
+poziomu miejscowości i ulicy. Dla zapytań zawierających wyłącznie miejscowość
+użyj `search_places`. Kody pocztowe i numery budynków są odrzucane z czytelnym
+błędem, ponieważ nie należą do TERYT.
 
 ### Sprawdzenie konkretnego identyfikatora
 
@@ -298,12 +300,12 @@ Odpowiedź ma postać:
 ```json
 {
   "serverName": "teryt-mcp",
-  "serverVersion": "0.1.5",
-  "frameworkVersion": "0.2.0",
+  "serverVersion": "0.1.8",
+  "frameworkVersion": "0.2.1",
   "transport": "stdio",
   "dataDir": "/path/to/teryt-data",
   "database": {
-    "status": "not_configured"
+    "status": "available"
   }
 }
 ```
@@ -362,7 +364,7 @@ Tryby:
 
 ```text
 missing  zbuduj bazę tylko wtedy, gdy jej brakuje
-stale    tryb przygotowany pod politykę odświeżania nieaktualnych danych
+stale    przebuduj bazę, jeśli ma co najmniej 24 godziny
 force    przebuduj bazę pod lockiem
 ```
 
@@ -471,10 +473,15 @@ Input:
 
 ```json
 {
-  "query": "Boleslawiec Marszalkowska",
+  "place": "Bolesławiec",
+  "street": "Marszałkowska",
   "limit": 20
 }
 ```
+
+Można również przekazać `query`, np. `Marszalkowska Boleslawiec` albo
+`ulica Marszalkowska w Boleslawiec`. Pola `place` i `street` są preferowane,
+gdy klient potrafi rozdzielić miejscowość od ulicy.
 
 Zwraca:
 
@@ -517,7 +524,7 @@ Input:
 
 ```json
 {
-  "id": "0009876-0000123"
+  "id": "0009876-00123"
 }
 ```
 
@@ -530,12 +537,12 @@ exact_code
 exact_normalized_name
 exact_normalized_address
 prefix
-fts
+contains
 ```
 
 `confidence` jest wynikiem rankingu wyszukiwania, a nie oficjalną wartością z
 rejestru. Dopasowanie po dokładnym kodzie ma najwyższy priorytet. Dopasowania
-pełnotekstowe są niżej.
+zawierające szukany fragment są niżej.
 
 Wyszukiwanie normalizuje polskie znaki, więc zapytania takie jak `Boleslawiec`
 mogą znaleźć `Bolesławiec`.
@@ -614,6 +621,29 @@ danych:
   }
 }
 ```
+
+### Codex
+
+Codex CLI i rozszerzenie Codex dla IDE współdzielą konfigurację
+`~/.codex/config.toml`. Plik VS Code `User/mcp.json` nie rejestruje serwera w
+Codex.
+
+Najprościej dodać globalnie zainstalowany serwer poleceniem:
+
+```bash
+codex mcp add teryt-mcp -- teryt-mcp serve
+```
+
+Odpowiednik w `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.teryt-mcp]
+command = "teryt-mcp"
+args = ["serve"]
+```
+
+Po zmianie konfiguracji uruchom nowy proces lub nową sesję Codex i sprawdź
+serwer przez `codex mcp list` albo `/mcp` w interfejsie terminalowym.
 
 ## Pierwsza Synchronizacja
 
@@ -741,6 +771,10 @@ Pliki lokalne:
 <data-dir>/sync-manifest.json
 <data-dir>/*.lock
 ```
+
+Nowe wydania mogą zmieniać schemat SQLite. Serwer wykrywa niezgodną bazę i
+przebudowuje ją podczas synchronizacji w trybie `missing`; można też jawnie
+uruchomić `teryt-mcp sync --force`.
 
 ## Development
 

@@ -7,6 +7,7 @@ import { callTool } from "@mcp-craftsman/core";
 import { createApp } from "../../src/app.js";
 import { createFixtureSyncSource } from "./fixture-sync-source.js";
 import { createTestRuntimeConfig } from "./runtime-config.js";
+import { createTestSourceCatalog } from "./test-source-catalog.js";
 
 const tempDirs: string[] = [];
 
@@ -19,6 +20,7 @@ export async function createSyncedFixtureApp() {
       dataDir,
     }),
     {
+      sourceCatalog: createTestSourceCatalog(),
       syncSource: createFixtureSyncSource(),
     },
   );

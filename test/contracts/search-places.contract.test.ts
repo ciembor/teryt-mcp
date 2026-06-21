@@ -57,7 +57,7 @@ describe("search_places contract", () => {
     });
   });
 
-  it("returns FTS ranking for normalized infix matches", async () => {
+  it("returns contains ranking for normalized infix matches", async () => {
     await expect(
       callTool(
         await createSyncedFixtureApp(),
@@ -71,7 +71,7 @@ describe("search_places contract", () => {
         places: [
           {
             confidence: 0.55,
-            matchedBy: "fts",
+            matchedBy: "contains",
             place: {
               name: "Bolesławiec",
             },

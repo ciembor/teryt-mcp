@@ -125,6 +125,7 @@ describe("sync_database contract", () => {
 
     await expect(stat(join(dataDir, "teryt.sqlite"))).resolves.toBeDefined();
     await expect(readFile(join(dataDir, "sync-manifest.json"), "utf8")).resolves.toContain('"dataset": "TERC"');
+    await expect(readFile(join(dataDir, "sync-manifest.json"), "utf8")).resolves.toContain('"schemaVersion": 2');
   });
 });
 

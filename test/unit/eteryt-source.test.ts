@@ -39,7 +39,7 @@ describe("EterytSource", () => {
     expect(result.content).toEqual(zip);
     expect(result.sourceUrl).toContain("pliki_pelne.aspx#TERC");
     expect(requests).toHaveLength(2);
-    expect(String(requests[1]?.[1]?.body)).toContain("__EVENTTARGET=ctl00%24body%24BTERCAdresowyPobierz");
+    expect(String(requests[1]?.[1]?.body)).toContain("__EVENTTARGET=ctl00%24body%24BTERCUrzedowyPobierz");
     expect(requests[1]?.[1]?.headers).toMatchObject({
       cookie: "ASP.NET_SessionId=session-id",
     });
@@ -57,5 +57,19 @@ describe("EterytSource", () => {
     );
 
     await expect(source.download("SIMC")).rejects.toThrow(/HTML/);
+  });
+
+  it("rejects HTML error pages with a misleading content type", async () => {
+    const source = new EterytSource(async (_url, init) =>
+      init
+        ? new Response("<!DOCTYPE html><html></html>", {
+            headers: {
+              "content-type": "application/octet-stream",
+            },
+          })
+        : new Response('<input type="hidden" name="__VIEWSTATE" value="view" />'),
+    );
+
+    await expect(source.download("TERC")).rejects.toThrow(/HTML/);
   });
 });

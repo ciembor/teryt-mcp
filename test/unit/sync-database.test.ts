@@ -17,6 +17,8 @@ describe("syncDatabase", () => {
         },
         fileStore: {
           databaseExists: async () => true,
+          databaseModifiedAt: async () => new Date("2026-01-01T00:00:00.000Z"),
+          databaseSchemaVersion: async () => 2,
           swapDatabase: async (content) => {
             swaps.push(content);
             return "test-data/teryt.sqlite";

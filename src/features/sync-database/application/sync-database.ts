@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { datasetCodes } from "../domain/dataset.js";
+import { terytDatabaseSchemaVersion } from "../domain/database-schema.js";
 import type { DatabaseSnapshot, DatasetSnapshot } from "../domain/snapshot.js";
 import type { SyncMode } from "../domain/sync-plan.js";
 import { importTerytSourceFile } from "./importers/teryt-source-file.js";
@@ -33,6 +34,7 @@ export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDataba
     const plan = await planSync({
       fileStore: input.fileStore,
       mode: input.mode,
+      now: input.now(),
     });
 
     if (plan.action === "skip_existing") {
@@ -67,6 +69,7 @@ export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDataba
       datasets,
       builtAt: input.now().toISOString(),
       path: databasePath,
+      schemaVersion: terytDatabaseSchemaVersion,
     };
 
     await input.manifestStore.writeSnapshot(snapshot);

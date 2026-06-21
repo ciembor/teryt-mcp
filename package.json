@@ -1,6 +1,6 @@
 {
   "name": "teryt-mcp",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "private": false,
   "description": "MCP server for the official Polish TERYT registry.",
   "type": "module",
@@ -10,6 +10,7 @@
   },
   "files": [
     "dist",
+    "CHANGELOG.md",
     "README.md"
   ],
   "publishConfig": {
@@ -20,16 +21,17 @@
     "postinstall": "node dist/postinstall.js",
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
     "quality": "mcp-craftsman quality",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:pack-smoke": "node test/smoke/npm-pack-smoke.mjs"
   },
   "dependencies": {
-    "@mcp-craftsman/core": "^0.2.0",
-    "@mcp-craftsman/node": "^0.2.0",
+    "@mcp-craftsman/core": "^0.2.1",
+    "@mcp-craftsman/node": "^0.2.1",
     "fflate": "^0.8.3",
     "sql.js": "^1.14.1"
   },
   "devDependencies": {
-    "@mcp-craftsman/cli": "^0.2.0",
+    "@mcp-craftsman/cli": "^0.2.1",
     "@types/node": "^24.0.3",
     "@types/sql.js": "^1.4.11",
     "@vitest/coverage-v8": "^3.2.4",

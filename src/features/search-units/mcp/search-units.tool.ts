@@ -5,7 +5,8 @@ import { searchUnits, type SearchUnitsDependencies } from "../application/search
 export function createSearchUnitsTool(dependencies: SearchUnitsDependencies) {
   return defineTool({
     name: "search_units",
-    description: "Searches TERYT territorial units.",
+    description:
+      "Search TERC administrative units: województwa, powiaty, gminy and commune types. Use for Polish requests about jednostka TERYT, TERC, kod województwa/powiatu/gminy. Do not use for SIMC localities/miejscowości; use search_places instead.",
     inputSchema: {
       type: "object",
       properties: {
@@ -44,7 +45,7 @@ export function createSearchUnitsTool(dependencies: SearchUnitsDependencies) {
               },
               matchedBy: {
                 type: "string",
-                enum: ["exact_code", "exact_normalized_name", "prefix", "fts"],
+                enum: ["exact_code", "exact_normalized_name", "prefix", "contains"],
               },
               unit: {
                 type: "object",

@@ -1,5 +1,6 @@
 import type { StreetMatch } from "../domain/street.js";
 import type { StreetRepository } from "./ports/street-repository.js";
+import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
 
 type SearchStreetsInput = {
   readonly limit?: number;
@@ -32,8 +33,8 @@ export async function searchStreets(
     };
   }
 
-  const normalizedQuery = normalizeName(query);
-  const streets = await dependencies.streetRepository.listStreets();
+  const normalizedQuery = normalizePolishText(query);
+  const streets = await dependencies.streetRepository.findStreets(query, candidateLimit(limit));
   const matches = streets
     .flatMap((street): readonly StreetMatch[] => {
       if (street.id === query || street.code === query) {
@@ -46,7 +47,7 @@ export async function searchStreets(
         ];
       }
 
-      const normalizedName = normalizeName(street.name);
+      const normalizedName = normalizePolishText(street.name);
 
       if (normalizedName === normalizedQuery) {
         return [
@@ -72,7 +73,7 @@ export async function searchStreets(
         return [
           {
             confidence: 0.55,
-            matchedBy: "fts",
+            matchedBy: "contains",
             street,
           },
         ];
@@ -101,11 +102,6 @@ function normalizeLimit(limit: number | undefined): number {
   return Math.min(limit, MAX_LIMIT);
 }
 
-function normalizeName(value: string): string {
-  return value
-    .replaceAll("ł", "l")
-    .replaceAll("Ł", "L")
-    .normalize("NFKD")
-    .replaceAll(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("pl-PL");
+function candidateLimit(limit: number): number {
+  return Math.max(100, limit * 10);
 }

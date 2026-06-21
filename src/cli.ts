@@ -10,6 +10,7 @@ import { mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { createApp } from "./app.js";
 import { getServerStatus } from "./features/server-status/index.js";
+import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
 import { loadTerytRuntimeConfig } from "./runtime/config.js";
 import { serve } from "./server/serve.js";
 
@@ -30,8 +31,9 @@ export async function runCli(argv: readonly string[] = process.argv.slice(2), io
 
     writeJson(
       io.stdout,
-      getServerStatus({
+      await getServerStatus({
         dataDir: config.dataDir,
+        databaseExists: () => new JsonManifestStore(config.dataDir).hasDatabase(),
         frameworkVersion: mcpCraftsmanCoreVersion,
         transport: config.transport,
       }),

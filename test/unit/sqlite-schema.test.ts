@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { terytSqliteSchema } from "../../src/features/sync-database/application/importers/sqlite-schema.js";
 
 describe("terytSqliteSchema", () => {
-  it("defines all target tables and FTS indexes", () => {
+  it("defines all target tables and normalized-name indexes", () => {
     const schema = terytSqliteSchema.join("\n");
 
     expect(schema).toContain("CREATE TABLE raw_terc");
@@ -14,9 +14,9 @@ describe("terytSqliteSchema", () => {
     expect(schema).toContain("CREATE TABLE places");
     expect(schema).toContain("CREATE TABLE streets");
     expect(schema).toContain("CREATE TABLE metadata");
-    expect(schema).toContain("CREATE VIRTUAL TABLE units_fts");
-    expect(schema).toContain("CREATE VIRTUAL TABLE places_fts");
-    expect(schema).toContain("CREATE VIRTUAL TABLE streets_fts");
+    expect(schema).toContain("CREATE INDEX units_normalized_name_idx");
+    expect(schema).toContain("CREATE INDEX places_normalized_name_idx");
+    expect(schema).toContain("CREATE INDEX streets_normalized_name_idx");
   });
 
   it.each(["WOJ", "POW", "GMI", "RODZ", "RODZ_GMI", "SYM", "SYMPOD", "SYM_UL", "RM"])(

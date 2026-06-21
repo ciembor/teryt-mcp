@@ -17,4 +17,5 @@ export type DatabaseSnapshot = {
   readonly builtAt: string;
   readonly datasets: readonly DatasetSnapshot[];
   readonly path: string;
+  readonly schemaVersion: number;
 };

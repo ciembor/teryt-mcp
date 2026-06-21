@@ -21,15 +21,15 @@ describe("resolve_address contract", () => {
         addresses: [
           {
             address: {
-              id: "0009876-0000123",
+              id: "0009876-00123",
               place: {
                 id: "0009876",
                 name: "Bolesławiec",
               },
               stateDate: "2026-01-01",
               street: {
-                code: "0000123",
-                id: "0009876-0000123",
+                code: "00123",
+                id: "0009876-00123",
                 name: "Marszałkowska",
               },
               unit: {
@@ -54,7 +54,7 @@ describe("resolve_address contract", () => {
         "resolve_address",
         {
           limit: 1,
-          query: "0009876-0000123",
+          query: "0009876-00123",
         },
       ),
     ).resolves.toMatchObject({
@@ -67,5 +67,29 @@ describe("resolve_address contract", () => {
         ],
       },
     });
+  });
+
+  it.each([
+    { query: "Marszalkowska Boleslawiec" },
+    { query: "ulica Marszalkowska w Boleslawiec" },
+    { query: "ul. Marszalkowskiej w Boleslawcu" },
+    { place: "Bolesławiec", street: "Marszałkowska" },
+  ])("accepts natural and structured address input: %o", async (input) => {
+    await expect(callTool(await createSyncedFixtureApp(), "resolve_address", input)).resolves.toMatchObject({
+      structuredContent: {
+        addresses: [
+          {
+            matchedBy: "exact_normalized_address",
+          },
+        ],
+      },
+    });
+  });
+
+  it.each([
+    ["Wieliszew Marszałkowska 10", /building numbers/],
+    ["00-001 Wieliszew Marszałkowska", /postal codes/],
+  ])("rejects unsupported address detail %s", async (query, expectedError) => {
+    await expect(callTool(await createSyncedFixtureApp(), "resolve_address", { query })).rejects.toThrow(expectedError);
   });
 });

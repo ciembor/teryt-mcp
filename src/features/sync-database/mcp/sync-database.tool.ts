@@ -10,7 +10,8 @@ export function createSyncDatabaseTool(input: CreateSyncDatabaseToolInput) {
     inputSchema,
     outputSchema,
     name: "sync_database",
-    description: "Synchronizes the local TERYT database.",
+    description:
+      "Download official TERYT datasets and build or rebuild the local SQLite database. Use when the user asks to install, synchronize or update TERYT data, or when another tool reports that the local database is missing.",
     policy: "write",
     returnsStructuredContent: true,
     annotations: {

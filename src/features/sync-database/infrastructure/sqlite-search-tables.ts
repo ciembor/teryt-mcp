@@ -2,6 +2,7 @@ import type { Database } from "sql.js";
 
 import { importTerytCsv } from "../application/importers/teryt-csv.js";
 import type { DatasetCode } from "../domain/dataset.js";
+import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
 
 type ImportedDataset = ReturnType<typeof importTerytCsv>;
 type ImportedRow = ImportedDataset["rows"][number];
@@ -14,14 +15,11 @@ export function insertSearchTables(db: Database, imports: readonly ImportedDatas
   insertUnits(db, terc.rows);
   insertPlaces(db, simc.rows);
   insertStreets(db, ulic.rows);
-  db.run("INSERT INTO units_fts(rowid, name) SELECT rowid, name FROM units");
-  db.run("INSERT INTO places_fts(rowid, name) SELECT rowid, name FROM places");
-  db.run("INSERT INTO streets_fts(rowid, name) SELECT rowid, name FROM streets");
 }
 
 function insertUnits(db: Database, rows: readonly ImportedRow[]): void {
   const statement = db.prepare(
-    "INSERT INTO units (id, WOJ, POW, GMI, RODZ, name, type, stateDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO units (id, WOJ, POW, GMI, RODZ, name, normalizedName, type, stateDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
 
   try {
@@ -33,6 +31,7 @@ function insertUnits(db: Database, rows: readonly ImportedRow[]): void {
         row.values.GMI ?? "",
         row.values.RODZ ?? "",
         row.values.NAZWA ?? "",
+        normalizePolishText(row.values.NAZWA ?? ""),
         row.values.NAZDOD ?? "",
         row.values.STAN_NA ?? "",
       ]);
@@ -44,7 +43,7 @@ function insertUnits(db: Database, rows: readonly ImportedRow[]): void {
 
 function insertPlaces(db: Database, rows: readonly ImportedRow[]): void {
   const statement = db.prepare(
-    "INSERT INTO places (id, SYM, SYMPOD, RM, name, unitId, stateDate) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO places (id, SYM, SYMPOD, RM, name, normalizedName, unitId, stateDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
   );
 
   try {
@@ -55,6 +54,7 @@ function insertPlaces(db: Database, rows: readonly ImportedRow[]): void {
         row.values.SYMPOD ?? "",
         row.values.RM ?? "",
         row.values.NAZWA ?? "",
+        normalizePolishText(row.values.NAZWA ?? ""),
         createUnitId(row.values),
         row.values.STAN_NA ?? "",
       ]);
@@ -66,16 +66,19 @@ function insertPlaces(db: Database, rows: readonly ImportedRow[]): void {
 
 function insertStreets(db: Database, rows: readonly ImportedRow[]): void {
   const statement = db.prepare(
-    "INSERT INTO streets (id, SYM, SYM_UL, name, placeId, stateDate) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO streets (id, SYM, SYM_UL, name, normalizedName, placeId, stateDate) VALUES (?, ?, ?, ?, ?, ?, ?)",
   );
 
   try {
     for (const row of rows) {
+      const name = [row.values.NAZWA_2, row.values.NAZWA_1].filter(Boolean).join(" ");
+
       statement.run([
         `${row.values.SYM ?? ""}-${row.values.SYM_UL ?? ""}`,
         row.values.SYM ?? "",
         row.values.SYM_UL ?? "",
-        [row.values.NAZWA_1, row.values.NAZWA_2].filter(Boolean).join(" "),
+        name,
+        normalizePolishText(name),
         row.values.SYM ?? "",
         row.values.STAN_NA ?? "",
       ]);

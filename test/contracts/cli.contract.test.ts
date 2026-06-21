@@ -10,6 +10,7 @@ import { createApp } from "../../src/app.js";
 import { runCli } from "../../src/cli.js";
 import { createFixtureSyncSource } from "../support/fixture-sync-source.js";
 import { createTestRuntimeConfig } from "../support/runtime-config.js";
+import { createTestSourceCatalog } from "../support/test-source-catalog.js";
 
 const tempDirs: string[] = [];
 
@@ -60,9 +61,12 @@ describe("teryt-mcp CLI contract", () => {
       dataDir: resolve(env.MCP_DATA_DIR),
       port: 3010,
     });
-    const mcpResult = await callTool(createApp(config), "source_status", {});
+    const appFactory = (runtimeConfig: Parameters<typeof createApp>[0]) =>
+      createApp(runtimeConfig, { sourceCatalog: createTestSourceCatalog() });
+    const mcpResult = await callTool(appFactory(config), "source_status", {});
 
     await runCli(["source-status"], {
+      appFactory,
       env,
       stderr: new MemoryWritable(),
       stdout,
@@ -116,20 +120,26 @@ describe("teryt-mcp CLI contract", () => {
 
   it("returns place search results consistent with MCP", async () => {
     const stdout = new MemoryWritable();
+    const dataDir = await createTempDir();
     const env = {
-      MCP_DATA_DIR: "test-data/teryt-cli",
+      MCP_DATA_DIR: dataDir,
       MCP_TRANSPORT: "stdio",
       PORT: "3010",
     };
     const config = createTestRuntimeConfig({
-      dataDir: resolve(env.MCP_DATA_DIR),
+      dataDir,
       port: 3010,
     });
-    const mcpResult = await callTool(createApp(config), "search_places", {
+    const appFactory = (runtimeConfig: Parameters<typeof createApp>[0]) =>
+      createApp(runtimeConfig, { syncSource: createFixtureSyncSource() });
+    const app = appFactory(config);
+    await callTool(app, "sync_database", { mode: "force" });
+    const mcpResult = await callTool(app, "search_places", {
       query: "Kraków",
     });
 
     await runCli(["search", "places", "Kraków"], {
+      appFactory,
       env,
       stderr: new MemoryWritable(),
       stdout,

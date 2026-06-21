@@ -24,8 +24,8 @@ describe("search_streets contract", () => {
             confidence: 0.95,
             matchedBy: "exact_normalized_name",
             street: {
-              code: "0000123",
-              id: "0009876-0000123",
+              code: "00123",
+              id: "0009876-00123",
               name: "Marszałkowska",
               placeId: "0009876",
               stateDate: "2026-01-01",
@@ -43,7 +43,7 @@ describe("search_streets contract", () => {
         "search_streets",
         {
           limit: 1,
-          query: "0000123",
+          query: "00123",
         },
       ),
     ).resolves.toMatchObject({

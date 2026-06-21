@@ -3,11 +3,14 @@ import { terytMcpVersion } from "../../../version.js";
 
 export type GetServerStatusInput = {
   readonly dataDir: string;
+  readonly databaseExists: () => Promise<boolean>;
   readonly frameworkVersion: string;
   readonly transport: "stdio" | "http";
 };
 
-export function getServerStatus(input: GetServerStatusInput): ServerStatus {
+export async function getServerStatus(input: GetServerStatusInput): Promise<ServerStatus> {
+  const databaseExists = await input.databaseExists();
+
   return {
     serverName: "teryt-mcp",
     serverVersion: terytMcpVersion,
@@ -15,7 +18,7 @@ export function getServerStatus(input: GetServerStatusInput): ServerStatus {
     transport: input.transport,
     dataDir: input.dataDir,
     database: {
-      status: "not_configured",
+      status: databaseExists ? "available" : "missing",
     },
   };
 }

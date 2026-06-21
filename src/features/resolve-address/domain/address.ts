@@ -19,7 +19,7 @@ export type ResolvedAddress = {
   readonly id: string;
   readonly place: AddressPlace;
   readonly stateDate: string;
-  readonly street: AddressStreet | null;
+  readonly street: AddressStreet;
   readonly unit: AddressUnit;
 };
 

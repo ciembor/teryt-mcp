@@ -29,7 +29,11 @@ export type GetSourceStatusInput = {
 };
 
 export async function getSourceStatus(input: GetSourceStatusInput): Promise<SourceStatus> {
-  const datasets = await input.sourceCatalog.listDatasets();
+  const [datasets, hasDatabase, remoteSource] = await Promise.all([
+    input.sourceCatalog.listDatasets(),
+    input.manifestStore.hasDatabase(),
+    input.sourceCatalog.checkAvailability(),
+  ]);
   const snapshots = await Promise.all(
     datasets.map(async (dataset) => {
       const snapshot = (await input.manifestStore.getSnapshot(dataset.code)) ?? null;
@@ -49,13 +53,13 @@ export async function getSourceStatus(input: GetSourceStatusInput): Promise<Sour
     .at(-1) ?? null;
 
   return {
-    lastCheckedAt: null,
+    lastCheckedAt: remoteSource.checkedAt,
     localDatabase: {
-      status: snapshots.some((item) => item.snapshot) ? "available" : "missing",
+      status: hasDatabase ? "available" : "missing",
     },
     remoteSource: {
-      errors: [],
-      status: "unknown",
+      errors: remoteSource.errors,
+      status: remoteSource.status,
     },
     datasets: snapshots,
     lastSuccessfulSync,

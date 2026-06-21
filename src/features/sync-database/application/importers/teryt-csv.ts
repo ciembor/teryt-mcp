@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import type { DatasetCode } from "../../domain/dataset.js";
+import { parseCsvRecords } from "./csv-record-parser.js";
 
 type TerytRow = {
   readonly dataset: DatasetCode;
@@ -35,25 +36,24 @@ const detectionColumns: Readonly<Record<DatasetCode, readonly string[]>> = {
 };
 
 export function importTerytCsv(content: string, options: ImportTerytCsvOptions = {}): TerytImport {
-  const [headerLine, ...recordLines] = content.trim().split(/\r?\n/);
+  const records = parseCsvRecords(content);
+  const [header, ...recordValues] = records;
 
-  if (!headerLine) {
+  if (!header) {
     throw new Error("TERYT CSV is empty.");
   }
 
   validateSha256(content, options.expectedSha256);
 
-  const columns = parseCsvLine(headerLine);
+  const columns = header.map(normalizeColumn);
   const dataset = detectDataset(columns);
   validateColumns(dataset, columns);
-  const rows = recordLines.filter(Boolean).map((line) => {
-    const values = parseCsvLine(line);
-
-    return {
+  const rows = recordValues
+    .filter((values) => values.some(Boolean))
+    .map((values) => ({
       values: Object.fromEntries(columns.map((column, index) => [column, values[index] ?? ""])),
       dataset,
-    };
-  });
+    }));
   const stateDate = validateStateDate(dataset, rows);
   validateRecordCount(dataset, rows.length, options.minRecordCount);
 
@@ -64,6 +64,11 @@ export function importTerytCsv(content: string, options: ImportTerytCsvOptions =
     rows,
     stateDate,
   };
+}
+
+function normalizeColumn(column: string): string {
+  const normalized = column.replace(/^\uFEFF/, "");
+  return normalized === "NAZWA_DOD" ? "NAZDOD" : normalized;
 }
 
 export function detectDataset(columns: readonly string[]): DatasetCode {
@@ -120,28 +125,6 @@ function validateSha256(content: string, expectedSha256: string | undefined): vo
   if (actualSha256 !== expectedSha256) {
     throw new Error(`TERYT CSV sha256 mismatch: expected ${expectedSha256}, got ${actualSha256}.`);
   }
-}
-
-function parseCsvLine(line: string): readonly string[] {
-  const delimiter = line.includes(";") ? ";" : ",";
-  const values: string[] = [];
-  let current = "";
-  let quoted = false;
-
-  for (const character of line) {
-    if (character === '"') {
-      quoted = !quoted;
-    } else if (character === delimiter && !quoted) {
-      values.push(current);
-      current = "";
-    } else {
-      current += character;
-    }
-  }
-
-  values.push(current);
-
-  return values;
 }
 
 function isIsoDate(value: string): boolean {

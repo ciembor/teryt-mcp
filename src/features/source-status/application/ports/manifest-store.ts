@@ -3,4 +3,5 @@ import type { SourceSnapshot } from "../../domain/source-snapshot.js";
 
 export type ManifestStore = {
   readonly getSnapshot: (dataset: DatasetCode) => Promise<SourceSnapshot | undefined>;
+  readonly hasDatabase: () => Promise<boolean>;
 };

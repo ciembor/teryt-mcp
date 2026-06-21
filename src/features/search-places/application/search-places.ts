@@ -1,5 +1,6 @@
 import type { PlaceMatch } from "../domain/place.js";
 import type { PlaceRepository } from "./ports/place-repository.js";
+import { normalizePolishText } from "../../../shared/normalize-polish-text.js";
 
 type SearchPlacesInput = {
   readonly limit?: number;
@@ -32,8 +33,8 @@ export async function searchPlaces(
     };
   }
 
-  const normalizedQuery = normalizeName(query);
-  const places = await dependencies.placeRepository.listPlaces();
+  const normalizedQuery = normalizePolishText(query);
+  const places = await dependencies.placeRepository.findPlaces(query, candidateLimit(limit));
   const matches = places
     .flatMap((place): readonly PlaceMatch[] => {
       if (place.id === query) {
@@ -46,7 +47,7 @@ export async function searchPlaces(
         ];
       }
 
-      const normalizedName = normalizeName(place.name);
+      const normalizedName = normalizePolishText(place.name);
 
       if (normalizedName === normalizedQuery) {
         return [
@@ -72,7 +73,7 @@ export async function searchPlaces(
         return [
           {
             confidence: 0.55,
-            matchedBy: "fts",
+            matchedBy: "contains",
             place,
           },
         ];
@@ -101,11 +102,6 @@ function normalizeLimit(limit: number | undefined): number {
   return Math.min(limit, MAX_LIMIT);
 }
 
-function normalizeName(value: string): string {
-  return value
-    .replaceAll("ł", "l")
-    .replaceAll("Ł", "L")
-    .normalize("NFKD")
-    .replaceAll(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("pl-PL");
+function candidateLimit(limit: number): number {
+  return Math.max(100, limit * 10);
 }

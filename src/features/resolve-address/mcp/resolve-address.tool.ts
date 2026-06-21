@@ -1,130 +1,61 @@
-import { defineTool, readQueryLimitInput } from "@mcp-craftsman/core";
+import { defineTool } from "@mcp-craftsman/core";
 
 import { resolveAddress, type ResolveAddressDependencies } from "../application/resolve-address.js";
+import { resolveAddressInputSchema, resolveAddressOutputSchema } from "./resolve-address.schemas.js";
+import { assertSupportedAddressText } from "./address-input-validation.js";
 
 export function createResolveAddressTool(dependencies: ResolveAddressDependencies) {
   return defineTool({
-    inputSchema,
-    outputSchema,
+    inputSchema: resolveAddressInputSchema,
+    outputSchema: resolveAddressOutputSchema,
     name: "resolve_address",
-    description: "Resolves a TERYT address candidate to territorial, place, and street identifiers.",
+    description:
+      "Resolve a Polish locality plus street to TERYT identifiers: TERC unit, SIMC place and ULIC street. Use when the user provides both a miejscowość and ulica, for example 'Warszawa Marszałkowska' or 'ulica Marszałkowska w Warszawie'. Prefer structured place and street fields when possible. This is not geocoding and does not validate building numbers, postal codes or coordinates.",
     policy: "read",
     returnsStructuredContent: true,
     annotations: {
       readOnlyHint: true,
     },
     handler: async (input) => ({
-      structuredContent: await resolveAddress(readQueryLimitInput(input, "resolve_address"), dependencies),
+      structuredContent: await resolveAddress(parseInput(input), dependencies),
     }),
   });
 }
 
-const inputSchema = {
-  type: "object",
-  properties: {
-    query: {
-      type: "string",
-    },
-    limit: {
-      type: "number",
-      default: 20,
-      maximum: 100,
-      minimum: 1,
-    },
-  },
-  required: ["query"],
-};
+function parseInput(input: unknown): { readonly limit?: number; readonly place?: string; readonly query?: string; readonly street?: string } {
+  if (typeof input !== "object" || input === null) {
+    throw new Error("resolve_address input must be an object.");
+  }
 
-const outputSchema = {
-  type: "object",
-  properties: {
-    addresses: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          address: {
-            type: "object",
-            properties: {
-              id: {
-                type: "string",
-              },
-              place: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  name: {
-                    type: "string",
-                  },
-                },
-                required: ["id", "name"],
-              },
-              stateDate: {
-                type: "string",
-              },
-              street: {
-                anyOf: [
-                  {
-                    type: "object",
-                    properties: {
-                      code: {
-                        type: "string",
-                      },
-                      id: {
-                        type: "string",
-                      },
-                      name: {
-                        type: "string",
-                      },
-                    },
-                    required: ["code", "id", "name"],
-                  },
-                  {
-                    type: "null",
-                  },
-                ],
-              },
-              unit: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  name: {
-                    type: "string",
-                  },
-                  type: {
-                    type: "string",
-                  },
-                },
-                required: ["id", "name", "type"],
-              },
-            },
-            required: ["id", "place", "stateDate", "street", "unit"],
-          },
-          confidence: {
-            type: "number",
-          },
-          matchedBy: {
-            type: "string",
-            enum: ["exact_code", "exact_normalized_address", "prefix"],
-          },
-        },
-        required: ["address", "confidence", "matchedBy"],
-      },
-    },
-    stateDate: {
-      anyOf: [
-        {
-          type: "string",
-        },
-        {
-          type: "null",
-        },
-      ],
-    },
-  },
-  required: ["addresses", "stateDate"],
-};
+  const value = input as Record<string, unknown>;
+  const query = readOptionalString(value, "query");
+  const place = readOptionalString(value, "place");
+  const street = readOptionalString(value, "street");
+  const limit = value.limit;
+
+  if (!query && (!place || !street)) {
+    throw new Error("resolve_address requires query or both place and street.");
+  }
+
+  if (limit !== undefined && typeof limit !== "number") {
+    throw new Error("resolve_address limit must be a number.");
+  }
+
+  assertSupportedAddressText(query, place, street);
+
+  return { limit, place, query, street };
+}
+
+function readOptionalString(input: Record<string, unknown>, field: string): string | undefined {
+  const value = input[field];
+
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== "string") {
+    throw new Error(`resolve_address ${field} must be a string.`);
+  }
+
+  return value;
+}

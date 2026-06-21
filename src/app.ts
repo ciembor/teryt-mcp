@@ -14,11 +14,12 @@ import { createRegistry } from "./mcp/registry.js";
 import { terytMcpVersion } from "./version.js";
 
 type CreateAppOverrides = {
+  readonly sourceCatalog?: EterytSourceCatalog;
   readonly syncSource?: TerytSource;
 };
 
 export function createApp(config: RuntimeConfig = loadRuntimeConfig(), overrides: CreateAppOverrides = {}) {
-  const sourceCatalog = new EterytSourceCatalog();
+  const sourceCatalog = overrides.sourceCatalog ?? new EterytSourceCatalog();
   const manifestStore = new JsonManifestStore(config.dataDir);
   const syncFileStore = new LocalFileStore(config.dataDir);
   const syncLockStore = new FileLockStore(config.dataDir);

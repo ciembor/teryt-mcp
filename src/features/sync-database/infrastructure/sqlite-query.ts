@@ -3,23 +3,19 @@ import { join } from "node:path";
 
 import initSqlJs from "sql.js";
 import type { Database, SqlJsStatic, SqlValue } from "sql.js";
+import { terytDatabaseSchemaVersion } from "../domain/database-schema.js";
 
 let sqlJs: Promise<SqlJsStatic> | undefined;
+const databaseFileName = "teryt.sqlite";
 
 export async function withTerytDatabase<T>(dataDir: string, callback: (db: Database) => T): Promise<T> {
   let content: Uint8Array;
 
   try {
-    content = await readFile(join(dataDir, "teryt.sqlite"));
+    content = await readFile(join(dataDir, databaseFileName));
   } catch (error) {
     if (isMissingFile(error)) {
-      const db = await createEmptyDatabase();
-
-      try {
-        return callback(db);
-      } finally {
-        db.close();
-      }
+      throw new Error(`TERYT database is missing at ${join(dataDir, databaseFileName)}. Run sync_database first.`);
     }
 
     throw error;
@@ -29,7 +25,31 @@ export async function withTerytDatabase<T>(dataDir: string, callback: (db: Datab
   const db = new SQL.Database(content);
 
   try {
+    assertCompatibleSchema(db);
     return callback(db);
+  } finally {
+    db.close();
+  }
+}
+
+export async function readTerytDatabaseSchemaVersion(dataDir: string): Promise<number | null> {
+  let content: Uint8Array;
+
+  try {
+    content = await readFile(join(dataDir, databaseFileName));
+  } catch (error) {
+    if (isMissingFile(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+
+  const SQL = await loadSqlJs();
+  const db = new SQL.Database(content);
+
+  try {
+    return readSchemaVersion(db);
   } finally {
     db.close();
   }
@@ -56,18 +76,29 @@ export function queryMany<T>(db: Database, sql: string, params: readonly SqlValu
   return rows;
 }
 
-async function createEmptyDatabase(): Promise<Database> {
-  const SQL = await loadSqlJs();
-  const db = new SQL.Database();
-  db.run("CREATE TABLE places (id TEXT, name TEXT, stateDate TEXT, unitId TEXT)");
-  db.run("CREATE TABLE streets (SYM_UL TEXT, id TEXT, name TEXT, placeId TEXT, stateDate TEXT)");
-  db.run("CREATE TABLE units (id TEXT, name TEXT, stateDate TEXT, type TEXT)");
-  return db;
-}
-
 function loadSqlJs(): Promise<SqlJsStatic> {
   sqlJs ??= initSqlJs();
   return sqlJs;
+}
+
+function assertCompatibleSchema(db: Database): void {
+  const actual = readSchemaVersion(db);
+
+  if (actual !== terytDatabaseSchemaVersion) {
+    throw new Error(
+      `TERYT database schema is incompatible (found ${actual ?? "unknown"}, expected ${terytDatabaseSchemaVersion}). Run teryt-mcp sync --force.`,
+    );
+  }
+}
+
+function readSchemaVersion(db: Database): number | null {
+  try {
+    const row = queryOne(db, "SELECT value FROM metadata WHERE key = ?", ["schemaVersion"], (value) => value);
+    const version = Number(row?.value);
+    return Number.isInteger(version) ? version : null;
+  } catch {
+    return null;
+  }
 }
 
 function isMissingFile(error: unknown): boolean {

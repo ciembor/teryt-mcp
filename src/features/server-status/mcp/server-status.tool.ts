@@ -34,7 +34,7 @@ export function createServerStatusTool(input: CreateServerStatusToolInput) {
           properties: {
             status: {
               type: "string",
-              enum: ["not_configured"],
+              enum: ["missing", "available"],
             },
           },
           required: ["status"],
@@ -45,8 +45,8 @@ export function createServerStatusTool(input: CreateServerStatusToolInput) {
     annotations: {
       readOnlyHint: true,
     },
-    handler: () => ({
-      structuredContent: getServerStatus({
+    handler: async () => ({
+      structuredContent: await getServerStatus({
         ...input,
         frameworkVersion: mcpCraftsmanCoreVersion,
       }),

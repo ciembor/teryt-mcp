@@ -12,7 +12,9 @@ import type { StreetRepository } from "../../search-streets/application/ports/st
 import type { Street } from "../../search-streets/domain/street.js";
 import type { UnitRepository } from "../../search-units/application/ports/unit-repository.js";
 import type { Unit } from "../../search-units/domain/unit.js";
-import { queryMany, queryOne, type SqlRow, withTerytDatabase } from "./sqlite-query.js";
+import { queryMany, queryOne, withTerytDatabase } from "./sqlite-query.js";
+import { mapAddress, mapPlace, mapStreet, mapUnit } from "./sqlite-row-mappers.js";
+import { findSearchCandidates } from "./sqlite-search-candidates.js";
 
 export class SqliteTerytRepository
   implements
@@ -34,8 +36,8 @@ export class SqliteTerytRepository
     return withTerytDatabase(this.dataDir, (db) =>
       queryOne(
         db,
-        "SELECT SYM_UL AS code, id, name, placeId, stateDate FROM streets WHERE id = ? OR SYM_UL = ?",
-        [id, id],
+        "SELECT SYM_UL AS code, id, name, placeId, stateDate FROM streets WHERE id = ?",
+        [id],
         mapStreet,
       ),
     );
@@ -45,7 +47,12 @@ export class SqliteTerytRepository
     return withTerytDatabase(this.dataDir, (db) => queryOne(db, "SELECT id, name, stateDate, type FROM units WHERE id = ?", [id], mapUnit));
   }
 
-  async listAddresses(): Promise<readonly ResolvedAddress[]> {
+  async findAddresses(input: {
+    readonly limit: number;
+    readonly place: string;
+    readonly query: string;
+    readonly street: string;
+  }): Promise<readonly ResolvedAddress[]> {
     return withTerytDatabase(this.dataDir, (db) =>
       queryMany(
         db,
@@ -62,79 +69,51 @@ export class SqliteTerytRepository
         FROM streets
         JOIN places ON places.id = streets.placeId
         JOIN units ON units.id = places.unitId
-        ORDER BY places.name, streets.name, streets.id`,
-        [],
+        WHERE streets.id = ?
+          OR (? <> '' AND places.normalizedName = ? AND streets.normalizedName = ?)
+          OR (? <> '' AND (
+            (places.normalizedName || ' ' || streets.normalizedName) LIKE ?
+            OR (streets.normalizedName || ' ' || places.normalizedName) LIKE ?
+          ))
+        ORDER BY places.name, streets.name, streets.id
+        LIMIT ?`,
+        [
+          input.query,
+          input.place,
+          input.place,
+          input.street,
+          input.query,
+          `${input.query}%`,
+          `${input.query}%`,
+          input.limit,
+        ],
         mapAddress,
       ),
     );
   }
 
-  async listPlaces(): Promise<readonly Place[]> {
-    return withTerytDatabase(this.dataDir, (db) => queryMany(db, "SELECT id, name, stateDate, unitId FROM places ORDER BY name, id", [], mapPlace));
-  }
-
-  async listStreets(): Promise<readonly Street[]> {
+  async findPlaces(query: string, limit: number): Promise<readonly Place[]> {
     return withTerytDatabase(this.dataDir, (db) =>
-      queryMany(db, "SELECT SYM_UL AS code, id, name, placeId, stateDate FROM streets ORDER BY name, id", [], mapStreet),
+      findSearchCandidates(db, "places", query, limit, mapPlace),
     );
   }
 
-  async listUnits(): Promise<readonly Unit[]> {
-    return withTerytDatabase(this.dataDir, (db) => queryMany(db, "SELECT id, name, stateDate, type FROM units ORDER BY name, id", [], mapUnit));
+  async findStreets(query: string, limit: number): Promise<readonly Street[]> {
+    return withTerytDatabase(this.dataDir, (db) =>
+      findSearchCandidates(
+        db,
+        "streets",
+        query,
+        limit,
+        mapStreet,
+        "SYM_UL",
+      ),
+    );
   }
-}
 
-function mapPlace(row: SqlRow): Place {
-  return {
-    id: readText(row.id),
-    name: readText(row.name),
-    stateDate: readText(row.stateDate),
-    unitId: readText(row.unitId),
-  };
-}
-
-function mapStreet(row: SqlRow): Street {
-  return {
-    code: readText(row.code),
-    id: readText(row.id),
-    name: readText(row.name),
-    placeId: readText(row.placeId),
-    stateDate: readText(row.stateDate),
-  };
-}
-
-function mapUnit(row: SqlRow): Unit {
-  return {
-    id: readText(row.id),
-    name: readText(row.name),
-    stateDate: readText(row.stateDate),
-    type: readText(row.type),
-  };
-}
-
-function mapAddress(row: SqlRow): ResolvedAddress {
-  const streetId = readText(row.id);
-
-  return {
-    id: streetId,
-    place: {
-      id: readText(row.placeId),
-      name: readText(row.placeName),
-    },
-    stateDate: readText(row.stateDate),
-    street: {
-      code: readText(row.streetCode),
-      id: streetId,
-      name: readText(row.streetName),
-    },
-    unit: {
-      id: readText(row.unitId),
-      name: readText(row.unitName),
-      type: readText(row.unitType),
-    },
-  };
-}
-
-function readText(value: unknown): string {
-  return typeof value === "string" ? value : "";
+  async findUnits(query: string, limit: number): Promise<readonly Unit[]> {
+    return withTerytDatabase(this.dataDir, (db) =>
+      findSearchCandidates(db, "units", query, limit, mapUnit),
+    );
+  }
 }

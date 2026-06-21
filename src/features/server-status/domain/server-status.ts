@@ -5,6 +5,6 @@ export type ServerStatus = {
   readonly transport: "stdio" | "http";
   readonly dataDir: string;
   readonly database: {
-    readonly status: "not_configured";
+    readonly status: "missing" | "available";
   };
 };

@@ -38,9 +38,11 @@ describe("syncDatabase from TERYT fixtures", () => {
           };
         },
       },
-      fileStore: {
-        databaseExists: async () => false,
-        swapDatabase: async (content) => {
+        fileStore: {
+          databaseExists: async () => false,
+          databaseModifiedAt: async () => null,
+          databaseSchemaVersion: async () => null,
+          swapDatabase: async (content) => {
           swaps.push(content);
           return "test-data/teryt.sqlite";
         },

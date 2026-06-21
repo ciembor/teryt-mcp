@@ -5,7 +5,8 @@ import { searchPlaces, type SearchPlacesDependencies } from "../application/sear
 export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
   return defineTool({
     name: "search_places",
-    description: "Searches TERYT places.",
+    description:
+      "Search SIMC localities/miejscowości such as cities, towns and villages. Use for requests about miejscowość, wieś, miasto as a locality, SIMC or identyfikator miejscowości. Do not use for administrative gminy/powiaty; use search_units instead.",
     inputSchema: {
       type: "object",
       properties: {
@@ -34,7 +35,7 @@ export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
               },
               matchedBy: {
                 type: "string",
-                enum: ["exact_code", "exact_normalized_name", "prefix", "fts"],
+                enum: ["exact_code", "exact_normalized_name", "prefix", "contains"],
               },
               place: {
                 type: "object",

@@ -8,7 +8,7 @@ const DOWNLOAD_PAGE_URL =
 
 const eventTargets: Readonly<Record<DatasetCode, string>> = {
   SIMC: "ctl00$body$BSIMCUrzedowyPobierz",
-  TERC: "ctl00$body$BTERCAdresowyPobierz",
+  TERC: "ctl00$body$BTERCUrzedowyPobierz",
   ULIC: "ctl00$body$BULICUrzedowyPobierz",
   WMRODZ: "ctl00$body$BRodzMiejPobierz",
 };
@@ -61,13 +61,20 @@ export class EterytSource implements TerytSource {
     }
 
     const contentType = response.headers.get("content-type") ?? "";
+    const content = new Uint8Array(await response.arrayBuffer());
 
-    if (contentType.includes("text/html")) {
+    if (contentType.includes("text/html") || looksLikeHtml(content)) {
       throw new Error("eTeryt returned HTML instead of a dataset file.");
     }
 
-    return new Uint8Array(await response.arrayBuffer());
+    return content;
   }
+}
+
+function looksLikeHtml(content: Uint8Array): boolean {
+  const prefix = new TextDecoder().decode(content.subarray(0, 256)).trimStart().toLowerCase();
+
+  return prefix.startsWith("<!doctype html") || prefix.startsWith("<html");
 }
 
 function parseHiddenInputs(html: string): URLSearchParams {

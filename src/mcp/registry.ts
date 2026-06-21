@@ -46,6 +46,7 @@ export function createRegistry(input: CreateRegistryInput) {
     healthTool,
     createServerStatusTool({
       dataDir: input.config.dataDir,
+      databaseExists: () => input.manifestStore.hasDatabase(),
       transport: input.config.transport,
     }),
     createSourceStatusTool({

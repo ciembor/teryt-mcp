@@ -1,96 +1,39 @@
 # Backlog
 
-This file tracks current follow-up work. Historical framework extraction notes were removed because MCP Craftsman now lives in its own repository and is published as `@mcp-craftsman/*`.
+This file tracks work that remains after the runtime, sync, SQLite, MCP contract, and documentation fixes prepared for `teryt-mcp@0.1.8`.
 
-## Done
+## Release And Database Migration
 
-- TERYT MCP is a single server package.
-- MCP Craftsman framework packages were extracted to `/Users/maciej/Projects/mcp-craftman`.
-- Published packages:
-  - `@mcp-craftsman/core@0.1.3`
-  - `@mcp-craftsman/node@0.1.2`
-  - `@mcp-craftsman/cli@0.1.5`
-- TERYT consumes the framework from npm.
-- `teryt-mcp@0.1.3` is published.
-- TERYT reads runtime data from synced SQLite instead of in-memory repositories.
-- TERYT runs first sync during package installation with `TERYT_MCP_SKIP_POSTINSTALL_SYNC=1` opt-out.
-- `pnpm quality` and `pnpm build` pass in TERYT.
+- [x] Add an explicit SQLite schema version to the database metadata and sync manifest.
+- [x] Detect an incompatible existing database and return an actionable `sync --force` error instead of a raw SQLite column error.
+- [x] Automatically rebuild an outdated schema during postinstall/missing sync while preserving explicit `sync --force`.
+- [x] Publish version 0.1.8 to npm and verify a clean global upgrade (requires explicit release authorization).
+- [x] Add a clean `npm pack` installation smoke test that performs sync, status, search, and an MCP stdio roundtrip.
 
-## Next
+## Search And Performance
 
-- Move local development to Node.js `>=20.19.0`.
-- Add installation and first-run examples for `teryt-mcp`.
-- Add release notes for current MCP Craftsman and TERYT MCP releases.
-- Add a smoke test that installs `@mcp-craftsman/cli` from npm in a temporary project and runs generated project quality.
+- [x] Make SQL candidate ordering deterministic before `LIMIT`, preserving exact code, exact normalized name, prefix, and substring priority.
+- [x] Benchmark search and `resolve_address` against the full TERC, SIMC, and ULIC datasets, including latency and memory usage.
+- [x] Keep normalized SQLite indexes for 0.1.8; measured latency is acceptable for the local MCP use case.
+- [x] Defer FTS5 with explicit performance thresholds; keep `matchedBy: "contains"` truthful.
 
-## Framework Next
+## Address Resolution
 
-These should stay generic. MCP Craftsman is intended for any MCP server, not only TERYT.
+- [x] Support common Polish inflected locality/street forms, including `Warszawie`, `Krakowie`, `Bolesławcu`, and adjective forms such as `Marszałkowskiej`.
+- [x] Expand normalization for common street prefixes and variants such as `al.`, `aleja`, `pl.`, `plac`, and punctuation-heavy input.
+- [x] Keep `resolve_address` scoped to locality-and-street relations; route locality-only requests to `search_places`.
+- [x] Reject building numbers and postal codes with actionable errors; they are outside TERYT scope.
+- [x] Add packaged smoke tests based on real TERYT relations for natural Polish prompts in both place-street and street-place order.
 
-1. Add setup lifecycle primitives.
-   - [x] `defineSetupTask`
-   - [x] `runSetupTasks({ mode: "missing" | "force" })`
-   - [x] a postinstall helper for best-effort setup
-   - [x] env opt-out such as `MCP_SKIP_POSTINSTALL_SETUP`
-   - [x] stable setup logging that does not fail package installation unless explicitly configured
+## Source Freshness And Status
 
-2. Improve runtime config.
-   - [x] Accept an application name, e.g. `loadRuntimeConfig({ appName: "teryt-mcp" })`.
-   - [x] Resolve app-specific data/cache directories.
-   - [x] Keep `MCP_DATA_DIR` override.
-   - [x] Support `XDG_CACHE_HOME`, macOS user cache, and Windows `LOCALAPPDATA`.
-   - [x] Consider `MCP_CONFIG_DIR` and `MCP_LOG_LEVEL`.
+- [x] Implement a 24-hour `stale` policy instead of rebuilding unconditionally.
+- [x] Populate `lastCheckedAt` and `remoteSource.status` by checking the official eTeryt source.
+- [x] Verify consistency between `teryt.sqlite` and `sync-manifest.json`, including missing files, mismatched schema versions, and interrupted manual changes.
 
-3. Add a CLI builder.
-   - [x] `createMcpCli({ appName, createApp })`.
-   - [x] Standard commands: `serve`, `status`, `tools`, `call`, `setup`.
-   - [x] JSON output by default.
-   - [x] Allow applications to add domain aliases, e.g. `search places`.
+## MCP Client UX
 
-4. Add library-backed schema and validation ergonomics.
-   - [x] Keep `@mcp-craftsman/core` capable of accepting raw JSON Schema.
-   - [x] Add an optional Zod integration package, e.g. `@mcp-craftsman/zod`.
-   - [x] Provide `defineZodTool({ input, output, handler })` that:
-     - [x] validates input with Zod,
-     - [x] infers typed handler input,
-     - [x] generates MCP `inputSchema` and `outputSchema` from the same source.
-   - Use Ajv for raw JSON Schema validation if/when raw schemas are validated at runtime.
-   - [x] Do not build a large custom schema DSL in MCP Craftsman.
-   - [x] Keep small field readers such as `readRequiredStringField` for lightweight/no-Zod use cases.
-
-5. Add project configuration loading for CLI/tooling.
-   - [x] Use `cosmiconfig` for project config discovery.
-   - [x] Support `mcp-craftsman.config.ts`, `.mcp-craftsmanrc`, and `package.json` config.
-   - [x] Keep runtime env/data-dir config separate from project/tooling config.
-   - [x] Do not use beta config loaders as framework foundations.
-
-6. Generate standard quality contracts for applications.
-   - [x] Registry contains expected tools.
-   - [x] Every tool has output schema.
-   - [x] Read/write annotations are consistent.
-   - [x] Tools return structured content.
-   - [x] Invalid input errors are stable.
-   - [x] Applications do not import private framework paths.
-
-7. Improve feature generation.
-   - [x] Generate domain type.
-   - [x] Generate application use-case.
-   - [x] Generate port.
-   - [x] Generate MCP tool.
-   - [x] Generate contract test.
-   - [x] Update registry.
-   - [x] Optionally generate an infrastructure adapter stub.
-   - [x] Default generated tools should use Zod once `@mcp-craftsman/zod` exists.
-
-8. Add generic local resource lifecycle helpers.
-   - [x] File resource store.
-   - [x] Manifest store.
-   - [x] Resource lock.
-   - [x] Atomic resource swap.
-   - [x] Snapshot metadata.
-   - [x] Generic resource sync flow for local indexes, caches, downloaded dictionaries, embedding stores, or model files.
-
-## TERYT Next
-
-- Decide whether search should keep JS ranking with SQL preselection, or move more ranking into SQLite.
-- If optimizing search, preserve current MCP output contracts and use SQL/FTS only to reduce candidate sets first.
+- [x] Add an intent-selection matrix and runtime metadata contracts, including clarification for ambiguous `Jaki jest TERYT Warszawy?` prompts.
+- [x] Evaluate server-level MCP instructions; defer until MCP Craftsman exposes the protocol `instructions` field.
+- [x] Document Codex configuration through `~/.codex/config.toml` and `codex mcp add`, separately from generic client and VS Code `mcp.json` examples.
+- [x] Verify the published package in Codex after a fresh process restart and confirm all tools are discoverable.

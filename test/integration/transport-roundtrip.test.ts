@@ -33,7 +33,7 @@ describe("transport roundtrip", () => {
       chunks.push(chunk.toString());
     });
 
-    const stdio = startStdioServer(createTerytApp(), {
+    const stdio = await startStdioServer(createTerytApp(), {
       input,
       output,
       logger: createSilentLogger(),
@@ -41,23 +41,61 @@ describe("transport roundtrip", () => {
 
     input.write(
       `${JSON.stringify({
+        jsonrpc: "2.0",
         id: 1,
+        method: "initialize",
+        params: {
+          capabilities: {},
+          clientInfo: {
+            name: "teryt-test-client",
+            version: "1.0.0",
+          },
+          protocolVersion: "2025-03-26",
+        },
+      })}\n`,
+    );
+    await waitForJsonLines(chunks, 1);
+    input.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`);
+    input.write(
+      `${JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "tools/list",
+        params: {},
+      })}\n`,
+    );
+    await waitForJsonLines(chunks, 2);
+    input.write(
+      `${JSON.stringify({
+        jsonrpc: "2.0",
+        id: 3,
         method: "tools/call",
         params: {
-          input: {},
+          arguments: {},
           name: "health_status",
         },
       })}\n`,
     );
+    await waitForJsonLines(chunks, 3);
+    await stdio.close();
 
-    await vi.waitFor(() => {
-      expect(chunks.join("")).toContain('"ok":true');
-    });
-    stdio.close();
-
-    expect(JSON.parse(chunks.join(""))).toEqual({
+    const [initialize, list, call] = chunks.join("").trim().split("\n").map((line) => JSON.parse(line));
+    expect(initialize).toMatchObject({
+      jsonrpc: "2.0",
       id: 1,
       result: {
+        capabilities: { tools: {} },
+        serverInfo: { name: "teryt-mcp" },
+      },
+    });
+    expect(list.result.tools).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: "health_status" })]),
+    );
+    expect(call).toEqual({
+      jsonrpc: "2.0",
+      id: 3,
+      result: {
+        content: [],
         structuredContent: {
           ok: true,
         },
@@ -106,4 +144,10 @@ function createTempDirSync(): string {
   const path = mkdtempSync(join(tmpdir(), "teryt-transport-roundtrip-"));
   tempDirs.push(path);
   return path;
+}
+
+async function waitForJsonLines(chunks: string[], count: number): Promise<void> {
+  await vi.waitFor(() => {
+    expect(chunks.join("").trim().split("\n").filter(Boolean)).toHaveLength(count);
+  });
 }

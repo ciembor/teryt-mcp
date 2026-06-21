@@ -39,7 +39,7 @@ validate columns, STAN_NA, record counts, and relations
 build SQLite schema
 insert raw tables
 insert search tables
-build FTS indexes
+build normalized-name indexes
 atomically swap teryt.sqlite
 write sync-manifest.json
 ```
@@ -54,7 +54,7 @@ Builds the database only when `teryt.sqlite` does not exist.
 
 `stale`
 
-Currently plans a rebuild path for stale data checks. Remote freshness policy can be expanded without changing the MCP contract.
+Skips a compatible database modified less than 24 hours ago. Rebuilds databases that are at least 24 hours old, have no usable modification timestamp, or use an incompatible schema.
 
 `force`
 
@@ -92,9 +92,7 @@ units
 places
 streets
 metadata
-units_fts
-places_fts
-streets_fts
+normalized-name indexes for units, places, and streets
 ```
 
 TERYT identifiers are stored as `TEXT` to preserve leading zeroes.
@@ -104,6 +102,7 @@ TERYT identifiers are stored as `TEXT` to preserve leading zeroes.
 The manifest records:
 
 ```text
+schemaVersion
 dataset
 variant
 stateDate

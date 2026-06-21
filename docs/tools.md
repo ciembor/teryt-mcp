@@ -94,7 +94,7 @@ matchedBy
 confidence
 ```
 
-Ranking supports exact code, exact normalized name, prefix, and FTS.
+Ranking supports exact code, exact normalized name, prefix, and normalized substring matching.
 
 ## search_places
 
@@ -116,7 +116,7 @@ matchedBy
 confidence
 ```
 
-Ranking supports exact code, exact normalized name, prefix, and FTS.
+Ranking supports exact code, exact normalized name, prefix, and normalized substring matching.
 
 ## search_streets
 
@@ -138,7 +138,7 @@ matchedBy
 confidence
 ```
 
-Ranking supports exact code, exact normalized name, prefix, and FTS.
+Ranking supports exact code, exact normalized name, prefix, and normalized substring matching.
 
 ## resolve_address
 
@@ -147,9 +147,13 @@ Read-only address candidate resolution up to street level.
 Input:
 
 ```text
-query: string
+query?: string
+place?: string
+street?: string
 limit?: number, default 20, max 100
 ```
+
+Provide either `query` or both `place` and `street`. Structured fields are preferred.
 
 Returns address candidates with:
 
@@ -160,7 +164,7 @@ matchedBy
 confidence
 ```
 
-The tool resolves territorial unit, place, and street identifiers. It does not geocode and does not return coordinates.
+The tool requires both a locality and a street and resolves territorial unit, place, and street identifiers. Use `search_places` for locality-only requests. It does not geocode and does not return coordinates.
 
 ## get_unit
 

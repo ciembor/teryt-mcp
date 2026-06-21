@@ -44,6 +44,7 @@ export const terytSqliteSchema = [
     GMI TEXT,
     RODZ TEXT,
     name TEXT,
+    normalizedName TEXT,
     type TEXT,
     stateDate TEXT
   )`,
@@ -53,6 +54,7 @@ export const terytSqliteSchema = [
     SYMPOD TEXT,
     RM TEXT,
     name TEXT,
+    normalizedName TEXT,
     unitId TEXT,
     stateDate TEXT
   )`,
@@ -61,6 +63,7 @@ export const terytSqliteSchema = [
     SYM TEXT,
     SYM_UL TEXT,
     name TEXT,
+    normalizedName TEXT,
     placeId TEXT,
     stateDate TEXT
   )`,
@@ -68,7 +71,7 @@ export const terytSqliteSchema = [
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
   )`,
-  "CREATE VIRTUAL TABLE units_fts USING fts5(name, content='units', content_rowid='rowid')",
-  "CREATE VIRTUAL TABLE places_fts USING fts5(name, content='places', content_rowid='rowid')",
-  "CREATE VIRTUAL TABLE streets_fts USING fts5(name, content='streets', content_rowid='rowid')",
+  "CREATE INDEX units_normalized_name_idx ON units(normalizedName)",
+  "CREATE INDEX places_normalized_name_idx ON places(normalizedName)",
+  "CREATE INDEX streets_normalized_name_idx ON streets(normalizedName)",
 ] as const;

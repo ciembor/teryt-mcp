@@ -8,7 +8,7 @@ describe("project architecture", () => {
   it("keeps the capability registry valid", () => {
     const registry = createRegistry({
       addressRepository: {
-        listAddresses: async () => [],
+        findAddresses: async () => [],
       },
       unitDetailsRepository: {
         getUnit: async () => null,
@@ -16,23 +16,25 @@ describe("project architecture", () => {
       config: createTestRuntimeConfig(),
       manifestStore: {
         getSnapshot: async () => undefined,
+        hasDatabase: async () => false,
       },
       placeDetailsRepository: {
         getPlace: async () => null,
       },
       placeRepository: {
-        listPlaces: async () => [],
+        findPlaces: async () => [],
       },
       streetRepository: {
-        listStreets: async () => [],
+        findStreets: async () => [],
       },
       streetDetailsRepository: {
         getStreet: async () => null,
       },
       unitRepository: {
-        listUnits: async () => [],
+        findUnits: async () => [],
       },
       sourceCatalog: {
+        checkAvailability: async () => ({ checkedAt: "2026-01-01T00:00:00.000Z", errors: [], status: "available" }),
         listDatasets: async () => [],
       },
       sync: {
@@ -43,6 +45,8 @@ describe("project architecture", () => {
         },
         fileStore: {
           databaseExists: async () => false,
+          databaseModifiedAt: async () => null,
+          databaseSchemaVersion: async () => null,
           swapDatabase: async () => "test-data/teryt.sqlite",
         },
         lockStore: {

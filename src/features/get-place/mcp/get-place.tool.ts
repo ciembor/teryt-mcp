@@ -5,12 +5,14 @@ import { getPlace, type GetPlaceDependencies } from "../application/get-place.js
 export function createGetPlaceTool(dependencies: GetPlaceDependencies) {
   return defineTool({
     name: "get_place",
-    description: "Gets a TERYT place by identifier.",
+    description: "Get a SIMC locality/miejscowość by its 7-digit SIMC identifier.",
     inputSchema: {
       type: "object",
       properties: {
         id: {
           type: "string",
+          pattern: "^[0-9]{7}$",
+          description: "7-digit SIMC locality identifier.",
         },
       },
       required: ["id"],

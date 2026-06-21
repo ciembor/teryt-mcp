@@ -7,7 +7,8 @@ export function createSearchStreetsTool(dependencies: SearchStreetsDependencies)
     inputSchema,
     outputSchema,
     name: "search_streets",
-    description: "Searches TERYT streets.",
+    description:
+      "Search ULIC street names across all localities. Use when the user asks for a street without a specific locality. If both locality/miejscowość and street/ulica are provided, use resolve_address instead.",
     policy: "read",
     returnsStructuredContent: true,
     annotations: {
@@ -58,7 +59,7 @@ const outputSchema = {
           },
           matchedBy: {
             type: "string",
-            enum: ["exact_code", "exact_normalized_name", "prefix", "fts"],
+            enum: ["exact_code", "exact_normalized_name", "prefix", "contains"],
           },
           street: {
             type: "object",

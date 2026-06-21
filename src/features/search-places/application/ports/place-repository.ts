@@ -1,5 +1,5 @@
 import type { Place } from "../../domain/place.js";
 
 export type PlaceRepository = {
-  readonly listPlaces: () => Promise<readonly Place[]>;
+  readonly findPlaces: (query: string, limit: number) => Promise<readonly Place[]>;
 };

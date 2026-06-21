@@ -5,12 +5,14 @@ import { getUnit, type GetUnitDependencies } from "../application/get-unit.js";
 export function createGetUnitTool(dependencies: GetUnitDependencies) {
   return defineTool({
     name: "get_unit",
-    description: "Gets a TERYT territorial unit by identifier.",
+    description: "Get a TERC administrative unit by its full TERYT identifier, for example 02-01-01-1.",
     inputSchema: {
       type: "object",
       properties: {
         id: {
           type: "string",
+          pattern: "^[0-9]{2}(?:-[0-9]{2})?(?:-[0-9]{2}-[0-9])?$",
+          description: "TERC unit identifier, for example 02 or 02-01-01-1.",
         },
       },
       required: ["id"],

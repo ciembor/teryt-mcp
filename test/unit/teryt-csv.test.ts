@@ -32,6 +32,25 @@ describe("importTerytCsv", () => {
     expect(result.rows[0]?.values.SYM).toBe("0009876");
   });
 
+  it("normalizes the current official TERC NAZWA_DOD column", () => {
+    const result = importTerytCsv(
+      "WOJ;POW;GMI;RODZ;NAZWA;NAZWA_DOD;STAN_NA\n02;01;01;1;Bolesławiec;gmina miejska;2026-01-01",
+    );
+
+    expect(result.dataset).toBe("TERC");
+    expect(result.columns).toContain("NAZDOD");
+    expect(result.rows[0]?.values.NAZDOD).toBe("gmina miejska");
+  });
+
+  it("handles BOM, escaped quotes and multiline quoted fields", () => {
+    const result = importTerytCsv(
+      '\uFEFFRM;NAZWA_RM;STAN_NA\n01;"miasto ""stołeczne""\nwielkie";2026-01-01',
+    );
+
+    expect(result.columns[0]).toBe("RM");
+    expect(result.rows[0]?.values.NAZWA_RM).toBe('miasto "stołeczne"\nwielkie');
+  });
+
   it("rejects missing required columns", () => {
     expect(() => importTerytCsv("WOJ;POW;GMI;RODZ\n02;01;01;1")).toThrow(/Missing TERC columns/);
   });
@@ -77,6 +96,16 @@ describe("importTerytCsv", () => {
     });
 
     expect(() => importTerytZip(zip)).toThrow(/does not contain a CSV/);
+  });
+
+  it("selects the expected dataset from ZIP archives with multiple CSV files", async () => {
+    const [terc, simc] = await Promise.all([
+      readFile(join(fixtureDir, "TERC.csv"), "utf8"),
+      readFile(join(fixtureDir, "SIMC.csv"), "utf8"),
+    ]);
+    const zip = zipSync({ "TERC.csv": strToU8(terc), "SIMC.csv": strToU8(simc) });
+
+    expect(importTerytZip(zip, "SIMC").dataset).toBe("SIMC");
   });
 
   it("rejects ambiguous dataset detection", () => {

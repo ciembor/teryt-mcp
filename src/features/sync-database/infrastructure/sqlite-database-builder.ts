@@ -7,6 +7,7 @@ import { validateTerytRelations } from "../application/importers/teryt-relations
 import { terytSqliteSchema } from "../application/importers/sqlite-schema.js";
 import type { DatabaseBuilder, BuiltDatabase } from "../application/ports/database-builder.js";
 import type { SourceFile } from "../application/ports/teryt-source.js";
+import { terytDatabaseSchemaVersion } from "../domain/database-schema.js";
 import { insertSearchTables } from "./sqlite-search-tables.js";
 
 type ImportedDataset = ReturnType<typeof importTerytCsv>;
@@ -102,6 +103,7 @@ function insertRawDatasets(db: Database, imports: readonly ImportedDataset[]): v
 function insertMetadata(db: Database, imports: readonly ImportedDataset[]): void {
   const metadata = [
     ["datasetCount", String(imports.length)],
+    ["schemaVersion", String(terytDatabaseSchemaVersion)],
     ["stateDates", imports.map((item) => `${item.dataset}:${item.stateDate}`).join(",")],
   ];
 
