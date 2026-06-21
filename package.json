@@ -1,8 +1,16 @@
 {
   "name": "teryt-mcp",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": false,
   "description": "MCP server for the official Polish TERYT registry.",
+  "author": {
+    "name": "Maciej Ciemborowicz",
+    "email": "maciej.ciemborowicz@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ciembor/teryt-mcp.git"
+  },
   "type": "module",
   "packageManager": "pnpm@10.12.1",
   "bin": {

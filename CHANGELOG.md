@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.10
+
+- Add the `about` MCP tool with author, contact, repository, server version, synchronization status, and TERYT data state dates.
+- Improve install-time output with an ASCII banner, package metadata, and synchronization result details.
+- Fix the postinstall wrapper so it explicitly runs the built `runPostinstallSync` export.
+- Make `sync --force` rebuild without reading metadata from a potentially corrupt existing database.
+- Harden address validation for postal codes with punctuation while allowing numeric street names.
+- Add timeout and retry handling for official eTeryt downloads.
+
 ## 0.1.9
 
 - Add a committed postinstall wrapper so fresh repository installs do not require `dist/postinstall.js`.

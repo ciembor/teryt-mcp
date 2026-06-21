@@ -1,6 +1,7 @@
 import { createCapabilityRegistry } from "@mcp-craftsman/core";
 import type { RuntimeConfig } from "@mcp-craftsman/node";
 
+import { createAboutTool } from "../features/about/index.js";
 import { createGetPlaceTool, type PlaceDetailsRepository } from "../features/get-place/index.js";
 import { createGetStreetTool, type StreetDetailsRepository } from "../features/get-street/index.js";
 import { createGetUnitTool, type UnitDetailsRepository } from "../features/get-unit/index.js";
@@ -19,6 +20,7 @@ import {
   type SyncManifestStore,
   type TerytSource,
 } from "../features/sync-database/index.js";
+import { terytMcpVersion } from "../version.js";
 
 type CreateRegistryInput = {
   readonly addressRepository: AddressRepository;
@@ -44,6 +46,14 @@ type CreateRegistryInput = {
 
 export function createRegistry(input: CreateRegistryInput) {
   return createCapabilityRegistry([
+    createAboutTool({
+      authorEmail: "maciej.ciemborowicz@gmail.com",
+      authorName: "Maciej Ciemborowicz",
+      manifestStore: input.manifestStore,
+      repositoryUrl: "https://github.com/ciembor/teryt-mcp",
+      serverName: "teryt-mcp",
+      serverVersion: terytMcpVersion,
+    }),
     healthTool,
     createServerStatusTool({
       dataDir: input.config.dataDir,

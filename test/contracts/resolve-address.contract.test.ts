@@ -86,10 +86,24 @@ describe("resolve_address contract", () => {
     });
   });
 
+  it("does not reject numeric street names as building numbers", async () => {
+    await expect(
+      callTool(await createSyncedFixtureApp(), "resolve_address", {
+        place: "Bolesławiec",
+        street: "1 Armii Wojska Polskiego",
+      }),
+    ).resolves.toMatchObject({
+      structuredContent: {
+        addresses: [],
+      },
+    });
+  });
+
   it.each([
     ["Wieliszew Marszałkowska 5", /building numbers/],
     ["Wieliszew Marszałkowska 10", /building numbers/],
     ["00-001 Wieliszew Marszałkowska", /postal codes/],
+    ["00-001, Wieliszew Marszałkowska", /postal codes/],
   ])("rejects unsupported address detail %s", async (query, expectedError) => {
     await expect(callTool(await createSyncedFixtureApp(), "resolve_address", { query })).rejects.toThrow(expectedError);
   });

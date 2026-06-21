@@ -36,7 +36,13 @@ describe("postinstall sync", () => {
         },
       },
     ]);
-    expect(stderr.content).toContain("initial sync synced");
+    expect(stderr.content).toContain("████████╗███████╗██████╗");
+    expect(stderr.content).toContain("teryt-mcp 0.1.10");
+    expect(stderr.content).toContain("Author: Maciej Ciemborowicz <maciej.ciemborowicz@gmail.com>");
+    expect(stderr.content).toContain("Repository: https://github.com/ciembor/teryt-mcp");
+    expect(stderr.content).toContain("Data sync: ✓ downloaded and synchronized.");
+    expect(stderr.content).toContain("TERYT data state dates:");
+    expect(stderr.content).toContain("  - TERC: 2026-01-01");
   });
 
   it("can skip install-time sync", async () => {
@@ -54,7 +60,8 @@ describe("postinstall sync", () => {
     });
 
     expect(calls).toEqual([]);
-    expect(stderr.content).toContain("skipping initial sync");
+    expect(stderr.content).toContain("teryt-mcp 0.1.10");
+    expect(stderr.content).toContain("Data sync: skipped by TERYT_MCP_SKIP_POSTINSTALL_SYNC.");
   });
 });
 
@@ -74,6 +81,12 @@ function createSyncCaptureApp(config: RuntimeConfig, calls: unknown[]): McpApp {
 
           return {
             structuredContent: {
+              datasets: [
+                {
+                  dataset: "TERC",
+                  stateDate: "2026-01-01",
+                },
+              ],
               status: "synced",
             },
           };

@@ -13,6 +13,7 @@ import { createTestSourceCatalog } from "../support/test-source-catalog.js";
 const tempDirs: string[] = [];
 
 const toolInputs: Readonly<Record<string, unknown>> = {
+  about: {},
   get_place: {
     id: "0009876",
   },
@@ -42,7 +43,7 @@ const toolInputs: Readonly<Record<string, unknown>> = {
   },
 };
 
-const toolsWithoutInputSchema = new Set(["health_status", "server_status", "source_status"]);
+const toolsWithoutInputSchema = new Set(["about", "health_status", "server_status", "source_status"]);
 
 const invalidInputErrors: Readonly<Record<string, string>> = {
   get_place: "get_place requires id.",

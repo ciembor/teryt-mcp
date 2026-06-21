@@ -4,6 +4,26 @@ TERYT MCP exposes public tools through `src/mcp/registry.ts`. The registry is ex
 
 All tools return `structuredContent` and have `outputSchema`.
 
+## about
+
+Read-only package, contact, repository, server version, and local data synchronization status.
+
+Input: none.
+
+Returns:
+
+```text
+author name
+contact email
+repository URL
+server name and version
+data synchronization status
+last synchronized at
+TERYT data stateDate per dataset
+```
+
+TERYT datasets do not expose a package-style semantic version in this server. The tool reports `stateDate` as the data version stamp.
+
 ## health_status
 
 Read-only health check.

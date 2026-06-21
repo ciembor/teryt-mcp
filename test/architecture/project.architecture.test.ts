@@ -15,6 +15,7 @@ describe("project architecture", () => {
       },
       config: createTestRuntimeConfig(),
       manifestStore: {
+        getDatabaseSnapshot: async () => undefined,
         getSnapshot: async () => undefined,
         hasDatabase: async () => false,
       },
@@ -69,6 +70,7 @@ describe("project architecture", () => {
     });
 
     expect(registry.capabilities.map((capability) => capability.name)).toEqual([
+      "about",
       "get_place",
       "get_street",
       "get_unit",

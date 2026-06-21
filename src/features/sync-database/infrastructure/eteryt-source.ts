@@ -1,5 +1,6 @@
 import type { DatasetCode } from "../domain/dataset.js";
 import type { SourceFile, TerytSource } from "../application/ports/teryt-source.js";
+import { fetchWithRetry } from "./eteryt-fetch.js";
 
 type Fetch = typeof fetch;
 
@@ -29,7 +30,7 @@ export class EterytSource implements TerytSource {
   }
 
   private async fetchPage(): Promise<{ readonly cookies: string; readonly html: string }> {
-    const response = await this.fetchFn(DOWNLOAD_PAGE_URL);
+    const response = await fetchWithRetry(this.fetchFn, DOWNLOAD_PAGE_URL);
 
     if (!response.ok) {
       throw new Error(`Cannot load eTeryt download page: HTTP ${response.status}.`);
@@ -47,7 +48,7 @@ export class EterytSource implements TerytSource {
     form.set("__EVENTTARGET", eventTarget);
     form.set("__EVENTARGUMENT", "");
 
-    const response = await this.fetchFn(DOWNLOAD_PAGE_URL, {
+    const response = await fetchWithRetry(this.fetchFn, DOWNLOAD_PAGE_URL, {
       body: form,
       headers: {
         "content-type": "application/x-www-form-urlencoded",

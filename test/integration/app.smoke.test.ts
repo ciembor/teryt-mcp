@@ -7,6 +7,7 @@ describe("app", () => {
   it("creates an MCP app", () => {
     const app = createApp(createTestRuntimeConfig());
 
+    expect(app.registry.get("about")).toBeDefined();
     expect(app.registry.get("get_place")).toBeDefined();
     expect(app.registry.get("get_street")).toBeDefined();
     expect(app.registry.get("get_unit")).toBeDefined();

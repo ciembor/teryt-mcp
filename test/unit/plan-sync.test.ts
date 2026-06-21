@@ -3,6 +3,32 @@ import { describe, expect, it } from "vitest";
 import { planSync } from "../../src/features/sync-database/application/plan-sync.js";
 
 describe("planSync", () => {
+  it("rebuilds in force mode without reading existing database metadata", async () => {
+    const fileStore = {
+      databaseExists: async () => {
+        throw new Error("databaseExists should not be called");
+      },
+      databaseModifiedAt: async () => {
+        throw new Error("databaseModifiedAt should not be called");
+      },
+      databaseSchemaVersion: async () => {
+        throw new Error("databaseSchemaVersion should not be called");
+      },
+      swapDatabase: async () => "unused",
+    };
+
+    await expect(
+      planSync({
+        databaseIsUsable: async () => {
+          throw new Error("databaseIsUsable should not be called");
+        },
+        fileStore,
+        mode: "force",
+        now: new Date("2026-01-01T00:00:00.000Z"),
+      }),
+    ).resolves.toEqual({ action: "build_database", reason: "force" });
+  });
+
   it("skips an existing compatible database in missing mode", async () => {
     await expect(
       planSync({

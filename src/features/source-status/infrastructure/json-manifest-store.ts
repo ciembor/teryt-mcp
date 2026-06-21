@@ -4,10 +4,12 @@ import { join, resolve } from "node:path";
 import type { DatasetCode } from "../domain/dataset.js";
 import type { SourceSnapshot } from "../domain/source-snapshot.js";
 import type { ManifestStore } from "../application/ports/manifest-store.js";
+import type { DatabaseSnapshot } from "../../sync-database/domain/snapshot.js";
 import { terytDatabaseSchemaVersion } from "../../sync-database/domain/database-schema.js";
 import { readTerytDatabaseSchemaVersion } from "../../sync-database/infrastructure/sqlite-query.js";
 
 type ManifestFile = {
+  readonly builtAt?: string;
   readonly datasets?: readonly SourceSnapshot[];
   readonly path?: string;
   readonly schemaVersion?: number;
@@ -19,6 +21,32 @@ export class JsonManifestStore implements ManifestStore {
   async getSnapshot(dataset: DatasetCode): Promise<SourceSnapshot | undefined> {
     const manifest = await this.readCompatibleManifest();
     return manifest?.datasets?.find((snapshot) => snapshot.dataset === dataset);
+  }
+
+  async getDatabaseSnapshot(): Promise<DatabaseSnapshot | undefined> {
+    const manifest = await this.readCompatibleManifest();
+
+    if (!manifest?.builtAt || !manifest.path || !manifest.datasets) {
+      return undefined;
+    }
+
+    return {
+      builtAt: manifest.builtAt,
+      datasets: manifest.datasets.map((dataset) => ({
+        columns: [],
+        dataset: dataset.dataset,
+        downloadedAt: dataset.downloadedAt,
+        publishedAtObserved: null,
+        recordCount: dataset.recordCount ?? 0,
+        sha256: dataset.sha256 ?? "",
+        source: "official-teryt-download",
+        sourceUrl: dataset.sourceUrl,
+        stateDate: dataset.stateDate ?? "unknown",
+        variant: "full",
+      })),
+      path: manifest.path,
+      schemaVersion: terytDatabaseSchemaVersion,
+    };
   }
 
   async hasDatabase(): Promise<boolean> {

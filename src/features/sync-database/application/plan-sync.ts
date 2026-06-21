@@ -12,6 +12,13 @@ type PlanSyncInput = {
 const databaseStaleAfterMs = 24 * 60 * 60 * 1000;
 
 export async function planSync(input: PlanSyncInput): Promise<SyncPlan> {
+  if (input.mode === "force") {
+    return {
+      action: "build_database",
+      reason: "force",
+    };
+  }
+
   const databaseExists = await input.fileStore.databaseExists();
 
   if (databaseExists) {

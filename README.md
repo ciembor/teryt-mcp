@@ -267,6 +267,52 @@ lub osobny bounded context, nie jako ukryty dodatek do TERYT.
 
 Wszystkie narzędzia zwracają `structuredContent`.
 
+### `about`
+
+Zwraca informacje o pakiecie, autorze, kontakcie, repozytorium, wersji serwera
+oraz stanie lokalnej synchronizacji danych.
+
+Input:
+
+```json
+{}
+```
+
+Odpowiedź ma postać:
+
+```json
+{
+  "author": {
+    "name": "Maciej Ciemborowicz"
+  },
+  "contact": {
+    "email": "maciej.ciemborowicz@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/ciembor/teryt-mcp"
+  },
+  "server": {
+    "name": "teryt-mcp",
+    "version": "0.1.10"
+  },
+  "data": {
+    "status": "available",
+    "synchronizedSuccessfully": true,
+    "lastSynchronizedAt": "2026-06-21T00:00:00.000Z",
+    "datasets": [
+      {
+        "dataset": "TERC",
+        "stateDate": "2026-01-01",
+        "version": "2026-01-01"
+      }
+    ]
+  }
+}
+```
+
+TERYT nie ma tu klasycznej wersji semver danych. Pole `version` jest datą
+stanu danych `STAN_NA` z lokalnego manifestu synchronizacji.
+
 ### `health_status`
 
 Sprawdza, czy serwer odpowiada.
@@ -300,7 +346,7 @@ Odpowiedź ma postać:
 ```json
 {
   "serverName": "teryt-mcp",
-  "serverVersion": "0.1.9",
+  "serverVersion": "0.1.10",
   "frameworkVersion": "0.2.1",
   "transport": "stdio",
   "dataDir": "/path/to/teryt-data",
