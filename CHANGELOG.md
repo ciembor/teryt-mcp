@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.13
+
+- Replace custom HTML and CSV parsing with `cheerio` and streaming `csv-parse`, including compatibility with current official ULIC irregularities.
+- Share search scoring, limits, match kinds, and MCP schemas across units, places, and streets.
+- Split ASP.NET postback form and cookie handling into tested infrastructure modules.
+- Delegate runtime paths and CLI dispatch to `@mcp-craftsman/node` while preserving existing TERYT commands and default help output.
+- Improve ZIP import and packaged smoke-test diagnostics with original parser errors.
+
+## 0.1.12
+
+- Show consistent colorized package and synchronization details after installation and in `teryt-mcp about`.
+- Match addresses embedded in longer natural-language queries.
+- Ignore common street type prefixes such as `ul.`, `al.`, and `plac` in `search_streets` queries.
+- Keep synchronization compatible with additional columns in official TERYT CSV files.
+- Treat SQL `LIKE` wildcard characters in search input as literals.
+
 ## 0.1.11
 
 - Add `teryt-mcp about` and `teryt-mcp help` CLI commands.

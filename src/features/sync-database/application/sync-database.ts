@@ -49,10 +49,12 @@ export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDataba
     }
 
     const sourceFiles = await Promise.all(datasetCodes.map((dataset) => input.source.download(dataset)));
-    const imports = sourceFiles.map((sourceFile) => ({
-      imported: importTerytSourceFile(sourceFile),
-      sourceFile,
-    }));
+    const imports = await Promise.all(
+      sourceFiles.map(async (sourceFile) => ({
+        imported: await importTerytSourceFile(sourceFile),
+        sourceFile,
+      })),
+    );
     const database = await input.databaseBuilder.build(imports.map(({ imported }) => imported));
     const databasePath = await input.fileStore.swapDatabase(database.content);
     const datasets = imports.map(({ imported, sourceFile }) => ({

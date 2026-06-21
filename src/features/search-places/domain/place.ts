@@ -7,6 +7,7 @@ export type Place = {
 
 export type PlaceMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "contains";
+  readonly matchedBy: SearchMatchKind;
   readonly place: Place;
 };
+import type { SearchMatchKind } from "../../../shared/search-entities.js";

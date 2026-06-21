@@ -1,106 +1,86 @@
 #!/usr/bin/env node
+import { callTool } from "@mcp-craftsman/core";
 import {
   createDefaultCliIo,
+  createMcpCli,
   isCliEntrypoint,
-  writeCliToolStructuredContent,
   writeJson,
   type CliIo,
+  type McpCliCommand,
+  type McpCliCommandContext,
 } from "@mcp-craftsman/node";
-import { mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { createApp } from "./app.js";
+import { writeAbout } from "./cli-about.js";
 import { helpText } from "./cli-help.js";
-import { getServerStatus } from "./features/server-status/index.js";
-import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
-import { loadTerytRuntimeConfig } from "./runtime/config.js";
-import { serve } from "./server/serve.js";
 
 type TerytCliIo = CliIo & {
   readonly appFactory?: typeof createApp;
 };
 
 export async function runCli(argv: readonly string[] = process.argv.slice(2), io: TerytCliIo = defaultIo()): Promise<void> {
-  const [command, ...args] = argv;
-
-  switch (normalizeCommand(command)) {
-    case "about":
-      await writeCliToolResult(io.stdout, "about", {}, io);
-      return;
-    case "help":
-      io.stdout.write(helpText);
-      return;
-    case "search":
-      await runSearchCommand(args, io);
-      return;
-    case "serve":
-      await serve(loadTerytRuntimeConfig(io.env));
-      return;
-    case "source-status":
-      await writeCliToolResult(io.stdout, "source_status", {}, io);
-      return;
-    case "status":
-      await writeStatus(io);
-      return;
-    case "sync":
-      await writeCliToolResult(io.stdout, "sync_database", { mode: parseSyncMode(args) }, io);
-      return;
-    default:
-      throw new Error(`Unknown command: ${command ?? "<missing>"}`);
-  }
-}
-
-function normalizeCommand(command: string | undefined): string {
-  return !command || command === "--help" || command === "-h" ? "help" : command;
-}
-
-async function writeStatus(io: TerytCliIo): Promise<void> {
-  const config = loadTerytRuntimeConfig(io.env);
-
-  writeJson(
-    io.stdout,
-    await getServerStatus({
-      dataDir: config.dataDir,
-      databaseExists: () => new JsonManifestStore(config.dataDir).hasDatabase(),
-      frameworkVersion: mcpCraftsmanCoreVersion,
-      transport: config.transport,
-    }),
-  );
-}
-
-async function writeCliToolResult(
-  stream: NodeJS.WritableStream,
-  toolName: string,
-  input: unknown,
-  io: TerytCliIo,
-): Promise<void> {
-  await writeCliToolStructuredContent(stream, io.appFactory ?? createApp, toolName, input, {
-    ...io.env,
-    MCP_DATA_DIR: loadTerytRuntimeConfig(io.env).dataDir,
+  const cli = createMcpCli({
+    appName: "teryt-mcp",
+    commands: createCommands(),
+    createApp: io.appFactory ?? createApp,
   });
+
+  await cli.run(normalizeArgv(argv), io);
 }
 
-function defaultIo(): TerytCliIo {
-  return createDefaultCliIo();
+function createCommands(): readonly McpCliCommand[] {
+  return [
+    {
+      name: "about",
+      run: ({ app, config, io }) => writeAbout(app, config.dataDir, io.stdout),
+    },
+    {
+      name: "help",
+      run: ({ io }) => {
+        io.stdout.write(helpText);
+      },
+    },
+    {
+      name: "search",
+      run: (context) => runSearchCommand(context),
+    },
+    toolCommand("source-status", "source_status", () => ({})),
+    toolCommand("status", "server_status", () => ({})),
+    toolCommand("sync", "sync_database", parseSyncInput),
+  ];
 }
 
-async function runSearchCommand(args: readonly string[], io: TerytCliIo): Promise<void> {
-  const [scope, ...queryParts] = args;
+function toolCommand(
+  name: string,
+  toolName: string,
+  readInput: (args: readonly string[]) => unknown,
+): McpCliCommand {
+  return {
+    name,
+    run: async ({ app, args, io }) => {
+      const result = await callTool(app, toolName, readInput(args));
+      writeJson(io.stdout, result.structuredContent);
+    },
+  };
+}
+
+async function runSearchCommand(context: McpCliCommandContext): Promise<void> {
+  const [scope, ...queryParts] = context.args;
 
   if (scope !== "places") {
     throw new Error("search requires scope: places.");
   }
 
-  const { limit, query } = parseSearchArgs(queryParts);
+  const result = await callTool(context.app, "search_places", parseSearchArgs(queryParts));
+  writeJson(context.io.stdout, result.structuredContent);
+}
 
-  await writeCliToolResult(
-    io.stdout,
-    "search_places",
-    {
-      limit,
-      query,
-    },
-    io,
-  );
+function normalizeArgv(argv: readonly string[]): readonly string[] {
+  return argv.length === 0 || argv[0] === "--help" || argv[0] === "-h" ? ["help"] : argv;
+}
+
+function defaultIo(): TerytCliIo {
+  return createDefaultCliIo();
 }
 
 function parseSearchArgs(args: readonly string[]): { readonly limit?: number; readonly query: string } {
@@ -136,6 +116,10 @@ function parseLimit(value: string | undefined): number {
   }
 
   return limit;
+}
+
+function parseSyncInput(args: readonly string[]): { readonly mode: "missing" | "stale" | "force" } {
+  return { mode: parseSyncMode(args) };
 }
 
 function parseSyncMode(args: readonly string[]): "missing" | "stale" | "force" {

@@ -1,6 +1,6 @@
 {
   "name": "teryt-mcp",
-  "version": "0.1.11",
+  "version": "0.1.13",
   "private": false,
   "description": "MCP server for the official Polish TERYT registry.",
   "author": {
@@ -37,6 +37,8 @@
   "dependencies": {
     "@mcp-craftsman/core": "^0.2.1",
     "@mcp-craftsman/node": "^0.2.1",
+    "cheerio": "^1.2.0",
+    "csv-parse": "^7.0.0",
     "fflate": "^0.8.3",
     "sql.js": "^1.14.1"
   },

@@ -21,7 +21,7 @@ describe("server_status contract", () => {
     ).resolves.toEqual({
       structuredContent: {
         serverName: "teryt-mcp",
-        serverVersion: "0.1.11",
+        serverVersion: "0.1.13",
         frameworkVersion: "0.2.1",
         transport: "stdio",
         dataDir: "test-data/teryt-mcp",

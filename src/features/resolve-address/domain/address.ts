@@ -26,5 +26,5 @@ export type ResolvedAddress = {
 export type AddressMatch = {
   readonly address: ResolvedAddress;
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_address" | "prefix";
+  readonly matchedBy: "contains" | "exact_code" | "exact_normalized_address" | "prefix";
 };

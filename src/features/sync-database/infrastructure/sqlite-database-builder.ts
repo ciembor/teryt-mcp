@@ -1,7 +1,7 @@
 import initSqlJs from "sql.js";
 import type { Database, SqlJsStatic } from "sql.js";
 
-import type { TerytImport } from "../application/importers/teryt-csv.js";
+import { terytRequiredColumns, type TerytImport } from "../application/importers/teryt-csv.js";
 import { validateTerytRelations } from "../application/importers/teryt-relations.js";
 import { terytSqliteSchema } from "../application/importers/sqlite-schema.js";
 import type { DatabaseBuilder, BuiltDatabase } from "../application/ports/database-builder.js";
@@ -91,7 +91,7 @@ function createFtsFallbackStatement(statement: string, error: unknown): string |
 
 function insertRawDatasets(db: Database, imports: readonly TerytImport[]): void {
   for (const imported of imports) {
-    insertRows(db, `raw_${imported.dataset.toLowerCase()}`, imported.columns, imported.rows);
+    insertRows(db, `raw_${imported.dataset.toLowerCase()}`, terytRequiredColumns[imported.dataset], imported.rows);
   }
 }
 

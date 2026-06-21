@@ -57,7 +57,7 @@ export const resolveAddressOutputSchema = {
           confidence: { type: "number" },
           matchedBy: {
             type: "string",
-            enum: ["exact_code", "exact_normalized_address", "prefix"],
+            enum: ["contains", "exact_code", "exact_normalized_address", "prefix"],
           },
         },
         required: ["address", "confidence", "matchedBy"],

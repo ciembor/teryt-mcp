@@ -7,6 +7,7 @@ export type Unit = {
 
 export type UnitMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "contains";
+  readonly matchedBy: SearchMatchKind;
   readonly unit: Unit;
 };
+import type { SearchMatchKind } from "../../../shared/search-entities.js";

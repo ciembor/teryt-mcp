@@ -1,81 +1,45 @@
-export function parseCsvRecords(content: string): readonly (readonly string[])[] {
-  const headerEnd = content.search(/[\r\n]/);
-  const header = content.slice(0, headerEnd < 0 ? undefined : headerEnd);
-  const delimiter = header.includes(";") ? ";" : ",";
-  return new CsvRecordParser(content, delimiter).parse();
+import { Readable } from "node:stream";
+import { TextDecoder } from "node:util";
+
+import { parse } from "csv-parse";
+
+const chunkSize = 64 * 1024;
+const decoder = new TextDecoder();
+
+export async function parseCsvRecords(content: string | Uint8Array): Promise<readonly (readonly string[])[]> {
+  const parser = Readable.from(readChunks(content)).pipe(
+    parse({
+      bom: true,
+      delimiter: detectDelimiter(content),
+      relax_column_count: true,
+      relax_quotes: true,
+      skip_empty_lines: true,
+    }),
+  );
+  const records: string[][] = [];
+
+  for await (const record of parser) {
+    records.push(record as string[]);
+  }
+
+  return records;
 }
 
-class CsvRecordParser {
-  private current = "";
-  private quoted = false;
-  private readonly records: string[][] = [];
-  private values: string[] = [];
-
-  constructor(
-    private readonly content: string,
-    private readonly delimiter: string,
-  ) {}
-
-  parse(): readonly (readonly string[])[] {
-    for (let index = 0; index < this.content.length; index += 1) {
-      index += this.consume(this.content[index] ?? "", this.content[index + 1]);
-    }
-
-    if (this.quoted) {
-      throw new Error("TERYT CSV contains an unterminated quoted field.");
-    }
-
-    this.finishLastRecord();
-    return this.records;
+function* readChunks(content: string | Uint8Array): Generator<string | Uint8Array> {
+  if (typeof content === "string") {
+    yield content;
+    return;
   }
 
-  private consume(character: string, next: string | undefined): number {
-    if (character === '"') {
-      return this.consumeQuote(next);
-    }
-
-    if (character === this.delimiter && !this.quoted) {
-      this.finishValue();
-      return 0;
-    }
-
-    if (isRecordSeparator(character) && !this.quoted) {
-      this.finishRecord();
-      return character === "\r" && next === "\n" ? 1 : 0;
-    }
-
-    this.current += character;
-    return 0;
-  }
-
-  private consumeQuote(next: string | undefined): number {
-    if (this.quoted && next === '"') {
-      this.current += '"';
-      return 1;
-    }
-
-    this.quoted = !this.quoted;
-    return 0;
-  }
-
-  private finishValue(): void {
-    this.values.push(this.current);
-    this.current = "";
-  }
-
-  private finishRecord(): void {
-    this.finishValue();
-    this.records.push(this.values);
-    this.values = [];
-  }
-
-  private finishLastRecord(): void {
-    if (this.current || this.values.length > 0) {
-      this.finishRecord();
-    }
+  for (let offset = 0; offset < content.length; offset += chunkSize) {
+    yield content.subarray(offset, offset + chunkSize);
   }
 }
 
-function isRecordSeparator(character: string): boolean {
-  return character === "\n" || character === "\r";
+function detectDelimiter(content: string | Uint8Array): string {
+  const prefix = typeof content === "string" ? content.slice(0, chunkSize) : decoder.decode(content.subarray(0, chunkSize));
+  const headerEnd = prefix.search(/[\r\n]/);
+  const header = prefix.slice(0, headerEnd < 0 ? undefined : headerEnd);
+
+  return header.includes(";") ? ";" : ",";
 }

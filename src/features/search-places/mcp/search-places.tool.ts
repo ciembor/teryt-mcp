@@ -1,5 +1,6 @@
 import { defineTool, readQueryLimitInput } from "@mcp-craftsman/core";
 
+import { createSearchOutputSchema, queryLimitInputSchema } from "../../../mcp/search-schemas.js";
 import { searchPlaces, type SearchPlacesDependencies } from "../application/search-places.js";
 
 export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
@@ -7,71 +8,17 @@ export function createSearchPlacesTool(dependencies: SearchPlacesDependencies) {
     name: "search_places",
     description:
       "Search SIMC localities/miejscowości such as cities, towns and villages. Use for requests about miejscowość, wieś, miasto as a locality, SIMC or identyfikator miejscowości. Do not use for administrative gminy/powiaty; use search_units instead.",
-    inputSchema: {
+    inputSchema: queryLimitInputSchema,
+    outputSchema: createSearchOutputSchema("places", "place", {
       type: "object",
       properties: {
-        query: {
-          type: "string",
-        },
-        limit: {
-          type: "number",
-          default: 20,
-          maximum: 100,
-          minimum: 1,
-        },
+        id: { type: "string" },
+        name: { type: "string" },
+        stateDate: { type: "string" },
+        unitId: { type: "string" },
       },
-      required: ["query"],
-    },
-    outputSchema: {
-      type: "object",
-      properties: {
-        places: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              confidence: {
-                type: "number",
-              },
-              matchedBy: {
-                type: "string",
-                enum: ["exact_code", "exact_normalized_name", "prefix", "contains"],
-              },
-              place: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  name: {
-                    type: "string",
-                  },
-                  stateDate: {
-                    type: "string",
-                  },
-                  unitId: {
-                    type: "string",
-                  },
-                },
-                required: ["id", "name", "stateDate", "unitId"],
-              },
-            },
-            required: ["confidence", "matchedBy", "place"],
-          },
-        },
-        stateDate: {
-          anyOf: [
-            {
-              type: "string",
-            },
-            {
-              type: "null",
-            },
-          ],
-        },
-      },
-      required: ["places", "stateDate"],
-    },
+      required: ["id", "name", "stateDate", "unitId"],
+    }),
     policy: "read",
     returnsStructuredContent: true,
     annotations: {

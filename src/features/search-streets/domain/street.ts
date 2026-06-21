@@ -8,6 +8,7 @@ export type Street = {
 
 export type StreetMatch = {
   readonly confidence: number;
-  readonly matchedBy: "exact_code" | "exact_normalized_name" | "prefix" | "contains";
+  readonly matchedBy: SearchMatchKind;
   readonly street: Street;
 };
+import type { SearchMatchKind } from "../../../shared/search-entities.js";

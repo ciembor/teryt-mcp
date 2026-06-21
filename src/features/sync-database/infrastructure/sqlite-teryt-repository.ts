@@ -15,6 +15,7 @@ import type { Unit } from "../../search-units/domain/unit.js";
 import { queryMany, queryOne, withTerytDatabase } from "./sqlite-query.js";
 import { mapAddress, mapPlace, mapStreet, mapUnit } from "./sqlite-row-mappers.js";
 import { findSearchCandidates } from "./sqlite-search-candidates.js";
+import { escapeLikePattern } from "./sqlite-like.js";
 
 export class SqliteTerytRepository
   implements
@@ -53,6 +54,8 @@ export class SqliteTerytRepository
     readonly query: string;
     readonly street: string;
   }): Promise<readonly ResolvedAddress[]> {
+    const escapedQuery = escapeLikePattern(input.query);
+
     return withTerytDatabase(this.dataDir, (db) =>
       queryMany(
         db,
@@ -72,8 +75,12 @@ export class SqliteTerytRepository
         WHERE streets.id = ?
           OR (? <> '' AND places.normalizedName = ? AND streets.normalizedName = ?)
           OR (? <> '' AND (
-            (places.normalizedName || ' ' || streets.normalizedName) LIKE ?
-            OR (streets.normalizedName || ' ' || places.normalizedName) LIKE ?
+            (places.normalizedName || ' ' || streets.normalizedName) LIKE ? ESCAPE '\\'
+            OR (streets.normalizedName || ' ' || places.normalizedName) LIKE ? ESCAPE '\\'
+            OR (places.normalizedName || ' ' || streets.normalizedName) LIKE ? ESCAPE '\\'
+            OR (streets.normalizedName || ' ' || places.normalizedName) LIKE ? ESCAPE '\\'
+            OR ? LIKE '%' || places.normalizedName || ' ' || streets.normalizedName || '%'
+            OR ? LIKE '%' || streets.normalizedName || ' ' || places.normalizedName || '%'
           ))
         ORDER BY places.name, streets.name, streets.id
         LIMIT ?`,
@@ -83,8 +90,12 @@ export class SqliteTerytRepository
           input.place,
           input.street,
           input.query,
-          `${input.query}%`,
-          `${input.query}%`,
+          `${escapedQuery}%`,
+          `${escapedQuery}%`,
+          `%${escapedQuery}%`,
+          `%${escapedQuery}%`,
+          input.query,
+          input.query,
           input.limit,
         ],
         mapAddress,
