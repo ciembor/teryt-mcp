@@ -19,6 +19,13 @@ const skipValues = new Set(["1", "true", "yes"]);
 const author = "Maciej Ciemborowicz";
 const authorEmail = "maciej.ciemborowicz@gmail.com";
 const repositoryUrl = "https://github.com/ciembor/teryt-mcp";
+const ansi = {
+  blue: "\u001B[34m",
+  green: "\u001B[32m",
+  magenta: "\u001B[35m",
+  red: "\u001B[31m",
+  reset: "\u001B[0m",
+} as const;
 const banner = String.raw`
 ████████╗███████╗██████╗ ██╗   ██╗████████╗   ███╗   ███╗ ██████╗██████╗
 ╚══██╔══╝██╔════╝██╔══██╗╚██╗ ██╔╝╚══██╔══╝   ████╗ ████║██╔════╝██╔══██╗
@@ -37,7 +44,8 @@ export async function runPostinstallSync(options: PostinstallOptions = {}): Prom
   writeInstallHeader(io.stderr);
 
   if (skipValues.has((io.env.TERYT_MCP_SKIP_POSTINSTALL_SYNC ?? "").toLowerCase())) {
-    io.stderr.write("Data sync: skipped by TERYT_MCP_SKIP_POSTINSTALL_SYNC.\n");
+    io.stderr.write(colorize("Data sync: skipped by TERYT_MCP_SKIP_POSTINSTALL_SYNC.", ansi.green));
+    io.stderr.write("\n");
     return;
   }
 
@@ -52,7 +60,7 @@ export async function runPostinstallSync(options: PostinstallOptions = {}): Prom
 }
 
 function writeInstallHeader(stream: NodeJS.WritableStream): void {
-  stream.write(`${banner}\n`);
+  stream.write(`${colorize(banner, ansi.magenta)}\n`);
   stream.write(`teryt-mcp ${terytMcpVersion}\n`);
   stream.write(`Author: ${author} <${authorEmail}>\n`);
   stream.write(`Repository: ${repositoryUrl}\n\n`);
@@ -110,13 +118,16 @@ function hasStringField(item: Record<string, unknown>, field: string): boolean {
 
 function formatSyncSummary(summary: SyncSummary, dataDir: string): string {
   const lines = [
-    `Data sync: ${formatStatus(summary.status)}.`,
+    colorize(
+      `Data sync: ${formatStatus(summary.status)}.`,
+      isSuccessfulStatus(summary.status) ? ansi.green : ansi.red,
+    ),
     `Data directory: ${dataDir}`,
   ];
 
   if (summary.datasets.length > 0) {
     lines.push("TERYT data state dates:");
-    lines.push(...summary.datasets.map((item) => `  - ${item.dataset}: ${item.stateDate}`));
+    lines.push(...summary.datasets.map((item) => colorize(`  - ${item.dataset}: ${item.stateDate}`, ansi.blue)));
   } else if (summary.status === "skipped") {
     lines.push("TERYT data: already available; no download needed.");
   } else {
@@ -138,8 +149,17 @@ function formatStatus(status: string): string {
   return status;
 }
 
+function isSuccessfulStatus(status: string): boolean {
+  return status === "synced" || status === "skipped" || status === "completed";
+}
+
+function colorize(text: string, color: string): string {
+  return `${color}${text}${ansi.reset}`;
+}
+
 if (isCliEntrypoint("postinstall.js")) {
   runPostinstallSync().catch((error: unknown) => {
-    process.stderr.write(`Data sync: ✗ failed: ${error instanceof Error ? error.message : String(error)}\n`);
+    const message = `Data sync: ✗ failed: ${error instanceof Error ? error.message : String(error)}`;
+    process.stderr.write(`${colorize(message, ansi.red)}\n`);
   });
 }
