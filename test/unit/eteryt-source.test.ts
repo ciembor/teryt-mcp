@@ -76,6 +76,37 @@ describe("EterytSource", () => {
     expect(attempts).toBe(3);
   });
 
+  it("retries transient HTTP responses", async () => {
+    let attempts = 0;
+    const zip = zipSync({
+      "TERC.csv": strToU8("WOJ;POW;GMI;RODZ;NAZWA;NAZDOD;STAN_NA\n02;01;01;1;Bolesławiec;gmina miejska;2026-01-01"),
+    });
+    const source = new EterytSource(async (_url, init) => {
+      attempts += 1;
+
+      if (!init || init.method !== "POST") {
+        return new Response('<input type="hidden" name="__VIEWSTATE" value="view" />');
+      }
+
+      if (attempts === 2) {
+        return new Response("retry later", {
+          status: 503,
+        });
+      }
+
+      return new Response(zip, {
+        headers: {
+          "content-type": "application/zip",
+        },
+      });
+    });
+
+    await expect(source.download("TERC")).resolves.toMatchObject({
+      dataset: "TERC",
+    });
+    expect(attempts).toBe(3);
+  });
+
   it("rejects HTML error pages returned instead of dataset files", async () => {
     const source = new EterytSource(async (_url, init) =>
       init?.method === "POST"

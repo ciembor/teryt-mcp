@@ -1,7 +1,8 @@
 import type { Dataset } from "../domain/dataset.js";
 import type { TerytSourceCatalog } from "../application/ports/teryt-source-catalog.js";
 
-const SOURCE_URL = "https://eteryt.stat.gov.pl/eTeryt/";
+const SOURCE_URL =
+  "https://eteryt.stat.gov.pl/eTeryt/rejestr_teryt/udostepnianie_danych/baza_teryt/uzytkownicy_indywidualni/pobieranie/pliki_pelne.aspx";
 
 export class EterytSourceCatalog implements TerytSourceCatalog {
   constructor(

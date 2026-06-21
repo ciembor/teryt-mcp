@@ -293,7 +293,7 @@ Odpowiedź ma postać:
   },
   "server": {
     "name": "teryt-mcp",
-    "version": "0.1.10"
+    "version": "0.1.11"
   },
   "data": {
     "status": "available",
@@ -346,7 +346,7 @@ Odpowiedź ma postać:
 ```json
 {
   "serverName": "teryt-mcp",
-  "serverVersion": "0.1.10",
+  "serverVersion": "0.1.11",
   "frameworkVersion": "0.2.1",
   "transport": "stdio",
   "dataDir": "/path/to/teryt-data",
@@ -695,6 +695,15 @@ serwer przez `codex mcp list` albo `/mcp` w interfejsie terminalowym.
 
 Serwer może zwracać status bez lokalnej bazy, ale wyszukiwanie i lookupy
 wymagają bazy SQLite.
+
+Podstawowe komendy CLI:
+
+```bash
+teryt-mcp help
+teryt-mcp about
+teryt-mcp status
+teryt-mcp source-status
+```
 
 Wymuszenie synchronizacji:
 

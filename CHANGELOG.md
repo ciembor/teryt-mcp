@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.11
+
+- Add `teryt-mcp about` and `teryt-mcp help` CLI commands.
+- Keep npm installation successful when install-time synchronization fails.
+- Treat corrupt local SQLite files as unusable so status and sync paths can recover.
+- Retry eTeryt downloads on transient HTTP `429` and `5xx` responses.
+- Check the concrete eTeryt full-file download endpoint in `source_status`.
+
 ## 0.1.10
 
 - Add the `about` MCP tool with author, contact, repository, server version, synchronization status, and TERYT data state dates.

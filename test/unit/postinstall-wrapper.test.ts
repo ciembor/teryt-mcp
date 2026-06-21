@@ -42,4 +42,26 @@ describe("postinstall wrapper", () => {
     expect(result.status).toBe(0);
     expect(readFileSync(join(tempDir, "marker.txt"), "utf8")).toBe("called");
   });
+
+  it("keeps installation successful when runPostinstallSync fails", () => {
+    const tempDir = mkdtempSync(join(tmpdir(), "teryt-postinstall-wrapper-"));
+    tempDirs.push(tempDir);
+    mkdirSync(join(tempDir, "dist"));
+    writeFileSync(
+      join(tempDir, "dist", "postinstall.js"),
+      [
+        "export async function runPostinstallSync() {",
+        "  throw new Error('network unavailable');",
+        "}",
+      ].join("\n"),
+    );
+
+    const result = spawnSync(process.execPath, [resolve("scripts/postinstall.mjs")], {
+      cwd: tempDir,
+      encoding: "utf8",
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toContain("initial sync failed, continuing installation: network unavailable");
+  });
 });

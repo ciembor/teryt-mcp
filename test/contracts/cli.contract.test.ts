@@ -27,6 +27,40 @@ afterEach(async () => {
 });
 
 describe("teryt-mcp CLI contract", () => {
+  it("prints help", async () => {
+    const stdout = new MemoryWritable();
+
+    await runCli(["--help"], {
+      env: {},
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(stdout.content).toContain("Usage:");
+    expect(stdout.content).toContain("teryt-mcp about");
+    expect(stdout.content).toContain("teryt-mcp serve");
+  });
+
+  it("returns about information consistent with MCP", async () => {
+    const stdout = new MemoryWritable();
+    const env = {
+      MCP_DATA_DIR: "test-data/teryt-cli",
+      MCP_TRANSPORT: "stdio",
+    };
+    const config = createTestRuntimeConfig({
+      dataDir: resolve(env.MCP_DATA_DIR),
+    });
+    const mcpResult = await callTool(createApp(config), "about", {});
+
+    await runCli(["about"], {
+      env,
+      stderr: new MemoryWritable(),
+      stdout,
+    });
+
+    expect(JSON.parse(stdout.content)).toEqual(mcpResult.structuredContent);
+  });
+
   it("returns server status consistent with MCP", async () => {
     const stdout = new MemoryWritable();
     const env = {

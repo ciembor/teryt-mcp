@@ -7,6 +7,9 @@ import { createTestRuntimeConfig } from "../support/runtime-config.js";
 import { cleanupSyncedFixtureApps, createSyncedFixtureApp } from "../support/synced-fixture-app.js";
 import { createTestSourceCatalog } from "../support/test-source-catalog.js";
 
+const sourceUrl =
+  "https://eteryt.stat.gov.pl/eTeryt/rejestr_teryt/udostepnianie_danych/baza_teryt/uzytkownicy_indywidualni/pobieranie/pliki_pelne.aspx";
+
 afterEach(cleanupSyncedFixtureApps);
 
 describe("source_status contract", () => {
@@ -27,7 +30,7 @@ describe("source_status contract", () => {
             dataset: {
               code: "TERC",
               name: "Territorial units",
-              sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
+              sourceUrl,
             },
             sha256: null,
             snapshot: null,
@@ -37,7 +40,7 @@ describe("source_status contract", () => {
             dataset: {
               code: "SIMC",
               name: "Localities",
-              sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
+              sourceUrl,
             },
             sha256: null,
             snapshot: null,
@@ -47,7 +50,7 @@ describe("source_status contract", () => {
             dataset: {
               code: "ULIC",
               name: "Streets",
-              sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
+              sourceUrl,
             },
             sha256: null,
             snapshot: null,
@@ -57,7 +60,7 @@ describe("source_status contract", () => {
             dataset: {
               code: "WMRODZ",
               name: "Locality type dictionary",
-              sourceUrl: "https://eteryt.stat.gov.pl/eTeryt/",
+              sourceUrl,
             },
             sha256: null,
             snapshot: null,

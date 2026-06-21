@@ -9,6 +9,7 @@ import {
 import { mcpCraftsmanCoreVersion } from "@mcp-craftsman/core";
 
 import { createApp } from "./app.js";
+import { helpText } from "./cli-help.js";
 import { getServerStatus } from "./features/server-status/index.js";
 import { JsonManifestStore } from "./features/source-status/infrastructure/json-manifest-store.js";
 import { loadTerytRuntimeConfig } from "./runtime/config.js";
@@ -21,42 +22,49 @@ type TerytCliIo = CliIo & {
 export async function runCli(argv: readonly string[] = process.argv.slice(2), io: TerytCliIo = defaultIo()): Promise<void> {
   const [command, ...args] = argv;
 
-  if (command === "serve") {
-    await serve(loadTerytRuntimeConfig(io.env));
-    return;
+  switch (normalizeCommand(command)) {
+    case "about":
+      await writeCliToolResult(io.stdout, "about", {}, io);
+      return;
+    case "help":
+      io.stdout.write(helpText);
+      return;
+    case "search":
+      await runSearchCommand(args, io);
+      return;
+    case "serve":
+      await serve(loadTerytRuntimeConfig(io.env));
+      return;
+    case "source-status":
+      await writeCliToolResult(io.stdout, "source_status", {}, io);
+      return;
+    case "status":
+      await writeStatus(io);
+      return;
+    case "sync":
+      await writeCliToolResult(io.stdout, "sync_database", { mode: parseSyncMode(args) }, io);
+      return;
+    default:
+      throw new Error(`Unknown command: ${command ?? "<missing>"}`);
   }
+}
 
-  if (command === "status") {
-    const config = loadTerytRuntimeConfig(io.env);
+function normalizeCommand(command: string | undefined): string {
+  return !command || command === "--help" || command === "-h" ? "help" : command;
+}
 
-    writeJson(
-      io.stdout,
-      await getServerStatus({
-        dataDir: config.dataDir,
-        databaseExists: () => new JsonManifestStore(config.dataDir).hasDatabase(),
-        frameworkVersion: mcpCraftsmanCoreVersion,
-        transport: config.transport,
-      }),
-    );
-    return;
-  }
+async function writeStatus(io: TerytCliIo): Promise<void> {
+  const config = loadTerytRuntimeConfig(io.env);
 
-  if (command === "source-status") {
-    await writeCliToolResult(io.stdout, "source_status", {}, io);
-    return;
-  }
-
-  if (command === "sync") {
-    await writeCliToolResult(io.stdout, "sync_database", { mode: parseSyncMode(args) }, io);
-    return;
-  }
-
-  if (command === "search") {
-    await runSearchCommand(args, io);
-    return;
-  }
-
-  throw new Error(`Unknown command: ${command ?? "<missing>"}`);
+  writeJson(
+    io.stdout,
+    await getServerStatus({
+      dataDir: config.dataDir,
+      databaseExists: () => new JsonManifestStore(config.dataDir).hasDatabase(),
+      frameworkVersion: mcpCraftsmanCoreVersion,
+      transport: config.transport,
+    }),
+  );
 }
 
 async function writeCliToolResult(

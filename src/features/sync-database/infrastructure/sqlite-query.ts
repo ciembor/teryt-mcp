@@ -46,7 +46,13 @@ export async function readTerytDatabaseSchemaVersion(dataDir: string): Promise<n
   }
 
   const SQL = await loadSqlJs();
-  const db = new SQL.Database(content);
+  let db: Database;
+
+  try {
+    db = new SQL.Database(content);
+  } catch {
+    return null;
+  }
 
   try {
     return readSchemaVersion(db);

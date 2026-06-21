@@ -9,17 +9,27 @@ export async function fetchWithRetry(fetchFn: Fetch, input: RequestInfo | URL, i
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      return await fetchWithTimeout(fetchFn, input, init);
+      const response = await fetchWithTimeout(fetchFn, input, init);
+
+      if (!isRetryableStatus(response.status) || attempt === maxAttempts) {
+        return response;
+      }
+
+      lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {
       lastError = error;
+    }
 
-      if (attempt < maxAttempts) {
-        await delay(retryDelayMs * attempt);
-      }
+    if (attempt < maxAttempts) {
+      await delay(retryDelayMs * attempt);
     }
   }
 
   throw lastError;
+}
+
+function isRetryableStatus(status: number): boolean {
+  return status === 429 || status >= 500;
 }
 
 async function fetchWithTimeout(fetchFn: Fetch, input: RequestInfo | URL, init: RequestInit): Promise<Response> {

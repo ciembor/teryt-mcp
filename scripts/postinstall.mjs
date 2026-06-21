@@ -12,12 +12,22 @@ try {
     throw new Error("teryt-mcp postinstall: dist/postinstall.js does not export runPostinstallSync.");
   }
 
-  await postinstallModule.runPostinstallSync();
+  await runBestEffortPostinstall(postinstallModule.runPostinstallSync);
 } catch (error) {
   if (isMissingFile(error)) {
     process.stderr.write("teryt-mcp postinstall: dist/postinstall.js not found; skipping initial sync.\n");
   } else {
     throw error;
+  }
+}
+
+async function runBestEffortPostinstall(runPostinstallSync) {
+  try {
+    await runPostinstallSync();
+  } catch (error) {
+    process.stderr.write(
+      `teryt-mcp postinstall: initial sync failed, continuing installation: ${error instanceof Error ? error.message : String(error)}\n`,
+    );
   }
 }
 

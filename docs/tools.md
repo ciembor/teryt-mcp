@@ -227,6 +227,8 @@ Returns ULIC street details.
 The `teryt-mcp` CLI calls the same capabilities:
 
 ```text
+teryt-mcp about          -> about
+teryt-mcp help           -> CLI help
 teryt-mcp status         -> server_status or shared status use case
 teryt-mcp source-status  -> source_status
 teryt-mcp sync           -> sync_database

@@ -31,7 +31,7 @@ describe("about contract", () => {
         },
         server: {
           name: "teryt-mcp",
-          version: "0.1.10",
+          version: "0.1.11",
         },
         data: {
           datasets: [],

@@ -1,6 +1,6 @@
 {
   "name": "teryt-mcp",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": false,
   "description": "MCP server for the official Polish TERYT registry.",
   "author": {
