@@ -43,6 +43,7 @@ describe("project architecture", () => {
             content: new Uint8Array(),
           }),
         },
+        databaseIsUsable: async () => false,
         fileStore: {
           databaseExists: async () => false,
           databaseModifiedAt: async () => null,

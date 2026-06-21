@@ -87,6 +87,7 @@ describe("resolve_address contract", () => {
   });
 
   it.each([
+    ["Wieliszew Marszałkowska 5", /building numbers/],
     ["Wieliszew Marszałkowska 10", /building numbers/],
     ["00-001 Wieliszew Marszałkowska", /postal codes/],
   ])("rejects unsupported address detail %s", async (query, expectedError) => {

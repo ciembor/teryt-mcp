@@ -34,11 +34,7 @@ function isPostalCode(value: string): boolean {
 }
 
 function isBuildingNumber(value: string, next: string | undefined): boolean {
-  if (!isDigit(value[0]) || value.includes("-") || monthNames.has(next?.toLocaleLowerCase("pl-PL") ?? "")) {
-    return false;
-  }
-
-  return value.length > 1 || value.includes("/");
+  return isDigit(value[0]) && !value.includes("-") && !monthNames.has(next?.toLocaleLowerCase("pl-PL") ?? "");
 }
 
 function isDigit(value: string | undefined): boolean {

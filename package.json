@@ -1,6 +1,6 @@
 {
   "name": "teryt-mcp",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": false,
   "description": "MCP server for the official Polish TERYT registry.",
   "type": "module",
@@ -10,6 +10,7 @@
   },
   "files": [
     "dist",
+    "scripts",
     "CHANGELOG.md",
     "README.md"
   ],
@@ -18,7 +19,8 @@
   },
   "scripts": {
     "build": "tsup src/main.ts src/cli.ts src/postinstall.ts --format esm --dts --clean",
-    "postinstall": "node dist/postinstall.js",
+    "postinstall": "node scripts/postinstall.mjs",
+    "prepack": "pnpm build",
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
     "quality": "mcp-craftsman quality",
     "test": "vitest run",

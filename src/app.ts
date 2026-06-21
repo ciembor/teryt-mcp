@@ -43,6 +43,7 @@ export function createApp(config: RuntimeConfig = loadRuntimeConfig(), overrides
       unitRepository: terytRepository,
       sync: {
         databaseBuilder: new SqliteDatabaseBuilder(),
+        databaseIsUsable: () => manifestStore.hasDatabase(),
         fileStore: syncFileStore,
         lockStore: syncLockStore,
         manifestStore: syncManifestStore,

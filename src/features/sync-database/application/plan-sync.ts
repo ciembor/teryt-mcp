@@ -3,6 +3,7 @@ import type { FileStore } from "./ports/file-store.js";
 import { terytDatabaseSchemaVersion } from "../domain/database-schema.js";
 
 type PlanSyncInput = {
+  readonly databaseIsUsable: () => Promise<boolean>;
   readonly fileStore: FileStore;
   readonly mode: SyncMode;
   readonly now: Date;
@@ -20,6 +21,15 @@ export async function planSync(input: PlanSyncInput): Promise<SyncPlan> {
       return {
         action: "build_database",
         reason: "incompatible_schema",
+      };
+    }
+
+    const databaseIsUsable = await input.databaseIsUsable();
+
+    if (!databaseIsUsable) {
+      return {
+        action: "build_database",
+        reason: input.mode,
       };
     }
 

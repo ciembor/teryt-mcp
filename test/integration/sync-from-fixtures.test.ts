@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { TextDecoder, TextEncoder } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { importTerytCsv } from "../../src/features/sync-database/application/importers/teryt-csv.js";
 import { validateTerytRelations } from "../../src/features/sync-database/application/importers/teryt-relations.js";
 import { syncDatabase } from "../../src/features/sync-database/index.js";
 import type { SourceFile } from "../../src/features/sync-database/application/ports/teryt-source.js";
@@ -20,9 +19,7 @@ describe("syncDatabase from TERYT fixtures", () => {
 
     const result = await syncDatabase({
       databaseBuilder: {
-        build: async (sourceFiles) => {
-          const imports = sourceFiles.map((sourceFile) => importTerytCsv(decoder.decode(sourceFile.content)));
-
+        build: async (imports) => {
           validateTerytRelations(imports);
 
           return {
@@ -38,11 +35,12 @@ describe("syncDatabase from TERYT fixtures", () => {
           };
         },
       },
-        fileStore: {
-          databaseExists: async () => false,
-          databaseModifiedAt: async () => null,
-          databaseSchemaVersion: async () => null,
-          swapDatabase: async (content) => {
+      databaseIsUsable: async () => false,
+      fileStore: {
+        databaseExists: async () => false,
+        databaseModifiedAt: async () => null,
+        databaseSchemaVersion: async () => null,
+        swapDatabase: async (content) => {
           swaps.push(content);
           return "test-data/teryt.sqlite";
         },

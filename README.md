@@ -300,7 +300,7 @@ Odpowiedź ma postać:
 ```json
 {
   "serverName": "teryt-mcp",
-  "serverVersion": "0.1.8",
+  "serverVersion": "0.1.9",
   "frameworkVersion": "0.2.1",
   "transport": "stdio",
   "dataDir": "/path/to/teryt-data",

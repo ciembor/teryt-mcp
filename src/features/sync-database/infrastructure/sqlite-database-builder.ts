@@ -1,26 +1,21 @@
 import initSqlJs from "sql.js";
 import type { Database, SqlJsStatic } from "sql.js";
 
-import { importTerytCsv } from "../application/importers/teryt-csv.js";
-import { importTerytSourceFile } from "../application/importers/teryt-source-file.js";
+import type { TerytImport } from "../application/importers/teryt-csv.js";
 import { validateTerytRelations } from "../application/importers/teryt-relations.js";
 import { terytSqliteSchema } from "../application/importers/sqlite-schema.js";
 import type { DatabaseBuilder, BuiltDatabase } from "../application/ports/database-builder.js";
-import type { SourceFile } from "../application/ports/teryt-source.js";
 import { terytDatabaseSchemaVersion } from "../domain/database-schema.js";
 import { insertSearchTables } from "./sqlite-search-tables.js";
 
-type ImportedDataset = ReturnType<typeof importTerytCsv>;
-type ImportedRow = ImportedDataset["rows"][number];
+type ImportedRow = TerytImport["rows"][number];
 
 export class SqliteDatabaseBuilder implements DatabaseBuilder {
-  async build(sourceFiles: readonly SourceFile[]): Promise<BuiltDatabase> {
+  async build(imports: readonly TerytImport[]): Promise<BuiltDatabase> {
     const SQL = await loadSqlJs();
     const db = new SQL.Database();
 
     try {
-      const imports = sourceFiles.map((sourceFile) => importTerytSourceFile(sourceFile));
-
       validateTerytRelations(imports);
       createSchema(db);
       db.run("BEGIN");
@@ -94,13 +89,13 @@ function createFtsFallbackStatement(statement: string, error: unknown): string |
   return tableName && firstColumn ? `CREATE TABLE ${tableName} (${firstColumn} TEXT)` : null;
 }
 
-function insertRawDatasets(db: Database, imports: readonly ImportedDataset[]): void {
+function insertRawDatasets(db: Database, imports: readonly TerytImport[]): void {
   for (const imported of imports) {
     insertRows(db, `raw_${imported.dataset.toLowerCase()}`, imported.columns, imported.rows);
   }
 }
 
-function insertMetadata(db: Database, imports: readonly ImportedDataset[]): void {
+function insertMetadata(db: Database, imports: readonly TerytImport[]): void {
   const metadata = [
     ["datasetCount", String(imports.length)],
     ["schemaVersion", String(terytDatabaseSchemaVersion)],

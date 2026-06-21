@@ -15,6 +15,7 @@ describe("syncDatabase", () => {
             throw new Error("invalid source files");
           },
         },
+        databaseIsUsable: async () => true,
         fileStore: {
           databaseExists: async () => true,
           databaseModifiedAt: async () => new Date("2026-01-01T00:00:00.000Z"),
@@ -40,5 +41,42 @@ describe("syncDatabase", () => {
 
     expect(swaps).toEqual([]);
     expect(manifests).toEqual([]);
+  });
+
+  it("passes parsed imports to the database builder", async () => {
+    const imports: unknown[] = [];
+
+    await syncDatabase({
+      databaseBuilder: {
+        build: async (input) => {
+          imports.push(...input);
+          return { content: new Uint8Array([1, 2, 3]) };
+        },
+      },
+      databaseIsUsable: async () => false,
+      fileStore: {
+        databaseExists: async () => false,
+        databaseModifiedAt: async () => null,
+        databaseSchemaVersion: async () => null,
+        swapDatabase: async () => "test-data/teryt.sqlite",
+      },
+      lockStore: {
+        withSyncLock: async (callback) => callback(),
+      },
+      manifestStore: {
+        writeSnapshot: async () => {},
+      },
+      mode: "missing",
+      now: () => new Date("2026-01-01T00:00:00.000Z"),
+      source: createFixtureSyncSource(),
+    });
+
+    expect(imports).toHaveLength(4);
+    expect(imports.map((item) => (item as { dataset: string }).dataset).sort()).toEqual([
+      "SIMC",
+      "TERC",
+      "ULIC",
+      "WMRODZ",
+    ]);
   });
 });

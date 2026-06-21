@@ -14,6 +14,7 @@ import type { TerytSource } from "./ports/teryt-source.js";
 
 export type SyncDatabaseInput = {
   readonly databaseBuilder: DatabaseBuilder;
+  readonly databaseIsUsable: () => Promise<boolean>;
   readonly fileStore: FileStore;
   readonly lockStore: LockStore;
   readonly manifestStore: SyncManifestStore;
@@ -32,6 +33,7 @@ type SyncDatabaseResult = {
 export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDatabaseResult> {
   return input.lockStore.withSyncLock(async () => {
     const plan = await planSync({
+      databaseIsUsable: input.databaseIsUsable,
       fileStore: input.fileStore,
       mode: input.mode,
       now: input.now(),
@@ -51,7 +53,7 @@ export async function syncDatabase(input: SyncDatabaseInput): Promise<SyncDataba
       imported: importTerytSourceFile(sourceFile),
       sourceFile,
     }));
-    const database = await input.databaseBuilder.build(sourceFiles);
+    const database = await input.databaseBuilder.build(imports.map(({ imported }) => imported));
     const databasePath = await input.fileStore.swapDatabase(database.content);
     const datasets = imports.map(({ imported, sourceFile }) => ({
       columns: imported.columns,

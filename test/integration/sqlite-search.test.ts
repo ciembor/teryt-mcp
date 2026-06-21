@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import initSqlJs from "sql.js";
 import type { Database, SqlValue } from "sql.js";
 
+import { importTerytSourceFile } from "../../src/features/sync-database/application/importers/teryt-source-file.js";
 import { SqliteDatabaseBuilder } from "../../src/features/sync-database/infrastructure/sqlite-database-builder.js";
 import type { SourceFile } from "../../src/features/sync-database/application/ports/teryt-source.js";
 import type { DatasetCode } from "../../src/features/sync-database/domain/dataset.js";
@@ -14,7 +15,8 @@ const datasets: readonly DatasetCode[] = ["TERC", "SIMC", "ULIC", "WMRODZ"];
 
 describe("SQLite search integration", () => {
   it("builds a searchable SQLite database from TERYT fixtures", async () => {
-    const database = await new SqliteDatabaseBuilder().build(await loadFixtureSources());
+    const sources = await loadFixtureSources();
+    const database = await new SqliteDatabaseBuilder().build(sources.map(importTerytSourceFile));
     const SQL = await initSqlJs();
     const db = new SQL.Database(database.content);
 

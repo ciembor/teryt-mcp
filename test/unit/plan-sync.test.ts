@@ -6,6 +6,7 @@ describe("planSync", () => {
   it("skips an existing compatible database in missing mode", async () => {
     await expect(
       planSync({
+        databaseIsUsable: async () => true,
         fileStore: createFileStore(2),
         mode: "missing",
         now: new Date("2026-01-01T00:00:00.000Z"),
@@ -16,6 +17,7 @@ describe("planSync", () => {
   it("rebuilds an existing database with an incompatible schema in missing mode", async () => {
     await expect(
       planSync({
+        databaseIsUsable: async () => true,
         fileStore: createFileStore(null),
         mode: "missing",
         now: new Date("2026-01-01T00:00:00.000Z"),
@@ -23,9 +25,32 @@ describe("planSync", () => {
     ).resolves.toEqual({ action: "build_database", reason: "incompatible_schema" });
   });
 
-  it("skips a compatible database newer than 24 hours in stale mode", async () => {
+  it("rebuilds in missing mode when a compatible database exists but is not usable", async () => {
     await expect(
       planSync({
+        databaseIsUsable: async () => false,
+        fileStore: createFileStore(2),
+        mode: "missing",
+        now: new Date("2026-01-01T00:00:00.000Z"),
+      }),
+    ).resolves.toEqual({ action: "build_database", reason: "missing" });
+  });
+
+  it("rebuilds when a compatible database exists but is not usable", async () => {
+    await expect(
+      planSync({
+        databaseIsUsable: async () => false,
+        fileStore: createFileStore(2, new Date("2026-01-01T12:00:00.000Z")),
+        mode: "stale",
+        now: new Date("2026-01-02T00:00:00.000Z"),
+      }),
+    ).resolves.toEqual({ action: "build_database", reason: "stale" });
+  });
+
+  it("skips a compatible usable database newer than 24 hours in stale mode", async () => {
+    await expect(
+      planSync({
+        databaseIsUsable: async () => true,
         fileStore: createFileStore(2, new Date("2026-01-01T12:00:00.000Z")),
         mode: "stale",
         now: new Date("2026-01-02T00:00:00.000Z"),
@@ -36,6 +61,7 @@ describe("planSync", () => {
   it("rebuilds a compatible database at least 24 hours old in stale mode", async () => {
     await expect(
       planSync({
+        databaseIsUsable: async () => true,
         fileStore: createFileStore(2, new Date("2026-01-01T00:00:00.000Z")),
         mode: "stale",
         now: new Date("2026-01-02T00:00:00.000Z"),

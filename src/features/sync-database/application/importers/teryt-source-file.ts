@@ -1,12 +1,12 @@
 import { TextDecoder } from "node:util";
 
-import { importTerytCsv } from "./teryt-csv.js";
+import { importTerytCsv, type TerytImport } from "./teryt-csv.js";
 import { importTerytZip } from "./teryt-zip.js";
 import type { SourceFile } from "../ports/teryt-source.js";
 
 const decoder = new TextDecoder();
 
-export function importTerytSourceFile(sourceFile: SourceFile) {
+export function importTerytSourceFile(sourceFile: SourceFile): TerytImport {
   if (isZip(sourceFile.content)) {
     return importTerytZip(sourceFile.content, sourceFile.dataset);
   }

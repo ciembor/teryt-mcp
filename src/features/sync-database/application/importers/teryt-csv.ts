@@ -8,7 +8,7 @@ type TerytRow = {
   readonly values: Readonly<Record<string, string>>;
 };
 
-type TerytImport = {
+export type TerytImport = {
   readonly columns: readonly string[];
   readonly dataset: DatasetCode;
   readonly recordCount: number;

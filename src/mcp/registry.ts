@@ -33,6 +33,7 @@ type CreateRegistryInput = {
   readonly unitRepository: UnitRepository;
   readonly sync: {
     readonly databaseBuilder: DatabaseBuilder;
+    readonly databaseIsUsable: () => Promise<boolean>;
     readonly fileStore: FileStore;
     readonly lockStore: LockStore;
     readonly manifestStore: SyncManifestStore;
