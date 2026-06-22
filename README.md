@@ -847,3 +847,11 @@ Szczegóły architektury i kontraktów:
 - [docs/data-sync.md](docs/data-sync.md)
 - [docs/architecture/feature-clean-architecture.md](docs/architecture/feature-clean-architecture.md)
 - [docs/architecture/runtime-ecosystem.md](docs/architecture/runtime-ecosystem.md)
+
+## Licencja i źródło danych
+
+Kod projektu: Copyright 2026 Maciej Ciemborowicz. Udostępniany wyłącznie na
+warunkach [European Union Public Licence 1.2](LICENSE) (`EUPL-1.2 only`).
+
+Dane TERYT pochodzą z Głównego Urzędu Statystycznego. Informacje o ich
+pozyskiwaniu i przetwarzaniu znajdują się w pliku [NOTICE.md](NOTICE.md).

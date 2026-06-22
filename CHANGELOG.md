@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+- License the project under EUPL 1.2 only and preserve the original author's copyright notice.
+- Document the GUS source, synchronization timestamps, and processing applied to TERYT data.
+- Include the licence and data notice in the published npm package.
+
 ## 0.1.13
 
 - Replace custom HTML and CSV parsing with `cheerio` and streaming `csv-parse`, including compatibility with current official ULIC irregularities.
